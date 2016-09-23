@@ -26,20 +26,24 @@ class Page
 
      /**
      * @ORM\ManyToOne(targetEntity="Page", inversedBy="children")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="parent", referencedColumnName="id", onDelete="CASCADE")
      */
-    private $parentId;
+    private $parent;
 
     /**
-     * @ORM\OneToMany(targetEntity="Page", mappedBy="parentId")
+     * @ORM\OneToMany(targetEntity="Page", mappedBy="parent")
      */
     private $children;	
 	
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="Image", mappedBy="page")
-	 */
-	private $file;
+	 * @ORM\ManyToMany(targetEntity="Image")
+	 * @ORM\JoinTable(name="page_image", joinColumns={@ORM\JoinColumn(name="page_id",
+		referencedColumnName="id", onDelete="CASCADE")},
+	 * inverseJoinColumns={@ORM\JoinColumn(name="image_id",
+	referencedColumnName="id")})
+	 */	
+    private $file;
 	  
 
 
@@ -485,27 +489,27 @@ class Page
     }
 
     /**
-     * Set parentId
+     * Set parent
      *
      * @param \BaseBundle\Entity\Page $parentId
      *
      * @return Page
      */
-    public function setParentId(\BaseBundle\Entity\Page $parentId = null)
+    public function setParent(\BaseBundle\Entity\Page $parent = null)
     {
-        $this->parentId = $parentId;
+        $this->parent = $parent;
 
         return $this;
     }
 
     /**
-     * Get parentId
+     * Get parent
      *
      * @return \BaseBundle\Entity\Page
      */
-    public function getParentId()
+    public function getParent()
     {
-        return $this->parentId;
+        return $this->parent;
     }
 
     /**
@@ -552,7 +556,7 @@ class Page
     public function addFile(\BaseBundle\Entity\Image $file)
     {
         $this->file[] = $file;
-
+		
         return $this;
     }
 

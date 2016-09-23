@@ -7,6 +7,10 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 //use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 
+//use Imagine\Gd;
+//use Imagine\Image\Box;
+//use Imagine\Image\BoxInterface;
+
 
 /**
  * Image
@@ -28,15 +32,6 @@ class Image
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
-	
-
-    /**
-     * @var \Page
-     * @ORM\ManyToOne(targetEntity="Page", inversedBy="file")
-     * @ORM\JoinColumn(onDelete="CASCADE")
-     */
-    private $page;
 	
 	
     /**
@@ -110,6 +105,8 @@ class Image
 		$this->getFile()->move(
 			Image::SERVER_PATH_TO_IMAGE_FOLDER,$newName
 		);
+		
+		//$photo = Image::getImagine()->open($dir . $fileName);
 
 		// set the path property to the filename where you've saved the file
 		
@@ -213,27 +210,28 @@ class Image
         return $this->updated;
     }
 
+
     /**
-     * Set page
+     * Set title
      *
-     * @param \BaseBundle\Entity\Page $page
+     * @param string $title
      *
      * @return Image
      */
-    public function setPage(\BaseBundle\Entity\Page $page = null)
+    public function setTitle($title)
     {
-        $this->page = $page;
+        $this->title = $title;
 
         return $this;
     }
 
     /**
-     * Get page
+     * Get title
      *
-     * @return \BaseBundle\Entity\Page
+     * @return string
      */
-    public function getPage()
+    public function getTitle()
     {
-        return $this->page;
+        return $this->title;
     }
 }

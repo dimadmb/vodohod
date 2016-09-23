@@ -37,9 +37,13 @@ class Page
 	
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="Image", mappedBy="page")
-	 */
-	private $file;
+	 * @ORM\ManyToMany(targetEntity="Image")
+	 * @ORM\JoinTable(name="page_image", joinColumns={@ORM\JoinColumn(name="page_id",
+		referencedColumnName="id", onDelete="CASCADE")},
+	 * inverseJoinColumns={@ORM\JoinColumn(name="image_id",
+	referencedColumnName="id", onDelete="CASCADE")})
+	 */	
+    private $file;
 	  
 
 
@@ -553,8 +557,6 @@ class Page
     {
         $this->file[] = $file;
 		
-		$file->setPage($this);
-
         return $this;
     }
 

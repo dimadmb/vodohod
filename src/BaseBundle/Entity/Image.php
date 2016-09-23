@@ -32,15 +32,6 @@ class Image
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
-	
-
-    /**
-     * @var \Page
-     * @ORM\ManyToOne(targetEntity="Page", inversedBy="file")
-     * @ORM\JoinColumn(onDelete="CASCADE")
-     */
-    private $page;
 	
 	
     /**
@@ -219,29 +210,6 @@ class Image
         return $this->updated;
     }
 
-    /**
-     * Set page
-     *
-     * @param \BaseBundle\Entity\Page $page
-     *
-     * @return Image
-     */
-    public function setPage(\BaseBundle\Entity\Page $page = null)
-    {
-        $this->page = $page;
-
-        return $this;
-    }
-
-    /**
-     * Get page
-     *
-     * @return \BaseBundle\Entity\Page
-     */
-    public function getPage()
-    {
-        return $this->page;
-    }
 
     /**
      * Set title
