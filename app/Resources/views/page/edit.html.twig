@@ -1,0 +1,28 @@
+{% extends 'baseadmin.html.twig' %}
+
+{% block body %}
+    <h1>Page edit</h1>
+
+    {{ form_start(edit_form) }}
+        {{ form_widget(edit_form) }}
+		<div id="dropZone" class="clearfix">
+			<div id="text">Для загрузки, перетащите файлы сюда.</div>
+			{% include 'image/upload.html.twig' with {'images':page.file} %}
+		</div>
+        <input type="submit" value="Edit" />
+    {{ form_end(edit_form) }}
+
+    <ul>
+        <li>
+            <a href="{{ path('page_index') }}">Back to the list</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}
+{% block javascripts %}
+	<script src="{{ asset('admin/js/imageUpload.js') }}"></script>
+{% endblock %}

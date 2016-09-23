@@ -1,0 +1,31 @@
+{% extends 'baseadmin.html.twig' %}
+
+{% block body %}
+
+{% import _self as tree %}
+{% macro pages(pages,  rootPages) %}
+    <ul{% if rootPages %} {% endif %} class="nav-list">
+        {% for page in pages if (not page.parent or not rootPages)%}
+            <li>
+
+                   <a href="{{ path('page_edit', { 'id': page.id }) }}">{{ page.name }}</a> 
+
+                {% if page.children|length %}
+                    {{ _self.pages(page.children,  false) }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endmacro %}
+
+
+        <div class="box-content">
+            {{ tree.pages(pages, true) }}
+        </div>
+
+
+
+
+            <a class="btn btn-primary" href="{{ path('page_new') }}">Создать новую страницу</a>
+
+{% endblock %}

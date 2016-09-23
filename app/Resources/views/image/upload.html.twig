@@ -1,0 +1,11 @@
+
+
+{% for image in images %}
+	<div class="col-sm-3 admin-thumb" id="image-{{image.id}}">
+		<a class="btn btn-danger delete_image" data-id="{{image.id}}">Удалить фото</a>
+		<a class="photo" href="{{ (upload_path~image.filename) | imagine_filter('show') }}" rel="group" >
+			<img class="img-responsive" alt="{{ image.title }}" src="{{ (upload_path~image.filename) | imagine_filter('my_thumb') }}" />
+		</a>
+		<input class="form-control" type="text" name="image[{{image.id}}]" value="{{image.title}}">
+	</div>
+{% endfor %}

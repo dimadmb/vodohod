@@ -1,0 +1,80 @@
+{% extends 'baseadmin.html.twig' %}
+
+{% block body %}
+    <h1>Page</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ page.id }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{% if page.created %}{{ page.created|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Updated</th>
+                <td>{% if page.updated %}{{ page.updated|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ page.name }}</td>
+            </tr>
+            <tr>
+                <th>Fullurl</th>
+                <td>{{ page.fullUrl }}</td>
+            </tr>
+            <tr>
+                <th>Parenturl</th>
+                <td>{{ page.parentUrl }}</td>
+            </tr>
+            <tr>
+                <th>Localurl</th>
+                <td>{{ page.localUrl }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ page.title }}</td>
+            </tr>
+            <tr>
+                <th>H1</th>
+                <td>{{ page.h1 }}</td>
+            </tr>
+            <tr>
+                <th>Body</th>
+                <td>{{ page.body }}</td>
+            </tr>
+            <tr>
+                <th>Sort</th>
+                <td>{{ page.sort }}</td>
+            </tr>
+            <tr>
+                <th>Active</th>
+                <td>{% if page.active %}Yes{% else %}No{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Ismenu</th>
+                <td>{% if page.isMenu %}Yes{% else %}No{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Isfolder</th>
+                <td>{% if page.isFolder %}Yes{% else %}No{% endif %}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('page_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('page_edit', { 'id': page.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

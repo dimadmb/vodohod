@@ -1,0 +1,53 @@
+#dropZone {    
+    color: #555;
+    font-size: 18px;
+    text-align: center;    
+    
+    /*width: 400px;*/
+    padding: 50px 0;
+    margin: 50px auto;
+    
+    background: #eee;
+    border: 1px solid #ccc;
+    
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+#dropZone.hover {
+    background: #ddd;
+    border-color: #aaa;
+}
+
+#dropZone.error {
+    background: #faa;
+    border-color: #f00;
+}
+
+#dropZone.drop {
+    background: #eee;
+    border-color: #0f0;
+}
+
+#dropZone div {
+	margin-bottom:30px;
+}
+
+#dropZone div input {
+	font-size:12px;
+}
+
+#dropZone div img {
+	margin: 10px auto;
+}
+
+.admin-thumb {
+	border:1px solid #aaa;
+	border-radius:5px;
+	padding: 10px 0;
+}
+ 
+.nav-list {
+	padding-left:15px;
+} 
