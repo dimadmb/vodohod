@@ -19,6 +19,10 @@ class AppKernel extends Kernel
             new AdminBundle\AdminBundle(),
 			
 			new Liip\ImagineBundle\LiipImagineBundle(),
+
+			new Ivory\CKEditorBundle\IvoryCKEditorBundle(),
+			new FM\ElfinderBundle\FMElfinderBundle(),			
+			
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

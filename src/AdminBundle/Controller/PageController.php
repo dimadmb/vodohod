@@ -37,16 +37,24 @@ class PageController extends Controller
     /**
      * Creates a new Page entity.
      *
-     * @Route("/new", name="page_new")
+     * @Route("/new/{parent}", name="page_new")
      * @Method({"GET", "POST"})
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $parent = null)
     {
         $page = new Page();
+		
+		// Назначаем родителя, если нужно
+		if(!null == $parent)
+		{
+			$em = $this->getDoctrine()->getManager();
+			$parent = $em->getRepository('BaseBundle:Page')->findOneById($parent);
+			$page->setParent($parent);
+		}
+		
         $form = $this->createForm('BaseBundle\Form\PageType', $page);
         $form->handleRequest($request);
 
-		
 		$images = $request->request->get("image");
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -58,7 +66,6 @@ class PageController extends Controller
 			$page->setParentUrl($parentUrl);
 			$page->setFullUrl($fullUrl);
 			$page->setLocalUrl($localUrl);
-			
 			
 			if ($images)
 			{
@@ -76,9 +83,6 @@ class PageController extends Controller
             $em->flush();
 
             return $this->redirectToRoute('page_show', array('id' => $page->getId()));
-			
-	
-			
         }
 
         return $this->render('page/new.html.twig', array(
@@ -119,6 +123,18 @@ class PageController extends Controller
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $em = $this->getDoctrine()->getManager();
+						
+			// если попытка назначить родителем саму же сусщность, то назначаем родителем по адресу выше
+			if( ($page->getParent()) && $page->getId() == $page->getParent()->getId())
+			{
+				$pos = strrpos($page->getFullUrl(), "/");
+				if ($pos !== false)
+				{
+					$newUrl = substr($page->getFullUrl(),0,$pos);
+				}
+				$pageOld = $em->getRepository('BaseBundle:Page')->findOneByFullUrl($newUrl);
+				$page->setParent($pageOld);
+			}
 			
 			$localUrl = trim($page->getLocalUrl())."";
 			$parentUrl = ($page->getParent() == null) ? "" : $page->getParent()->getFullUrl();
@@ -140,7 +156,7 @@ class PageController extends Controller
 			}
             $em->persist($page);
             $em->flush();
-
+			
             return $this->redirectToRoute('page_edit', array('id' => $page->getId()));
         }
 
@@ -154,21 +170,28 @@ class PageController extends Controller
     /**
      * Deletes a Page entity.
      *
-     * @Route("/{id}", name="page_delete")
-     * @Method("DELETE")
+     * @Route("/{id}/delete", name="page_delete")
      */
-    public function deleteAction(Request $request, Page $page)
+    public function deleteAction( $id )
     {
-        $form = $this->createDeleteForm($page);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($page);
-            $em->flush();
-        }
+        $em = $this->getDoctrine()->getManager();
+		
+		$page = $em->getRepository("BaseBundle\Entity\Page")->findOneById($id);
+		
+		$dump = $images = $page->getFile();
+		
+		foreach($images as $image)
+		{
+			// проверку на существование
+			if(file_exists($this->getParameter('upload_directory').'/'.$image->getFilename()))
+			unlink($this->getParameter('upload_directory').'/'.$image->getFilename());
+			$em->remove($image);
+		}
+        $em->remove($page);
+        $em->flush();
 
         return $this->redirectToRoute('page_index');
+		
     }
 
     /**

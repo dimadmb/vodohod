@@ -38,7 +38,8 @@ class ImageController extends Controller
         ));
     }
 	
-    /**
+	
+	/**
      * @Route("/image_delete/{id}", name="image_delete")
      */
     public function deleteAction(Request $request, $id = null)
@@ -49,8 +50,13 @@ class ImageController extends Controller
 		
 		if($image != null)
 		{
+			unlink($this->getParameter('upload_directory').'/'.$image->getFilename());
+			
 			$em->remove($image);
 			$em->flush();
+			
+			
+			
 			return new Response("ok ".$id);
 		}
 		else 

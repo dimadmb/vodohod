@@ -49,5 +49,15 @@
 }
  
 .nav-list {
+
 	padding-left:15px;
 } 
+
+.nav-list li {
+		padding:10px;
+		display:block;
+}
+
+.nav-list span.name {
+	display:block;
+}

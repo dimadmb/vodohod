@@ -5,6 +5,7 @@ namespace BaseBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Ivory\CKEditorBundle\Form\Type\CKEditorType;
 
 class PageType extends AbstractType
 {
@@ -19,7 +20,7 @@ class PageType extends AbstractType
             ->add('localUrl')
             ->add('title')
             ->add('h1')
-            ->add('body')
+            ->add('body', CKEditorType::class , array('attr' => array('rows' => 20) ))
             ->add('sort')
             ->add('active')
             ->add('isMenu')

@@ -8,7 +8,11 @@
         {% for page in pages if (not page.parent or not rootPages)%}
             <li>
 
-                   <a href="{{ path('page_edit', { 'id': page.id }) }}">{{ page.name }}</a> 
+                  <span  class="name"> {{ page.name }} Адрес:  /{{ page.fullUrl }} </span>
+				   <a class="btn btn-success" href="{{ path('page_edit', { 'id': page.id }) }}">Редатировать</a> 
+				   <a class="btn btn-success" href="{{ path('page_new', { 'parent': page.id }) }}">Создать ребёнка</a> 
+				   <a class="btn btn-success" href="{{ path('page_delete', { 'id': page.id }) }}">Удалить</a> 
+				   <a class="btn btn-success" href="{{ path('page', { 'url': page.fullUrl }) }}" target="_blank">Перейти на страницу</a> 
 
                 {% if page.children|length %}
                     {{ _self.pages(page.children,  false) }}
@@ -19,7 +23,7 @@
 {% endmacro %}
 
 
-        <div class="box-content">
+        <div class="page-tree">
             {{ tree.pages(pages, true) }}
         </div>
 
@@ -27,5 +31,18 @@
 
 
             <a class="btn btn-primary" href="{{ path('page_new') }}">Создать новую страницу</a>
+
+{% endblock %}
+
+{% block stylesheets %}
+
+<style>
+
+</style>
+
+{% endblock %}
+
+{% block javascripts %}
+
 
 {% endblock %}

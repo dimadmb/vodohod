@@ -4,10 +4,28 @@
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
         {% block stylesheets %}{% endblock %}
+		<link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+		<link rel="stylesheet" href="{{ asset('css/bootstrap-theme.min.css') }}">
+		<link rel="stylesheet" href="{{ asset('css/style.css') }}">
+		<link rel="stylesheet" href="{{ asset('css/fancybox/jquery.fancybox.css') }}">
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+        
+		
+		<div class="container">
+			{% block body %}{% endblock %}
+		</div>
+		
+        
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<script src="{{ asset('js/bootstrap.min.js') }}"></script>
+		<script src="{{ asset('js/jquery.fancybox.js') }}"></script>
+		<script>
+			$(document).ready(function() {
+				$('.photo').fancybox();
+			})
+		</script>
+		{% block javascripts %}{% endblock %}
     </body>
 </html>

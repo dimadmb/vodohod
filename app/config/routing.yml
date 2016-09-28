@@ -10,3 +10,20 @@ base:
 
 _liip_imagine:
     resource: "@LiipImagineBundle/Resources/config/routing.xml"
+
+elfinder:
+    resource: "@FMElfinderBundle/Resources/config/routing.yml"
+
+remove_trailing_slash:
+    path: /{url}
+    defaults: { _controller: BaseBundle:Redirecting:removeTrailingSlash }
+    requirements:
+        url: .*/$
+    methods: [GET]
+
+page:
+    path: /{url}
+    defaults: { _controller: BaseBundle:Page:index }
+    requirements:
+        url: .*$
+    methods: [GET]
