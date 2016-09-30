@@ -25,7 +25,8 @@
         "liip/imagine-bundle": "^1.6",
         "imagine/imagine": "^0.6.3",
         "egeloen/ckeditor-bundle": "^4.0",
-        "helios-ag/fm-elfinder-bundle": "^6.1"
+        "helios-ag/fm-elfinder-bundle": "^6.1",
+        "friendsofsymfony/user-bundle": "~2.0@dev"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

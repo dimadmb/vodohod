@@ -21,7 +21,9 @@ class AppKernel extends Kernel
 			new Liip\ImagineBundle\LiipImagineBundle(),
 
 			new Ivory\CKEditorBundle\IvoryCKEditorBundle(),
-			new FM\ElfinderBundle\FMElfinderBundle(),			
+			new FM\ElfinderBundle\FMElfinderBundle(),	
+
+			new FOS\UserBundle\FOSUserBundle(),
 			
         ];
 

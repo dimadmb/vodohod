@@ -3,48 +3,99 @@
 
 
 
-<h1 id="page_title" contenteditable="true">{{page.title}}</h1>
+<h1 id="page_h1"  class="{% if is_granted("ROLE_ADMIN") %} edit-inline {% endif %}">{{page.h1}}</h1>
 
-<div id="page_body" contenteditable="true"  >{{page.body | raw}}</div>
+<div class="clearfix {% if is_granted("ROLE_ADMIN") %} edit-inline {% endif %} " id="page_body"  >{{page.body | raw}}</div>
 
 {% if page.file |length > 0 %}
 <div class="images clearfix">
 {% for image in page.file %}
 	<div class="col-sm-3 admin-thumb" id="image-{{image.id}}">
-		<a class="photo" href="{{ (upload_path~image.filename) | imagine_filter('show') }}" rel="group" >
+		<a class="photo" title="{{ image.title }}" href="{{ (upload_path~image.filename) | imagine_filter('show') }}" rel="group" >
 			<img class="img-responsive" alt="{{ image.title }}" title="{{ image.title }}" src="{{ (upload_path~image.filename) | imagine_filter('my_thumb') }}" />
 		</a>
 	</div>
 {% endfor %}
 </div>
 {% endif %}
-<br>
-<br>
-<br>
-<br>
-<a href="" class="btn btn-success" id="get">get</a>
 
 {% endblock %}
 
+{% block admin %}
+{% if is_granted("ROLE_ADMIN") %}
+<div class="navbar navbar-inverse ">
+	<div class="navbar-inner">
+        <div class="container">
+			<div class="navbar-form pull-right">
+              <button class="btn" edit="false" id="edit-inline">Быстрая правка</button>
+              <a  href="{{ path('page_edit',{id:page.id}) }}" class="btn btn-primary"  >Редактировать в админке</a>
+            </div>
+        </div>
+    </div>	
+</div>
+
+<div id="answer" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h2>Страница изменена</h2>
+			</div>	
+			<div class="modal-body">
+				<p></p>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endif %}
+{% endblock %}
+
 {% block javascripts %}
-
+{% if is_granted("ROLE_ADMIN") %}
 <script type="text/javascript" src="/web/bundles/ivoryckeditor/ckeditor.js"></script>
-
 <script>
-CKEDITOR.disableAutoInline = true
- CKEDITOR.inline("page_body", {"contentsCss":["\/web\/css\/bootstrap.min.css","\/web\/css\/bootstrap-theme.min.css","\/web\/css\/style.css"],"allowedContent":true,"language":"ru","filebrowserBrowseUrl":"\/web\/app_dev.php\/elfinder"});
-
- 
  $(document).ready(function(){
-	$('a#get').click(function(){
-		console.log(CKEDITOR.instances['page_body'].getData());
-		return false;
+
+	$('#edit-inline').click(function(){
+		if($(this).attr("edit") == 'false')
+		{
+			$(this).attr("edit",'true');
+			$(this).text("Сохранить");
+			
+			$('.edit-inline').attr('contenteditable','true').css({backgroundColor:"#cfc"});
+			//$('.edit-inline').animate({ backgroundColor: "red" },500)
+			CKEDITOR.disableAutoInline = true
+			CKEDITOR.inline("page_body", {"contentsCss":["\/web\/css\/bootstrap.min.css","\/web\/css\/bootstrap-theme.min.css","\/web\/css\/style.css"],"allowedContent":true,"language":"ru","filebrowserBrowseUrl":"\/web\/app_dev.php\/elfinder"});
+		}
+		else 
+		{
+			console.log("сохраняем");
+			//console.log($('#page_title').text());
+			//console.log(CKEDITOR.instances['page_body'].getData());
+			//var data = 'page_title=' + $('#page_title').text() + '&page_body=' + CKEDITOR.instances['page_body'].getData();
+			var data = {'page_h1':$('#page_h1').text() , 'page_body' : CKEDITOR.instances['page_body'].getData() }
+			$.ajax({
+				type: "POST",
+				url: '{{ path('page_ajax_edit',{id:page.id}) }}',
+				data: data,
+				success: function(data, textStatus, jqXHR){
+					//console.log(data);
+					//$('#answer .modal-body').html(data);
+					$('#answer').modal();
+					location.reload();
+
+				},
+				error: function(jqXHR, textStatus){
+					alert(textStatus);
+				}
+			})
+		}
 	});
  })
  
  </script>
 
-
-
+{% endif %}
 
 {% endblock %}

@@ -3,6 +3,7 @@
 namespace AdminBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -106,7 +107,26 @@ class PageController extends Controller
             'delete_form' => $deleteForm->createView(),
         ));
     }
-
+    /**
+     * AJAX правка страницы
+     *
+     * @Route("/ajax/{id}/edit", name="page_ajax_edit")
+     * @Method({"GET", "POST"})
+     */
+    public function editAjaxAction(Request $request, Page $page)
+	{
+		$em = $this->getDoctrine()->getManager();
+		
+		$page_h1 = $request->request->get('page_h1');
+		$page_body = $request->request->get('page_body');
+		
+		$page->setH1($page_h1);
+		$page->setBody($page_body);
+		
+		$em->flush();
+		
+		return $this->render('dump.html.twig', ['dump'=>[$page_h1,$page_body , $request,$page]]);
+	}
     /**
      * Displays a form to edit an existing Page entity.
      *
@@ -145,6 +165,8 @@ class PageController extends Controller
 			
 			if ($images)
 			{
+				$page->removeAllFile();
+				
 				foreach($images as $id => $title)
 				{
 					$image = $em->getRepository('BaseBundle:Image')->findOneById($id);
@@ -156,6 +178,12 @@ class PageController extends Controller
 			}
             $em->persist($page);
             $em->flush();
+       /* return $this->render('page/edit.html.twig', array(
+            'dump' => $page,
+			'page' => $page,
+            'edit_form' => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
+        ));*/
 			
             return $this->redirectToRoute('page_edit', array('id' => $page->getId()));
         }

@@ -569,6 +569,15 @@ class Page
     {
         $this->file->removeElement($file);
     }
+    /**
+     * Remove file
+     *
+     * @param \BaseBundle\Entity\Image $file
+     */
+    public function removeAllFile()
+    {
+        $this->file = [];
+    }
 
     /**
      * Get file
