@@ -1,3 +1,8 @@
+cruise:
+    resource: "@CruiseBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
 

@@ -24,7 +24,7 @@ class AppKernel extends Kernel
 			new FM\ElfinderBundle\FMElfinderBundle(),	
 
 			new FOS\UserBundle\FOSUserBundle(),
-			
+            new CruiseBundle\CruiseBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
