@@ -99,7 +99,7 @@ class Cruise
 	/**
 	* @ORM\ManyToOne(targetEntity="Region", inversedBy="cruise")
 	*/
-    private $region; 
+    private $region; // присоединить 
 
     /**
      * @var int
