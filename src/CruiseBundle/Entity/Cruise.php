@@ -647,5 +647,28 @@ class Cruise
     {
         return $this->textCategoties;
     }
-}
 
+    /**
+     * Set class
+     *
+     * @param integer $class
+     *
+     * @return Cruise
+     */
+    public function setClass($class)
+    {
+        $this->class = $class;
+
+        return $this;
+    }
+
+    /**
+     * Get class
+     *
+     * @return integer
+     */
+    public function getClass()
+    {
+        return $this->class;
+    }
+}

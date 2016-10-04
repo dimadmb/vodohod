@@ -505,5 +505,38 @@ class Motorship
     {
         return $this->manager;
     }
-}
 
+    /**
+     * Add cruise
+     *
+     * @param \CruiseBundle\Entity\Cruise $cruise
+     *
+     * @return Motorship
+     */
+    public function addCruise(\CruiseBundle\Entity\Cruise $cruise)
+    {
+        $this->cruise[] = $cruise;
+
+        return $this;
+    }
+
+    /**
+     * Remove cruise
+     *
+     * @param \CruiseBundle\Entity\Cruise $cruise
+     */
+    public function removeCruise(\CruiseBundle\Entity\Cruise $cruise)
+    {
+        $this->cruise->removeElement($cruise);
+    }
+
+    /**
+     * Get cruise
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCruise()
+    {
+        return $this->cruise;
+    }
+}

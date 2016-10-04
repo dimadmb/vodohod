@@ -235,5 +235,72 @@ class Region
     {
         return $this->comment;
     }
-}
 
+    /**
+     * Add cruise
+     *
+     * @param \CruiseBundle\Entity\Cruise $cruise
+     *
+     * @return Region
+     */
+    public function addCruise(\CruiseBundle\Entity\Cruise $cruise)
+    {
+        $this->cruise[] = $cruise;
+
+        return $this;
+    }
+
+    /**
+     * Remove cruise
+     *
+     * @param \CruiseBundle\Entity\Cruise $cruise
+     */
+    public function removeCruise(\CruiseBundle\Entity\Cruise $cruise)
+    {
+        $this->cruise->removeElement($cruise);
+    }
+
+    /**
+     * Get cruise
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCruise()
+    {
+        return $this->cruise;
+    }
+
+    /**
+     * Add motorship
+     *
+     * @param \CruiseBundle\Entity\Motorship $motorship
+     *
+     * @return Region
+     */
+    public function addMotorship(\CruiseBundle\Entity\Motorship $motorship)
+    {
+        $this->motorship[] = $motorship;
+
+        return $this;
+    }
+
+    /**
+     * Remove motorship
+     *
+     * @param \CruiseBundle\Entity\Motorship $motorship
+     */
+    public function removeMotorship(\CruiseBundle\Entity\Motorship $motorship)
+    {
+        $this->motorship->removeElement($motorship);
+    }
+
+    /**
+     * Get motorship
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMotorship()
+    {
+        return $this->motorship;
+    }
+}
