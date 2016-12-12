@@ -47,6 +47,13 @@ class Image
      * @ORM\Column(name="filename", type="string", length=255)
      */
     private $filename;
+	
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="sort", type="integer")
+     */
+    private $sort;
 
     /**
      * @var \DateTime
@@ -233,5 +240,31 @@ class Image
     public function getTitle()
     {
         return $this->title;
+    }
+
+
+
+    /**
+     * Set sort
+     *
+     * @param integer $sort
+     *
+     * @return Image
+     */
+    public function setSort($sort)
+    {
+        $this->sort = $sort;
+
+        return $this;
+    }
+
+    /**
+     * Get sort
+     *
+     * @return integer
+     */
+    public function getSort()
+    {
+        return $this->sort;
     }
 }

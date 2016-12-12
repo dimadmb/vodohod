@@ -43,6 +43,15 @@ twig:
     globals: 
         upload_path: "/files/"
 
+services:
+    twig.extension.intl:
+        class: Twig_Extensions_Extension_Intl
+        tags:
+            - { name: twig.extension }
+    twig.extension.date:
+        class: Twig_Extensions_Extension_Date
+        tags:
+            - { name: twig.extension }
 # Doctrine Configuration
 doctrine:
     dbal:
@@ -129,6 +138,7 @@ ivory_ck_editor:
         default:
             contentsCss: [ 'css/bootstrap.min.css', 'css/bootstrap-theme.min.css', 'css/style.css', ]
             allowedContent: true
+            height:  600
             language: ru
             filebrowserBrowseRoute:  elfinder 
  #           filebrowserBrowseRouteParameters:
@@ -154,7 +164,7 @@ fm_elfinder:
                         path: "upload"
                         upload_allow: ['image/png', 'image/jpg', 'image/jpeg']
                         upload_deny: ['all']
-                        upload_max_size: 8M # also file upload sizes restricted in php.ini
+                        upload_max_size: 32M # also file upload sizes restricted in php.ini
                         #attributes: example of setting attributes permission
                         #    - { pattern: '/(.*?)/', read: true, write: false, locked: true }
 
@@ -162,3 +172,26 @@ fos_user:
     db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
     firewall_name: main
     user_class: BaseBundle\Entity\User
+
+lsw_memcache:
+    session:
+        pool: default
+    pools:
+        default:
+            servers:
+              - { host: "127.0.0.1", tcp_port: 11211 }
+
+lsw_memcache:
+    doctrine:
+        metadata_cache:
+            pool: default
+            entity_manager: default          # the name of your entity_manager connection
+            document_manager: default        # the name of your document_manager connection
+        result_cache:
+            pool: default
+            entity_manager: [default, read]  # you may specify multiple entity_managers
+            prefix: "result_"                # you may specify a prefix for the entries
+        query_cache:
+            pool: default
+            entity_manager: default
+    # pools

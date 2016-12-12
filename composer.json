@@ -26,7 +26,9 @@
         "imagine/imagine": "^0.6.3",
         "egeloen/ckeditor-bundle": "^4.0",
         "helios-ag/fm-elfinder-bundle": "^6.1",
-        "friendsofsymfony/user-bundle": "~2.0@dev"
+        "friendsofsymfony/user-bundle": "~2.0@dev",
+        "twig/extensions": "^1.4",
+        "leaseweb/memcache-bundle": "^2.1"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

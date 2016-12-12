@@ -20,7 +20,7 @@ class PageType extends AbstractType
             ->add('localUrl')
             ->add('title')
             ->add('h1')
-            ->add('body', CKEditorType::class , array('attr' => array('rows' => 20) ))
+            ->add('body', CKEditorType::class)
             ->add('sort')
             ->add('active')
             ->add('isMenu')

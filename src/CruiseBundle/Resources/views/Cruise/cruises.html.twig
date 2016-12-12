@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+	{#{dump(cruises)}#}
+
+<table>
+	<tr>
+		<td>Дата</td>
+		<td>Дней</td>
+		<td>Теплоход</td>
+		<td>Маршрут</td>
+		<td>Цены от</td>
+		<td>Свободно</td>
+	</tr>
+	{% for cruise in cruises %}
+	<tr>
+		<td>{{cruise.dateStart | localizeddate('full', 'none', null, null, 'dd MMM (eee)') }} — 
+		{{cruise.dateStop | localizeddate('full', 'none', null, null, 'dd MMM (eee) Y')}} </td>
+		<td></td>
+		<td>{{ cruise.motorship.name }}</td>
+		<td><a href="{{ path('cruise_detail',{'id':cruise.id}) }}">{{ cruise.name }}</a></td>
+		<td></td>
+		<td>{{cruise.freeCountRoom}}</td>
+	</tr>
+	{% endfor %}
+</table>	
+	
+
+
+{% endblock %}

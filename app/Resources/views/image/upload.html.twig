@@ -7,5 +7,6 @@
 			<img class="img-responsive" alt="{{ image.title }}" src="{{ (upload_path~image.filename) | imagine_filter('my_thumb') }}" />
 		</a>
 		<input class="form-control" type="text" name="image[{{image.id}}]" value="{{image.title}}">
+		<input class="sort" type="hidden" name="image-sort[{{image.id}}]" value="{{image.sort}}">
 	</div>
 {% endfor %}

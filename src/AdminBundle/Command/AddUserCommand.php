@@ -199,6 +199,8 @@ class AddUserCommand extends ContainerAwareCommand
         $user->setPassword($encodedPassword);
 		
         $user->setEnabled(true);
+        $user->setFirstName('FirstName');
+        $user->setLastName('LastName');
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();

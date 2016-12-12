@@ -26,6 +26,7 @@ class ImageController extends Controller
 		{
 			$image = new Image();
 			$image->setFile($file);
+			$image->setSort(0);
 			$em->persist($image);
 			$em->flush();
 			

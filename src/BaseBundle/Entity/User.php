@@ -21,14 +21,14 @@ class User extends BaseUser
     /**
      * @var string
      *
-     * @ORM\Column(name="first_name", type="string", length=255)
+     * @ORM\Column(name="first_name", type="string", length=255, nullable=true)
      */
     private $firstName;		
 	
     /**
      * @var string
      *
-     * @ORM\Column(name="last_name", type="string", length=255)
+     * @ORM\Column(name="last_name", type="string", length=255, nullable=true)
      */
     private $lastName;	
 
@@ -36,6 +36,8 @@ class User extends BaseUser
     {
         parent::__construct();
         // your own logic
+		
+		$this->salt = "";
     }
 
     /**

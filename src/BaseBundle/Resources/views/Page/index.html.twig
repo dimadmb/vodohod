@@ -1,11 +1,15 @@
 {% extends 'base.html.twig' %}
+
+{% block title %}{{page.title}}{% endblock %}
+
 {% block body %}
 
 
 
-<h1 id="page_h1"  class="{% if is_granted("ROLE_ADMIN") %} edit-inline {% endif %}">{{page.h1}}</h1>
+<h1 id="page_h1"  class="{% if is_granted('ROLE_ADMIN') %} edit-inline {% endif %}">{{page.h1}}</h1>
 
-<div class="clearfix {% if is_granted("ROLE_ADMIN") %} edit-inline {% endif %} " id="page_body"  >{{page.body | raw}}</div>
+<div class="clearfix" id="page_html"   >{{page.html | raw}}</div>
+{% if is_granted('ROLE_ADMIN') %}<div class="clearfix  edit-inline  " style="display:none;" id="page_body" >{{page.body | raw}}</div>{% endif %}
 
 {% if page.file |length > 0 %}
 <div class="images clearfix">
@@ -63,7 +67,8 @@
 			$(this).attr("edit",'true');
 			$(this).text("Сохранить");
 			
-			$('.edit-inline').attr('contenteditable','true').css({backgroundColor:"#cfc"});
+			$('#page_html').css({display:"none"});
+			$('.edit-inline').attr('contenteditable','true').css({backgroundColor:"#cfc", display : "block"});
 			//$('.edit-inline').animate({ backgroundColor: "red" },500)
 			CKEDITOR.disableAutoInline = true
 			CKEDITOR.inline("page_body", {"contentsCss":["\/web\/css\/bootstrap.min.css","\/web\/css\/bootstrap-theme.min.css","\/web\/css\/style.css"],"allowedContent":true,"language":"ru","filebrowserBrowseUrl":"\/web\/app_dev.php\/elfinder"});

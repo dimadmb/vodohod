@@ -47,6 +47,13 @@ class Image
      * @ORM\Column(name="filename", type="string", length=255)
      */
     private $filename;
+	
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="sort", type="integer")
+     */
+    private $sort;
 
     /**
      * @var \DateTime
@@ -234,4 +241,6 @@ class Image
     {
         return $this->title;
     }
+
+
 }

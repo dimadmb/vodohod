@@ -125,6 +125,8 @@ class PageController extends Controller
 		
 		$em->flush();
 		
+		return new Response('OK');
+		
 		return $this->render('dump.html.twig', ['dump'=>[$page_h1,$page_body , $request,$page]]);
 	}
     /**
@@ -140,6 +142,7 @@ class PageController extends Controller
         $editForm->handleRequest($request);
 		
 		$images = $request->request->get("image");
+		$imagesSort = $request->request->get("image-sort");
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -172,6 +175,7 @@ class PageController extends Controller
 					$image = $em->getRepository('BaseBundle:Image')->findOneById($id);
 					if($image == null) continue;
 					$image->setTitle($title);
+					$image->setSort($imagesSort[$id]);
 					$page->addFile($image);
 					$em->persist($image);
 				}	
@@ -185,6 +189,7 @@ class PageController extends Controller
             'delete_form' => $deleteForm->createView(),
         ));*/
 			
+            return $this->redirectToRoute('page', array('url' => $page->getFullUrl()));
             return $this->redirectToRoute('page_edit', array('id' => $page->getId()));
         }
 

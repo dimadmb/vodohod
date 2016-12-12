@@ -59,7 +59,7 @@ $(document).ready(function() {
 		for (var i = 0, file; file = event.dataTransfer.files[i]; ++i) {
 			formData.append('files['+i+']', file);
 		  }	
-			
+		if(i == 0 ){return false;}
 		var xhr = new XMLHttpRequest();
 		xhr.upload.addEventListener('progress', uploadProgress, false);
 		xhr.onreadystatechange = stateChange;

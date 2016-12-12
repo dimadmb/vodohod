@@ -38,6 +38,7 @@ class Page
 	
 	/**
 	 * @ORM\ManyToMany(targetEntity="Image")
+	 * @ORM\OrderBy({"sort" = "ASC"})
 	 * @ORM\JoinTable(name="page_image", joinColumns={@ORM\JoinColumn(name="page_id",
 		referencedColumnName="id", onDelete="CASCADE")},
 	 * inverseJoinColumns={@ORM\JoinColumn(name="image_id",

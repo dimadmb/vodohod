@@ -4,15 +4,15 @@
     <h1>Редактирование страницы</h1>
 
 {% if dump is defined %}
-		{{dump(dump)}}
+		{#{dump(dump)}#}
 {% endif %}	
     {{ form_start(edit_form) }}
         {{ form_widget(edit_form) }}
 		<div id="dropZone" class="clearfix">
 			<div id="text">Для загрузки, перетащите файлы сюда.</div>
-			{% include 'image/upload.html.twig' with {'images':page.file} %}
+			<div class="sortable">{% include 'image/upload.html.twig' with {'images':page.file} %}</div>
 		</div>
-        <input class="btn btn-primary" type="submit" value="Сохранить изменения " />
+        <input class="btn btn-primary" type="submit" value="Сохранить изменения и перейти на страницу" />
     {{ form_end(edit_form) }}
 
 	<br>
@@ -24,4 +24,21 @@
 {% endblock %}
 {% block javascripts %}
 	<script src="{{ asset('admin/js/imageUpload.js') }}"></script>
+	<script src="{{ asset('admin/js/jquery.sortable.js') }}"></script>
+	
+	<script>
+		$(document).ready(function() {
+			$('.sortable').sortable().bind('sortupdate', function(e, ui) {
+			
+			$('.sortable input.sort').each(function(i){
+				$(this).val(i);
+			})
+			
+			console.log(ui)
+    //ui.item contains the current dragged element.
+    //Triggered when the user stopped sorting and the DOM position has changed.
+		});
+		});
+	</script>
+	
 {% endblock %}
