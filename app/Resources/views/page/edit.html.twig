@@ -23,22 +23,19 @@
 
 {% endblock %}
 {% block javascripts %}
-	<script src="{{ asset('admin/js/imageUpload.js') }}"></script>
-	<script src="{{ asset('admin/js/jquery.sortable.js') }}"></script>
-	
-	<script>
-		$(document).ready(function() {
-			$('.sortable').sortable().bind('sortupdate', function(e, ui) {
-			
+
+<script src="{{ asset('admin/js/imageUpload.js') }}"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script>
+	$(document).ready(function() {
+		$('.sortable').sortable().bind('sortupdate', function(e, ui) {
 			$('.sortable input.sort').each(function(i){
 				$(this).val(i);
-			})
-			
-			console.log(ui)
-    //ui.item contains the current dragged element.
-    //Triggered when the user stopped sorting and the DOM position has changed.
+			});
 		});
-		});
-	</script>
-	
+		
+	});
+</script>	
+
 {% endblock %}

@@ -29,7 +29,15 @@ class PageController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $pages = $em->getRepository('BaseBundle:Page')->findAll();
-
+		foreach($pages as $page)
+		{
+			$parent = $page->getParent();
+			if ($parent)
+			{
+				$parent->addChild($page);
+			}
+			$page->getChildren()->setInitialized(true);
+		}
         return $this->render('page/index.html.twig', array(
             'pages' => $pages,
         ));
