@@ -27,6 +27,7 @@ class PageController extends Controller
 			'/{\{(.*)\}}/U',
 			function ($m) {
 				eval("\$temp = ".htmlspecialchars_decode($m[1],ENT_QUOTES ));
+				//return print_r($temp,1);
 				$ret = $this->forward($temp[0],isset($temp[1])?$temp[1]:[])->getContent();
 				return $ret;
 			},
