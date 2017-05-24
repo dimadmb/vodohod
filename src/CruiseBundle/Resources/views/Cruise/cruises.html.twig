@@ -17,7 +17,7 @@
 	<tr>
 		<td>{{cruise.dateStart | localizeddate('full', 'none', null, null, 'dd MMM (eee)') }} — 
 		{{cruise.dateStop | localizeddate('full', 'none', null, null, 'dd MMM (eee) Y')}} </td>
-		<td></td>
+		<td>{{cruise.days}}</td>
 		<td>{{ cruise.motorship.name }}</td>
 		<td><a href="{{ path('cruise_detail',{'id':cruise.id}) }}">{{ cruise.name }}</a></td>
 		<td></td>

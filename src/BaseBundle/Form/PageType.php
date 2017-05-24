@@ -7,6 +7,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Ivory\CKEditorBundle\Form\Type\CKEditorType;
 
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+
 class PageType extends AbstractType
 {
     /**
@@ -20,6 +22,8 @@ class PageType extends AbstractType
             ->add('localUrl')
             ->add('title')
             ->add('h1')
+            ->add('bannerHtml')
+            ->add('bannerImg',FileType::class, ['data_class' => null,'required'=>false])
             ->add('body', CKEditorType::class)
             ->add('sort')
             ->add('active')

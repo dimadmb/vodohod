@@ -42,6 +42,15 @@ class MotorshipClass
      * @ORM\Column(name="code", type="string", length=255)
      */
     private $code;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="text", nullable=true)
+     */
+    private $description;
+
 	
 	/**
 	 * @ORM\OneToMany(targetEntity="Motorship", mappedBy="motorshipClass")
@@ -172,5 +181,29 @@ class MotorshipClass
     public function getMotorship()
     {
         return $this->motorship;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     *
+     * @return MotorshipClass
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }

@@ -3,8 +3,8 @@
 {% block body %}
 
 {% import _self as tree %}
-{% macro pages(pages,  rootPages) %}
-    <ul{% if rootPages %} {% endif %} class="nav-list">
+{% macro pages(pages,  rootPages, id=0) %}
+    <ul{% if rootPages %} {% else %} style="display:none;" {% endif %}  page-id="{{id}}"  class="nav-list">
         {% for page in pages if (not page.parent or not rootPages)%}
             <li>
 
@@ -15,14 +15,15 @@
 				   <a class="btn btn-success" href="{{ path('page', { 'url': page.fullUrl }) }}" target="_blank">Перейти на страницу</a> 
 
                 {% if page.children|length %}
-                    {{ _self.pages(page.children,  false) }}
+                    <button class="show-hidden" data-id={{page.id}} >развернуть/скрыть</button>
+					{{ _self.pages(page.children,  false, page.id) }}
                 {% endif %}
             </li>
         {% endfor %}
     </ul>
 {% endmacro %}
 
-
+{#{dump(pages)}#}
         <div class="page-tree">
             {{ tree.pages(pages, true) }}
         </div>
@@ -43,6 +44,16 @@
 {% endblock %}
 
 {% block javascripts %}
-
+<script>
+	$(document).ready(function(){
+		$('button.show-hidden').click(function(){
+			var id = $(this).attr('data-id');
+			console.log(id);
+			$('ul[page-id='+id+']').toggle();
+			
+		})
+		$('ul ul').show();
+	})
+</script>
 
 {% endblock %}

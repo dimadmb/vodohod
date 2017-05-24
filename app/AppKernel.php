@@ -28,6 +28,8 @@ class AppKernel extends Kernel
 			
 			
 			new Lsw\MemcacheBundle\LswMemcacheBundle(),
+			
+			
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

@@ -2,7 +2,9 @@
 
 {% block body %}
     <h1>Редактирование страницы</h1>
-
+{{dump()}}
+	
+	
 {% if dump is defined %}
 		{#{dump(dump)}#}
 {% endif %}	

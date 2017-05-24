@@ -3,6 +3,7 @@
 namespace CruiseBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Cruise
@@ -102,11 +103,9 @@ class Cruise
     private $region; 
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="class", type="integer")
+     * @ORM\ManyToOne(targetEntity="CruiseClass", inversedBy="cruise")
      */
-    private $class; // присоединить 
+    private $cruiseClass; 
 
     /**
      * @var string
@@ -153,11 +152,44 @@ class Cruise
     /**
      * @var string
      *
-     * @ORM\Column(name="text_categoties", type="string", length=255)
+     * @ORM\Column(name="text_categories", type="string", length=255)
      */
-    private $textCategoties;
+    private $textCategories;
+	
+	/**
+	 * @ORM\ManyToMany(targetEntity="CruiseCategory", inversedBy="cruise")
+	 */
+	private $category;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="CruiseDays", mappedBy="cruise")
+	 */
+	private $cruiseDays;	
 
+	/**
+	 * @ORM\OneToMany(targetEntity="CruiseRoomBlock", mappedBy="cruise")
+	 */
+	private $roomBlock;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="Price", mappedBy="cruise")
+	 */
+	private $price;
+	
+	
+	public function __construct()
+	{
+		$category = new ArrayCollection();
+		$cruiseDays = new ArrayCollection();
+		$price = new ArrayCollection();
+	}
 
+	public function __toString()
+	{
+		return $this->getName();
+	}
+	
+	
     /**
      * Get id
      *
@@ -647,5 +679,236 @@ class Cruise
     {
         return $this->textCategoties;
     }
-}
 
+    /**
+     * Set class
+     *
+     * @param integer $class
+     *
+     * @return Cruise
+     */
+    public function setClass($class)
+    {
+        $this->class = $class;
+
+        return $this;
+    }
+
+    /**
+     * Get class
+     *
+     * @return integer
+     */
+    public function getClass()
+    {
+        return $this->class;
+    }
+
+    /**
+     * Set textCategories
+     *
+     * @param string $textCategories
+     *
+     * @return Cruise
+     */
+    public function setTextCategories($textCategories)
+    {
+        $this->textCategories = $textCategories;
+
+        return $this;
+    }
+
+    /**
+     * Get textCategories
+     *
+     * @return string
+     */
+    public function getTextCategories()
+    {
+        return $this->textCategories;
+    }
+
+    /**
+     * Set cruiseClass
+     *
+     * @param \CruiseBundle\Entity\CruiseClass $cruiseClass
+     *
+     * @return Cruise
+     */
+    public function setCruiseClass(\CruiseBundle\Entity\CruiseClass $cruiseClass = null)
+    {
+        $this->cruiseClass = $cruiseClass;
+
+        return $this;
+    }
+
+    /**
+     * Get cruiseClass
+     *
+     * @return \CruiseBundle\Entity\CruiseClass
+     */
+    public function getCruiseClass()
+    {
+        return $this->cruiseClass;
+    }
+
+    /**
+     * Add category
+     *
+     * @param \CruiseBundle\Entity\CruiseCategory $category
+     *
+     * @return Cruise
+     */
+    public function addCategory(\CruiseBundle\Entity\CruiseCategory $category)
+    {
+        $this->category[] = $category;
+
+        return $this;
+    }
+
+    /**
+     * Remove category
+     *
+     * @param \CruiseBundle\Entity\CruiseCategory $category
+     */
+    public function removeCategory(\CruiseBundle\Entity\CruiseCategory $category)
+    {
+        $this->category->removeElement($category);
+    }
+
+    /**
+     * Add cruiseDay
+     *
+     * @param \CruiseBundle\Entity\CruiseDays $cruiseDay
+     *
+     * @return Cruise
+     */
+    public function addCruiseDay(\CruiseBundle\Entity\CruiseDays $cruiseDay)
+    {
+        $this->cruiseDays[] = $cruiseDay;
+
+        return $this;
+    }
+
+    /**
+     * Remove cruiseDay
+     *
+     * @param \CruiseBundle\Entity\CruiseDays $cruiseDay
+     */
+    public function removeCruiseDay(\CruiseBundle\Entity\CruiseDays $cruiseDay)
+    {
+        $this->cruiseDays->removeElement($cruiseDay);
+    }
+
+    /**
+     * Get cruiseDays
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCruiseDays()
+    {
+        return $this->cruiseDays;
+    }
+
+    /**
+     * Add roomStatus
+     *
+     * @param \CruiseBundle\Entity\CruiseRoomStatus $roomStatus
+     *
+     * @return Cruise
+     */
+    public function addRoomStatus(\CruiseBundle\Entity\CruiseRoomStatus $roomStatus)
+    {
+        $this->roomStatus[] = $roomStatus;
+
+        return $this;
+    }
+
+    /**
+     * Remove roomStatus
+     *
+     * @param \CruiseBundle\Entity\CruiseRoomStatus $roomStatus
+     */
+    public function removeRoomStatus(\CruiseBundle\Entity\CruiseRoomStatus $roomStatus)
+    {
+        $this->roomStatus->removeElement($roomStatus);
+    }
+
+    /**
+     * Get roomStatus
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRoomStatus()
+    {
+        return $this->roomStatus;
+    }
+
+    /**
+     * Add roomBlock
+     *
+     * @param \CruiseBundle\Entity\CruiseRoomBlock $roomBlock
+     *
+     * @return Cruise
+     */
+    public function addRoomBlock(\CruiseBundle\Entity\CruiseRoomBlock $roomBlock)
+    {
+        $this->roomBlock[] = $roomBlock;
+
+        return $this;
+    }
+
+    /**
+     * Remove roomBlock
+     *
+     * @param \CruiseBundle\Entity\CruiseRoomBlock $roomBlock
+     */
+    public function removeRoomBlock(\CruiseBundle\Entity\CruiseRoomBlock $roomBlock)
+    {
+        $this->roomBlock->removeElement($roomBlock);
+    }
+
+    /**
+     * Get roomBlock
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRoomBlock()
+    {
+        return $this->roomBlock;
+    }
+
+    /**
+     * Add price
+     *
+     * @param \CruiseBundle\Entity\Price $price
+     *
+     * @return Cruise
+     */
+    public function addPrice(\CruiseBundle\Entity\Price $price)
+    {
+        $this->price[] = $price;
+
+        return $this;
+    }
+
+    /**
+     * Remove price
+     *
+     * @param \CruiseBundle\Entity\Price $price
+     */
+    public function removePrice(\CruiseBundle\Entity\Price $price)
+    {
+        $this->price->removeElement($price);
+    }
+
+    /**
+     * Get price
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+}

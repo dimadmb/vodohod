@@ -23,6 +23,49 @@ class CruiseController extends Controller
 	
 	/**
 	 * @Template()
+     */		
+	public function nearestCruisesAction($count = 5)
+	{
+		$em = $this->getDoctrine()->getManager("cruise");
+		$cruiseRepository = $em->getRepository('CruiseBundle:Cruise');
+		//$cruises = $cruiseRepository->findAll();
+		//$cruises = $cruiseRepository->findBy(["archives"=>0],["dateStart"=>"ASC"],5);
+		$qb = $em->createQueryBuilder();
+		$cruises = $qb
+		->select('c,m,ccd,port')
+        ->from('CruiseBundle:Cruise','c')
+		->leftJoin('c.motorship', 'm')
+		
+		->leftJoin('c.cruiseDays','ccd')
+		->leftJoin('ccd.port','port')
+		
+        ->where('c.motorship IS NOT NULL')
+		->andWhere('c.archives = 0')
+		->andWhere('c.forSale = 1')
+		->andWhere('c.dateStart > CURRENT_DATE()')
+		//->andWhere("m.name like '%бел%'")
+		->setMaxResults($count)
+		->orderBy('c.dateStart','ASC')
+        ->getQuery()
+        ->getResult();
+		;	
+		
+		
+		foreach($cruises as $cruise)
+		{
+			$days = 1 + (strtotime($cruise->getDateStop()->format("Y-m-d")) - strtotime($cruise->getDateStart()->format("Y-m-d")))/86400;
+			$cruise->days = $days;
+		}
+		
+
+		return ["cruises" => $cruises];
+		
+	}
+
+
+	
+	/**
+	 * @Template()
 	 * @Route("/cruises", name="cruises" )
      */		
 	public function cruisesAction(Request $request)
@@ -64,6 +107,9 @@ class CruiseController extends Controller
 				$cruise->freeCountRoom = $cruiseRoomStatusRepository->countFreeRoom($cruise->getId());
 				$this->get('memcache.default')->set('countFreeRoom'.$cruise->getId(),$cruise->freeCountRoom,0,60*10*1);
 			}
+			
+			$days = 1 + (strtotime($cruise->getDateStop()->format("Y-m-d")) - strtotime($cruise->getDateStart()->format("Y-m-d")))/86400;
+			$cruise->days = $days;			
 		}
 		return ["cruises" => $cruises];
 	}
@@ -99,6 +145,8 @@ class CruiseController extends Controller
 		$query->setParameter('id', $id);
 		
 		$cruise = $query->getOneOrNullResult();
+		
+		//$cruise->freeCountRoom = $cruiseRoomStatusRepository->countFreeRoom($cruise->getId()); 
 		
 		foreach($freeRooms as $room)
 		{

@@ -26,7 +26,7 @@ class ImageController extends Controller
 		{
 			$image = new Image();
 			$image->setFile($file);
-			$image->setSort(0);
+			$image->setSort(500);
 			$em->persist($image);
 			$em->flush();
 			
@@ -51,7 +51,10 @@ class ImageController extends Controller
 		
 		if($image != null)
 		{
-			unlink($this->getParameter('upload_directory').'/'.$image->getFilename());
+			//$fileName = $this->getParameter('upload_directory').'/'.$image->getFilename();
+
+				@unlink($this->getParameter('upload_directory').'/'.$image->getFilename());
+
 			
 			$em->remove($image);
 			$em->flush();

@@ -3,6 +3,7 @@
 namespace BaseBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Page
@@ -72,7 +73,7 @@ class Page
     /**
      * @var string
      *
-     * @ORM\Column(name="full_url", type="string", length=255)
+     * @ORM\Column(name="full_url", type="string", length=255, unique=true)
      */
     private $fullUrl;
     /**
@@ -102,10 +103,27 @@ class Page
      */
     private $h1;
 
+
+
+
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\File(mimeTypes={ "image/jpeg" })
+     */
+
+    private $bannerImg;
+
     /**
      * @var string
      *
-     * @ORM\Column(name="body", type="text")
+     * @ORM\Column(name="banner_html", type="text", nullable=true)
+     */
+    private $bannerHtml;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="body", type="text", nullable=true)
      */
     private $body;
 
@@ -523,6 +541,7 @@ class Page
     public function addChild(\BaseBundle\Entity\Page $child)
     {
         $this->children[] = $child;
+		$child->setParent($this);
 
         return $this;
     }
@@ -588,5 +607,55 @@ class Page
     public function getFile()
     {
         return $this->file;
+    }
+
+
+
+    /**
+     * Set bannerHtml
+     *
+     * @param string $bannerHtml
+     *
+     * @return Page
+     */
+    public function setBannerHtml($bannerHtml)
+    {
+        $this->bannerHtml = $bannerHtml;
+
+        return $this;
+    }
+
+    /**
+     * Get bannerHtml
+     *
+     * @return string
+     */
+    public function getBannerHtml()
+    {
+        return $this->bannerHtml;
+    }
+
+    /**
+     * Set bannerImg
+     *
+     * @param string $bannerImg
+     *
+     * @return Page
+     */
+    public function setBannerImg($bannerImg)
+    {
+        $this->bannerImg = $bannerImg;
+
+        return $this;
+    }
+
+    /**
+     * Get bannerImg
+     *
+     * @return string
+     */
+    public function getBannerImg()
+    {
+        return $this->bannerImg;
     }
 }

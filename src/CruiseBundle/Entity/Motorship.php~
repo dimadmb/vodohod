@@ -30,18 +30,19 @@ class Motorship
     private $name;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="type", type="integer")
+     * @ORM\ManyToOne(targetEntity="MotorshipType", inversedBy="motorship")
      */
-    private $type;
+    private $motorshipType; 
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="class", type="integer")
+     * @ORM\ManyToOne(targetEntity="MotorshipClass", inversedBy="motorship")
      */
-    private $class;
+    private $motorshipClass; 
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="MotorshipHall", mappedBy="motorship")
+	 */
+	private $hall;
 
     /**
      * @var string
@@ -53,7 +54,7 @@ class Motorship
 	/**
 	* @ORM\ManyToOne(targetEntity="Region", inversedBy="motorship")
 	*/
-    private $region; // присоединить 
+    private $region; 
 
     /**
      * @var string
@@ -129,11 +130,37 @@ class Motorship
 	/**
 	* @ORM\OneToMany(targetEntity="Cruise", mappedBy="motorship")
 	*/
-	private $cruise;
+	private $cruise;	
+	
+	/**
+	* @ORM\OneToMany(targetEntity="Room", mappedBy="motorship")
+	*/
+	private $room;
+	
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="MotorshipRooms", mappedBy="motorship")
+	 */
+	private $motorshipRooms;	
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="Price", mappedBy="motorship")
+	 */
+	private $price;
+	
+	
 
 	public function __construct()
 	{
 		$cruise = new ArrayCollection();
+		$room = new ArrayCollection();
+		$hall = new ArrayCollection();
+		$motorshipRooms = new ArrayCollection();
+	}
+
+	public function __toString()
+	{
+		return $this->getName();
 	}
 
     /**
@@ -538,5 +565,189 @@ class Motorship
     public function getCruise()
     {
         return $this->cruise;
+    }
+
+    /**
+     * Set motorshipType
+     *
+     * @param \CruiseBundle\Entity\MotorshipType $motorshipType
+     *
+     * @return Motorship
+     */
+    public function setMotorshipType(\CruiseBundle\Entity\MotorshipType $motorshipType = null)
+    {
+        $this->motorshipType = $motorshipType;
+
+        return $this;
+    }
+
+    /**
+     * Get motorshipType
+     *
+     * @return \CruiseBundle\Entity\MotorshipType
+     */
+    public function getMotorshipType()
+    {
+        return $this->motorshipType;
+    }
+
+    /**
+     * Set motorshipClass
+     *
+     * @param \CruiseBundle\Entity\MotorshipClass $motorshipClass
+     *
+     * @return Motorship
+     */
+    public function setMotorshipClass(\CruiseBundle\Entity\MotorshipClass $motorshipClass = null)
+    {
+        $this->motorshipClass = $motorshipClass;
+
+        return $this;
+    }
+
+    /**
+     * Get motorshipClass
+     *
+     * @return \CruiseBundle\Entity\MotorshipClass
+     */
+    public function getMotorshipClass()
+    {
+        return $this->motorshipClass;
+    }
+
+    /**
+     * Add room
+     *
+     * @param \CruiseBundle\Entity\Room $room
+     *
+     * @return Motorship
+     */
+    public function addRoom(\CruiseBundle\Entity\Room $room)
+    {
+        $this->room[] = $room;
+
+        return $this;
+    }
+
+    /**
+     * Remove room
+     *
+     * @param \CruiseBundle\Entity\Room $room
+     */
+    public function removeRoom(\CruiseBundle\Entity\Room $room)
+    {
+        $this->room->removeElement($room);
+    }
+
+    /**
+     * Get room
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRoom()
+    {
+        return $this->room;
+    }
+
+    /**
+     * Add hall
+     *
+     * @param \CruiseBundle\Entity\MotorshipHall $hall
+     *
+     * @return Motorship
+     */
+    public function addHall(\CruiseBundle\Entity\MotorshipHall $hall)
+    {
+        $this->hall[] = $hall;
+
+        return $this;
+    }
+
+    /**
+     * Remove hall
+     *
+     * @param \CruiseBundle\Entity\MotorshipHall $hall
+     */
+    public function removeHall(\CruiseBundle\Entity\MotorshipHall $hall)
+    {
+        $this->hall->removeElement($hall);
+    }
+
+    /**
+     * Get hall
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getHall()
+    {
+        return $this->hall;
+    }
+
+    /**
+     * Add motorshipRoom
+     *
+     * @param \CruiseBundle\Entity\MotorshipRooms $motorshipRoom
+     *
+     * @return Motorship
+     */
+    public function addMotorshipRoom(\CruiseBundle\Entity\MotorshipRooms $motorshipRoom)
+    {
+        $this->motorshipRooms[] = $motorshipRoom;
+
+        return $this;
+    }
+
+    /**
+     * Remove motorshipRoom
+     *
+     * @param \CruiseBundle\Entity\MotorshipRooms $motorshipRoom
+     */
+    public function removeMotorshipRoom(\CruiseBundle\Entity\MotorshipRooms $motorshipRoom)
+    {
+        $this->motorshipRooms->removeElement($motorshipRoom);
+    }
+
+    /**
+     * Get motorshipRooms
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMotorshipRooms()
+    {
+        return $this->motorshipRooms;
+    }
+
+    /**
+     * Add price
+     *
+     * @param \CruiseBundle\Entity\Price $price
+     *
+     * @return Motorship
+     */
+    public function addPrice(\CruiseBundle\Entity\Price $price)
+    {
+        $this->price[] = $price;
+
+        return $this;
+    }
+
+    /**
+     * Remove price
+     *
+     * @param \CruiseBundle\Entity\Price $price
+     */
+    public function removePrice(\CruiseBundle\Entity\Price $price)
+    {
+        $this->price->removeElement($price);
+    }
+
+    /**
+     * Get price
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPrice()
+    {
+        return $this->price;
     }
 }

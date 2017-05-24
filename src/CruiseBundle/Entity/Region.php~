@@ -60,7 +60,7 @@ class Region
     /**
      * @var string
      *
-     * @ORM\Column(name="comment", type="text")
+     * @ORM\Column(name="comment", type="text", nullable=true)
      */
     private $comment;
 	
@@ -81,6 +81,10 @@ class Region
 		$motorship = new ArrayCollection();
 	}
 
+	public function __toString()
+	{
+		return $this->getName();
+	}
 
     /**
      * Get id

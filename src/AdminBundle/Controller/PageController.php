@@ -11,6 +11,8 @@ use BaseBundle\Entity\Page;
 use BaseBundle\Entity\Image;
 use BaseBundle\Form\PageType;
 
+use Symfony\Component\HttpFoundation\File\File;
+
 /**
  * Page controller.
  *
@@ -38,6 +40,7 @@ class PageController extends Controller
 			}
 			$page->getChildren()->setInitialized(true);
 		}
+
         return $this->render('page/index.html.twig', array(
             'pages' => $pages,
         ));
@@ -68,6 +71,23 @@ class PageController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+
+
+			if(null !== $page->getBannerImg())
+			{
+				$file = $page->getBannerImg();
+				$fileName = md5(uniqid()).'.'.$file->guessExtension();
+				// Move the file to the directory where brochures are stored
+				$file->move(
+					$this->getParameter('upload_directory'),
+					$fileName
+				);
+				$page->setBannerImg($fileName);				
+			}
+			else
+			{
+				$page->setBannerImg("");
+			}
             
 			$localUrl = trim($page->getLocalUrl())."";
 			$parentUrl = ($page->getParent() == null) ? "" : $page->getParent()->getFullUrl();
@@ -90,7 +110,8 @@ class PageController extends Controller
 
 			$em->persist($page);
             $em->flush();
-
+			
+			return $this->redirectToRoute('page', array('url' => $page->getFullUrl()));
             return $this->redirectToRoute('page_show', array('id' => $page->getId()));
         }
 
@@ -128,7 +149,7 @@ class PageController extends Controller
 		$page_h1 = $request->request->get('page_h1');
 		$page_body = $request->request->get('page_body');
 		
-		$page->setH1($page_h1);
+		//$page->setH1($page_h1);
 		$page->setBody($page_body);
 		
 		$em->flush();
@@ -145,16 +166,44 @@ class PageController extends Controller
      */
     public function editAction(Request $request, Page $page)
     {
-        $deleteForm = $this->createDeleteForm($page);
+        $em = $this->getDoctrine()->getManager();
+		
+		$deleteForm = $this->createDeleteForm($page);
         $editForm = $this->createForm('BaseBundle\Form\PageType', $page);
-        $editForm->handleRequest($request);
+        
 		
 		$images = $request->request->get("image");
 		$imagesSort = $request->request->get("image-sort");
+		
+		$page_test = $em->getRepository('BaseBundle\Entity\Page')->findOneById($page->getId());
+		$bannerImgOriginal = $page_test->getBannerImg();
+		
+		
+		$editForm->handleRequest($request);
+
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $em = $this->getDoctrine()->getManager();
 						
+			
+			if("" != $page->getBannerImg())
+			{
+				$file = $page->getBannerImg();
+				$fileName = md5(uniqid()).'.'.$file->guessExtension();
+				// Move the file to the directory where brochures are stored
+				$file->move(
+					$this->getParameter('upload_directory'),
+					$fileName
+				);
+				$page->setBannerImg($fileName);				
+			}
+			else
+			{
+				$page->setBannerImg($bannerImgOriginal);
+			}
+
+			
+			
 			// если попытка назначить родителем саму же сусщность, то назначаем родителем по адресу выше
 			if( ($page->getParent()) && $page->getId() == $page->getParent()->getId())
 			{
@@ -190,17 +239,26 @@ class PageController extends Controller
 			}
             $em->persist($page);
             $em->flush();
-       /* return $this->render('page/edit.html.twig', array(
-            'dump' => $page,
+		/*	
+        return $this->render('page/edit.html.twig', array(
+            'dump' => $page_test,
 			'page' => $page,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-        ));*/
-			
+        ));
+		*/	
             return $this->redirectToRoute('page', array('url' => $page->getFullUrl()));
             return $this->redirectToRoute('page_edit', array('id' => $page->getId()));
         }
 
+		
+		if("" !== $page->getBannerImg())
+		{
+			$page->setBannerImg(
+				new File($this->getParameter('upload_directory').'/'.$page->getBannerImg())
+			);
+		}		
+		
         return $this->render('page/edit.html.twig', array(
             'page' => $page,
             'edit_form' => $editForm->createView(),
