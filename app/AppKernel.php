@@ -29,6 +29,7 @@ class AppKernel extends Kernel
 			
 			new Lsw\MemcacheBundle\LswMemcacheBundle(),
 			
+			new Symfony\Bundle\AsseticBundle\AsseticBundle(),
 			
         ];
 

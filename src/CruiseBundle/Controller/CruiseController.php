@@ -32,12 +32,12 @@ class CruiseController extends Controller
 		//$cruises = $cruiseRepository->findBy(["archives"=>0],["dateStart"=>"ASC"],5);
 		$qb = $em->createQueryBuilder();
 		$cruises = $qb
-		->select('c,m,ccd,port')
+		->select('c')
         ->from('CruiseBundle:Cruise','c')
-		->leftJoin('c.motorship', 'm')
+		//->leftJoin('c.motorship', 'm')
 		
-		->leftJoin('c.cruiseDays','ccd')
-		->leftJoin('ccd.port','port')
+		//->leftJoin('c.cruiseDays','ccd')
+		//->leftJoin('ccd.port','port')
 		
         ->where('c.motorship IS NOT NULL')
 		->andWhere('c.archives = 0')

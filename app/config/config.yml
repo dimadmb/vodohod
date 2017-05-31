@@ -11,6 +11,8 @@ imports:
 parameters:
     locale: ru
     upload_directory: "%kernel.root_dir%/../web/files"
+    liip_imagine.jpegoptim.binary: "%kernel.root_dir%/../../../.local/bin/jpegoptim"
+
 framework:
     #esi:             ~
     translator:      ~
@@ -35,6 +37,26 @@ framework:
     http_method_override: true
     assets: ~
 
+# Assetic Configuration
+assetic:
+    debug:          "%kernel.debug%"
+    use_controller: false
+    bundles:        [ ]
+    #java: /usr/bin/java
+    java: "/home/q/q12naswz/.local/bin/java"
+    filters:
+        cssrewrite: ~
+
+        yui_css:
+            jar: '%kernel.root_dir%/Resources/java/yuicompressor.jar'
+        yui_js:
+            jar: '%kernel.root_dir%/Resources/java/yuicompressor.jar'
+        jpegoptim:
+            bin: "%kernel.root_dir%/../../../.local/bin/jpegoptim"
+    twig:
+        functions:
+            jpegoptim: { output: images/*.jpg }
+
 # Twig Configuration
 twig:
     debug:            "%kernel.debug%"
@@ -42,6 +64,7 @@ twig:
     form_themes: ['bootstrap_3_layout.html.twig']
     globals: 
         upload_path: "/files/"
+        upload_web_path: "/web/files/%"
 
 services:
     twig.extension.intl:
@@ -121,6 +144,13 @@ liip_imagine :
 
     filter_sets :
         cache : ~
+
+        banner :
+            filters : 
+                #relative_resize: { heighten: 800 }
+                downscale: { max: [1920, 1080] }
+            post_processors:
+                jpegoptim: { strip_all: true, max: 70, progressive: true }       
 
         my_thumb :
             filters :
