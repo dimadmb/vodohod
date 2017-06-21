@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+<div class="container">
+
+{{dump()}}
+
+
+{% for message in forumTheme.forumMessages %}
+	
+	
+	<p>{{message.user.username}}</p>
+	<p>{{message.datetime | date("Y-m-d H:i:s")}}</p>
+	<p><b>{{message.quote | raw}}</b></p>
+	<p>{{message.body | raw}}</p>
+	<hr>
+{% endfor %}	
+
+</div>	
+	
+{% endblock %}

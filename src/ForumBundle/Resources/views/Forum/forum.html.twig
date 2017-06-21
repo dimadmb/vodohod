@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+{#{dump()}#}
+
+<div class="container">
+
+
+<h1 class="thin">{{forum.name}}</h1>
+
+{% for forumTheme in forum.forumTheme %}
+
+		<div class="block forum-item">
+		
+		
+			<span class="date">
+				
+				
+				{{forumTheme.forumMessages[0].datetime | date("d.m.y")}} <span>/</span> {{forumTheme.forumMessages[0].datetime | date("H:i")}}
+				
+			</span>
+			<div class="counts">
+				
+				<span class="replies">{{forumTheme.countAnswers}} {{forumTheme.countAnswers | numeral('ответ','ответа','ответов') }}</span>
+			</div>
+			<div class="clear"></div>
+			<div class="row">
+				<div class="col-sm-7 left-side">
+					<a href="{{path('forum_theme',{'forum_id':forum.id,'theme_id':forumTheme.id})}}" class="name">{{forumTheme.name}}</a>
+					{{forumTheme.comment | raw}}
+				</div>
+				<div class="col-sm-5">
+					Автор последнего сообщения: <a href="#">{{forumTheme.forumMessages[0].user.username}}</a><br>
+					Автор темы: <a href="#">{{forumTheme.user.username}}
+					{#{forumTheme.lastMessage.user.username}#}</a>
+				</div>
+			</div>
+		</div>
+
+
+{% endfor %}
+
+
+</div>
+
+{% endblock %}

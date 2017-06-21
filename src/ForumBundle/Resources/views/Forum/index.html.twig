@@ -1,0 +1,40 @@
+{{dump()}}
+
+
+{% for forumGroup in forumGroups %}
+
+		<div class="block">
+			<h2 class="forums-h2">{{forumGroup.name}}</h2>
+		</div>
+		
+		{% for forum in forumGroup.forum %}
+		
+		<div class="block forum-item">
+			<span class="date">
+				
+				
+				{{forum.lastMessage.datetime | date("d.m.y")}} <span>/</span> {{forum.lastMessage.datetime | date("H:i")}}
+				
+			</span>
+			<div class="counts">
+				<span class="themes">{{forum.countThemes}} {{forum.countThemes | numeral('тема','темы','тем') }}</span>
+				<span class="replies">{{forum.countAnswers}} {{forum.countAnswers | numeral('ответ','ответа','ответов') }}</span>
+			</div>
+			<div class="clear"></div>
+			<div class="row">
+				<div class="col-sm-7 left-side">
+					<a href="{{path('forum',{'id':forum.id})}}" class="name">{{forum.name}}</a>
+					{{forum.comment | raw}}
+				</div>
+				<div class="col-sm-5">
+					Тема: <a href="#">{{forum.lastMessage.name}}</a><br>
+					Автор: <a href="#">{{forum.lastMessage.user.username}}</a>
+				</div>
+			</div>
+		</div>
+		
+		{% endfor %}
+		
+		
+		
+{% endfor %}

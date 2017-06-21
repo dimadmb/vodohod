@@ -30,7 +30,25 @@ class User extends BaseUser
      *
      * @ORM\Column(name="last_name", type="string", length=255, nullable=true)
      */
-    private $lastName;	
+    private $lastName;
+	
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="father_name", type="string", length=255, nullable=true)
+     */
+    private $fatherName;
+	
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="user_email_new", type="string", length=255, nullable=true)
+     */
+    private $emailNew;
+
+
+
+	
 
     public function __construct()
     {

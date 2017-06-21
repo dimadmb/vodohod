@@ -30,7 +30,7 @@ class AppKernel extends Kernel
 			new Lsw\MemcacheBundle\LswMemcacheBundle(),
 			
 			new Symfony\Bundle\AsseticBundle\AsseticBundle(),
-			
+            new ForumBundle\ForumBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
