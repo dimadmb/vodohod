@@ -1,0 +1,13 @@
+<p>На форуме создана новая тема <b>{{newMessage.forumTheme.name}}</b> 
+<br>
+
+================================<br>
+<b>{{newMessage.body | nl2br}}</b><br>
+================================<br>
+Для действия необходима авторизация на сайте!
+
+<a href="{{absolute_url(path('forum_moderation',{'message_id':newMessage.id,'confirm':'true'}))}}">Одобрить</a> <a href="{{absolute_url(path('forum_moderation',{'message_id':newMessage.id,'confirm':'false'}))}}">Отказать</a>
+
+</p>
+
+<p><a href="{{absolute_url(path('forum_add_message_in',{'forum_id':newMessage.forumTheme.forum.id, 'message_id':newMessage.id }))}}">Добавить сообщение в одну из существующих тем</a> </p>

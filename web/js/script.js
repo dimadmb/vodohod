@@ -62,7 +62,7 @@ $(document).ready(function(){
 	$(".chosen-select").chosen({
 		disable_search: true,
 		no_results_text: "Не найдено: ",
-		placeholder_text_multiple: "Что посетить",
+		placeholder_text_multiple: "Добавьте по желанию",
 		placeholder_text_single: "Выберите"
 		
 	});

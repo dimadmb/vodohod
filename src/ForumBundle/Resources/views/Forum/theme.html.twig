@@ -5,19 +5,68 @@
 
 <div class="container">
 
-{{dump()}}
 
+<div class="block nopad " >
+	
+	<div style="padding-left:30px;">
+		<ul class="pager left ">
+			<li><a href="{{path('page',{'url':'club/forums'})}}">Форумы</a> => &nbsp;<a href="{{path('forum',{'id':forumTheme.forum.id})}}">{{forumTheme.forum.name}}</a> => <a href="{{path('forum_theme',{'forum_id':forumTheme.forum.id,'theme_id':forumTheme.id})}}">{{forumTheme.name}}</a></li>&nbsp;
+		</ul>
+	</div>
+	<div style="padding-right:30px;">
+		<ul class="pager">
+		{% for i in 1..count %}
+			<li><a href="{{path('forum_theme',{'forum_id':forumTheme.forum.id,'theme_id':forumTheme.id,'p':i})}}" {% if p==i %}class="active"{% endif %}>{{i}}</a></li>&nbsp;							
+		{% endfor %}	
+		</ul>
+	</div>	
+</div>
+
+<h1 class="thin">{{forumTheme.name}}</h1>
 
 {% for message in forumTheme.forumMessages %}
-	
-	
+
+<div class="block forum-message-item">
+			<span class="date">
+				{{message.datetime | date("Y.m.d")}} <span>/</span> {{message.datetime | date("H:i")}}
+			</span>
+			<div class="name">{{message.user.username}}</div>
+			
+			{% if message.quote != "" %}
+			<blockquote>
+				Цитата:{{message.replayId.user.username}}, {{message.replayId.datetime | date("Y.m.d , H:i")}}<br>
+				
+				
+				{#{message.replayId.body | raw}#}
+				{{message.quote | nl2br}}
+				
+			</blockquote>
+			{% endif %}
+			
+			<p>{{message.body | nl2br}}</p>
+			<div class="bottom-links">
+				<div class="row">
+					<div class="col-sm-6">
+						<a href="{{path('forum_reply',{'message_id':message.id})}}">Ответить</a>
+						<a href="{{path('forum_quote',{'message_id':message.id})}}">Цитировать</a>
+					</div>
+					<div class="col-sm-6 right-side">
+						
+						<a href="{{path('forum_add_message_in',{'forum_id':message.forumTheme.forum.id, 'message_id':message.id })}}">Перенести в другую тему</a>
+					</div>
+				</div>
+			</div>
+		</div>	
+	{#
 	<p>{{message.user.username}}</p>
 	<p>{{message.datetime | date("Y-m-d H:i:s")}}</p>
 	<p><b>{{message.quote | raw}}</b></p>
 	<p>{{message.body | raw}}</p>
 	<hr>
+	#}
 {% endfor %}	
 
 </div>	
 	
 {% endblock %}
+

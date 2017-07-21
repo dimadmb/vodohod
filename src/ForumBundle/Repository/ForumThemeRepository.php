@@ -18,9 +18,12 @@ class ForumThemeRepository extends \Doctrine\ORM\EntityRepository
 		SELECT COUNT(*) count
 		FROM `forum_theme` 
 		left join forum_message on forum_message.forum_theme_id = `forum_theme`.id
-		WHERE `forum_theme`.`id` = ".$theme_id." and `forum_theme`.`closed` = 0 and `forum_theme`.`active` = 1
+		WHERE `forum_theme`.`id` = ".$theme_id." 
+		and `forum_theme`.`closed` = 0 
+		and `forum_theme`.`active` = 1
 		and forum_message.active = 1 
 		and forum_message.moderation = 1
+		and forum_message.block = 0
 
 		";	
 		$connection = $this->_em->getConnection();

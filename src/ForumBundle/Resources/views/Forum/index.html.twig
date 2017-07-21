@@ -1,5 +1,4 @@
-{{dump()}}
-
+{#{dump()}#}
 
 {% for forumGroup in forumGroups %}
 
@@ -27,7 +26,8 @@
 					{{forum.comment | raw}}
 				</div>
 				<div class="col-sm-5">
-					Тема: <a href="#">{{forum.lastMessage.name}}</a><br>
+				{# узнать количество сообщений и добавить номер последней страницы в маршрут  #}
+					Тема: <a href="{{path('forum_theme',{'forum_id':forum.lastMessage.forum.id, 'theme_id':forum.lastMessage.id})}}">{{forum.lastMessage.name}}</a><br>
 					Автор: <a href="#">{{forum.lastMessage.user.username}}</a>
 				</div>
 			</div>

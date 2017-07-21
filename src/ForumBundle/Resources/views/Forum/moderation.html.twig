@@ -1,0 +1,11 @@
+<p>На форуме в <a href="{{absolute_url(path('forum_theme',{'forum_id':newMessage.forumTheme.forum.id,'theme_id':newMessage.forumTheme.id}))}}">теме</a>, появилось новое сообщение:
+<br>
+
+================================<br>
+{{newMessage.body | nl2br}}<br>
+================================<br>
+Для действия необходима авторизация на сайте!
+
+<a href="{{absolute_url(path('forum_moderation',{'message_id':newMessage.id,'confirm':'true'}))}}">Одобрить</a> <a href="{{absolute_url(path('forum_moderation',{'message_id':newMessage.id,'confirm':'false'}))}}">Отказать</a>
+
+</p>

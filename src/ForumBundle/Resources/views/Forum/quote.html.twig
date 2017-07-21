@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+<div class="container">
+
+
+
+
+{{ form_start(form) }}
+{{ form_widget(form) }}
+{{ form_end(form) }}
+
+<br>
+
+
+
+
+<div class="block forum-message-item">
+			<span class="date">
+				{{message.datetime | date("Y.m.d")}} <span>/</span> {{message.datetime | date("H:i")}}
+			</span>
+			<div class="name">{{message.user.username}}</div>
+			{{message.body | nl2br}}
+
+
+		</div>
+
+
+</div>	
+	
+{% endblock %}

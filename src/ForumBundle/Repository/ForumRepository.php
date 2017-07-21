@@ -59,7 +59,7 @@ class ForumRepository extends \Doctrine\ORM\EntityRepository
 	public function getLastMessage($forum_id)
 	{
 		$sql = "
-		SELECT ft,fm,u
+		SELECT ft,u
 		FROM ForumBundle\Entity\ForumTheme ft
 		LEFT JOIN ft.forumMessages fm
 		LEFT JOIN ft.user  u

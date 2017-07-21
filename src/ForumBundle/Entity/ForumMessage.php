@@ -57,9 +57,9 @@ class ForumMessage
     private $active;
 
     /**
-     * @var int
      *
-     * @ORM\Column(name="replayId", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="ForumMessage")
+	 * @ORM\JoinColumn(name="replayId", referencedColumnName="id")
      */
     private $replayId;
 

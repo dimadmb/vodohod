@@ -11,7 +11,8 @@ group:
         deleted: 'Группа удалена'
 security:
     login:
-        username: 'Имя пользователя'
+#        username: 'Имя пользователя'
+        username: 'Логин (псевдоним на сайте)'
         password: Пароль
         remember_me: 'Запомнить меня'
         submit: Войти
@@ -58,7 +59,7 @@ layout:
     logged_in_as: 'Вы вошли как %username%'
 form:
     group_name: 'Название группы'
-    username: 'Имя пользователя'
+    username: 'Логин (псевдоним на сайте)'
     email: 'Электронная почта'
     current_password: 'Текущий пароль'
     password: Пароль

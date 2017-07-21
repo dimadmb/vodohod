@@ -8,11 +8,14 @@
 <div class="container">
 
 <h1 class="thin">{{forum.name}}</h1>
+<h1 class="thin"></h1>
 
 <div style="padding:15px" class="block nopad " >
-
-<a href="{{path('forum_new_theme',{'forum_id':forum.id})}}">Новая тема в форум</a>
-	
+<b>Переносим сообщение в другую тему</b>
+<br>
+===================================================<br>
+{{message.body| nl2br}}<br>
+===================================================<br>	
 
 </div>
 
@@ -44,7 +47,13 @@
 					Автор последнего сообщения: <a href="#">{{forumTheme.forumMessages[0].user.username}}</a><br>
 					Автор темы: <a href="#">{{forumTheme.user.username}}
 					{#{forumTheme.lastMessage.user.username}#}</a>
+					
+					
+					<a href="{{path('forum_add_in_theme',{'forum_id':forum.id,'message_id':message.id ,'theme_id':forumTheme.id})}}">Перенести сюда</a>
+					
 				</div>
+				
+				
 			</div>
 		</div>
 

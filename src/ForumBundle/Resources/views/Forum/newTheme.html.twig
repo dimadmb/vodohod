@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+<div class="container">
+
+
+<div class="block nopad " >
+	
+	<div style="padding-left:30px;">
+		<ul class="pager left ">
+			<li><a href="{{path('page',{'url':'club/forums'})}}">Форумы</a> => &nbsp;<a href="{{path('forum',{'id':forum.id})}}">{{forum.name}}</a></li>&nbsp;
+		</ul>
+		
+		<p>Новая тема в форум «{{forum.name}}»</p>
+		
+	</div>
+</div>
+<br>
+
+{{ form_start(form) }}
+{{ form_widget(form) }}
+{{ form_end(form) }}
+
+
+
+</div>	
+	
+{% endblock %}

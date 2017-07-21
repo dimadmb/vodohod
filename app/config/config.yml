@@ -13,6 +13,7 @@ parameters:
     locale: ru
     upload_directory: "%kernel.root_dir%/../web/files"
     liip_imagine.jpegoptim.binary: "%kernel.root_dir%/../../../.local/bin/jpegoptim"
+    email_forum_moderator: "akokshin@vodohod.ru"
 
 framework:
     #esi:             ~
