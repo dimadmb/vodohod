@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+
+<div class="container">	
+	{% for ship in ships %}
+	
+	{{dump(ship)}}
+	
+	
+		{{ship.name}} {{ship.motorshipType.name}} 
+	
+	{% endfor %}
+</div>
+
+
+{% endblock %}

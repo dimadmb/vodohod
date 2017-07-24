@@ -20,10 +20,6 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 
-
-use Doctrine\ORM\Tools\Pagination\Paginator;
-
-
 class CruiseController extends Controller
 {
 	public function testAction($name = "")
@@ -97,7 +93,7 @@ class CruiseController extends Controller
 				'class' => 'CruiseBundle:Motorship',
 				'query_builder' => function (EntityRepository $er) {
 					return $er->createQueryBuilder('m')
-						//->where('m.motorshipClass >= 1')
+						->where('m.motorshipType > 0')
 						->andWhere('m.active = 1')
 						->orderBy('m.name', 'ASC');
 				},
@@ -128,7 +124,7 @@ class CruiseController extends Controller
 							'15-23' => '15-23'
 						],])
 				
-				->add('sort',ChoiceType::class, [
+				->add('sortable',ChoiceType::class, [
 						'choices'  => [
 							'По дате (по возрастанию)' => '1',
 							'По дате (по убыванию)' => '2',
@@ -144,11 +140,7 @@ class CruiseController extends Controller
 			
 		$form->handleRequest($request);	
 		
-		$data = "";
-		
-		
-		
-		
+
 		$em = $this->getDoctrine()->getManager("cruise");
 		$cruiseRepository = $em->getRepository('CruiseBundle:Cruise');
 		//$cruises = $cruiseRepository->findAll();
@@ -164,25 +156,14 @@ class CruiseController extends Controller
 		->andWhere('c.archives = 0')
 		->andWhere('c.forSale = 1')
 		->andWhere('c.dateStop > CURRENT_DATE()')
-		//->andWhere("m.name like '%бел%'")
 		;
 		
-
 		$qb->setMaxResults($countInPage);
 		$qb->setFirstResult($countInPage*$firstResult);		
-		
-		
-		
-		//->andWhere('mclass.id = :class')
-		//->setParameter("class", 1)
-		
-		
-		
 		
 		if ($form->isSubmitted() /*&& $form->isValid()*/) 
 		{
 			$data = $form->getData();
-		
 			// теплоходы
 			if(count($data['motorship']) > 0)
 			{
@@ -194,7 +175,6 @@ class CruiseController extends Controller
 			// класс теплохода
 			if(count($data['class']) > 0)
 			{
-			
 				$in = [];
 				foreach($data['class'] as $class)
 				{	$in[] = $class->getId();	}
@@ -209,53 +189,43 @@ class CruiseController extends Controller
 				$qb->andWhere("DATE_DIFF(c.dateStop ,c.dateStart )  <= $dmax - 1 ");
 			}
 			
-			dump($data);
-			
-			if(isset($data['sort']) && null != $data['sort'])
+			if(isset($data['sortable']) && null != $data['sortable'])
 			{
-				if($data['sort'] == '1')
+				if($data['sortable'] == '1')
 				{
 					$qb->orderBy('c.dateStart','ASC');
 				}
-				if($data['sort'] == '2')
+				if($data['sortable'] == '2')
 				{
 					$qb->orderBy('c.dateStart','DESC');
 				}
-				if($data['sort'] == '3')
+				if($data['sortable'] == '3')
 				{
 					$qb->orderBy('c.dateStart','ASC');
 					
 					// сделать сортировку по цене
 					
 				}
-				if($data['sort'] == '4')
+				if($data['sortable'] == '4')
 				{
 					$qb->orderBy('c.dateStart','ASC');
 					
 					// сделать сортировку по цене
 					
 				}
-				
 			}
 			else
 			{
 				$qb->orderBy('c.dateStart','ASC');
 			}
-			
 		}			
 
-		
-		
-
-		
-		/*
-		$cruises = $qb
-		->orderBy('c.dateStart','ASC')
-        ->getQuery()
-        ->getResult();
-		;*/
-		
-		$cruises = new Paginator($qb, $fetchJoinCollection = true);
+		    $paginator  = $this->get('knp_paginator');
+			$cruises = $paginator->paginate(
+				$qb, 
+				$request->query->getInt('page', 1)/*page number*/,
+				$countInPage 
+			);
 
 		
 		if(null != $request->query->get('ajax')) return new Response(count($cruises));
@@ -269,7 +239,7 @@ class CruiseController extends Controller
 			else
 			{
 				$cruise->freeCountRoom = $cruiseRoomStatusRepository->countFreeRoom($cruise->getId());
-				$this->get('memcache.default')->set('countFreeRoom'.$cruise->getId(),$cruise->freeCountRoom,0,60*10*1);
+				$this->get('memcache.default')->set('countFreeRoom'.$cruise->getId(),$cruise->freeCountRoom,0,60*60*1);  // час 
 			}
 			
 			$days = 1 + (strtotime($cruise->getDateStop()->format("Y-m-d")) - strtotime($cruise->getDateStart()->format("Y-m-d")))/86400;
@@ -279,7 +249,7 @@ class CruiseController extends Controller
 		
 		
 		
-		return ["cruises" => $cruises, "form"=> $form->createView(), "countInPage" => $countInPage, "firstResult" => $firstResult, 'request'=>$request];
+		return ["cruises" => $cruises, "form"=> $form->createView()];
 	}
 	
 	

@@ -1574,13 +1574,13 @@ h2 .ship-cat {
   width: 10px;
   border: 10px solid transparent;
 }
-.ship-cat.standart {
+.ship-cat.standard {
   background-color: #4688f1;
 }
-.ship-cat.standart:before {
+.ship-cat.standard:before {
   border-right: 6px solid #4688f1;
 }
-.ship-cat.standart:after {
+.ship-cat.standard:after {
   border-left: 6px solid #4688f1;
 }
 .ship-cat.comfort {

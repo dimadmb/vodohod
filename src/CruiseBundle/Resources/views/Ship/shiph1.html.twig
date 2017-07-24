@@ -1,0 +1,11 @@
+<h1 class="top-80">{{ship.name}}</h1>
+<div class="ship top-220">
+	<div class="ship-icon" style="background-image: url('images/captic.jpg');"></div><br>
+	<div>Капитан</div><br>
+	<div class="ship-name">Кистэнь Виталий Венедиктович</div>
+</div>
+
+{% if ship.motorshipClass is not null %}
+<div class="ship-cat {{ship.motorshipClass.code}}">{{ship.motorshipClass.name}}</div>
+{% endif %}
+

@@ -111,18 +111,16 @@
 						<div class="col-md-6 col-xs-12">
 							<label>Сортировка</label>
 							<div class="input-box">
-								{{ form_widget(form.sort, {'attr':{'class':'chosen-select'}} ) }}
+								{{ form_widget(form.sortable, {'attr':{'class':'chosen-select'}} ) }}
 							</div>
 						</div>
 						<div class="col-md-3 col-xs-6">
-							<div class="found-number">Найдено круизов: <span>{{cruises.count}}</span></div>
+							<div class="found-number">Найдено круизов: <span>{{cruises.getTotalItemCount}}</span></div>
 						</div>
 						<div class="col-md-3 col-xs-6">
-							<ul class="pager">			
-								{% for i in 1 .. (cruises.count/countInPage) | round(0,'ceil')  %}
-									<li><a href="{{app.request.requestUri}}{% if '?' in app.request.requestUri %}&{% else %}?{% endif %}p={{i-1}}" {% if (firstResult == (i-1)) %}class="active"{% endif %}>{{i}}</a></li>
-								{% endfor %}
-							</ul>
+						
+						{{ knp_pagination_render(cruises) }}
+						
 						</div>
 					</div>
 				</div>
