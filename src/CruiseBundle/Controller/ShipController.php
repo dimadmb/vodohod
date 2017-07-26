@@ -5,7 +5,10 @@ namespace CruiseBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
+
+//use CruiseBundle\Service\CruiseSearch;
 
 class ShipController extends Controller
 {
@@ -14,7 +17,7 @@ class ShipController extends Controller
 	 * @Route("/fleet/{shipcode}", name="fleet_ship" )	
 	 * @Template()
      */		
-	public function shipAction($shipcode)
+	public function shipAction($shipcode,Request $request)
 	{
 		$em = $this->getDoctrine()->getManager('cruise');
 
@@ -36,10 +39,13 @@ class ShipController extends Controller
 		
 		$ship->setProperties(explode(PHP_EOL,$ship->getProperties()));
 		$ship->setDescription(explode(PHP_EOL,$ship->getDescription()));
-		
+
+		$cruiseSearch = $this->get("cruise_search");
+		$cruises = $cruiseSearch->getCruisesAction(['motorship'=>[$ship]]);
 		$parameters = [];
 		$parameters['page'] = $page;
 		$parameters['ship'] = $ship;
+		$parameters['cruises'] = $cruises;
 		if("" != $page->getBannerImg())
 		{
 			$parameters['bannerImg'] = $page->getBannerImg();
@@ -49,7 +55,6 @@ class ShipController extends Controller
 			//$parameters['bannerHtml'] = $page->getBannerHtml(); // этот текст можно автоматизировать !!!
 			$parameters['bannerHtml'] = $this->renderView("CruiseBundle:Ship:shiph1.html.twig",['ship'=>$ship]);
 		}
-		
 		
 		return $parameters;		
 	}

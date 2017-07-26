@@ -67,6 +67,9 @@
 	</div>
 </div>
 
+
+{% include 'CruiseBundle:Cruise:cruise_table.html.twig'  with {'cruises':cruises} %}
+
 <div class="block decks-view">
 	<h2>СХЕМА ПАЛУБ ТЕПЛОХОДА</h2>
 	<img src="/images/{{page.fullUrl}}/decks.png" alt="Схема палуб">

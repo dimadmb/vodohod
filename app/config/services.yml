@@ -12,3 +12,7 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+
+    cruise_search:
+        class: CruiseBundle\Service\CruiseSearch
+        arguments: ["@doctrine","@knp_paginator","@memcache.default"]

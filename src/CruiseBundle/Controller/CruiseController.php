@@ -33,43 +33,11 @@ class CruiseController extends Controller
      */		
 	public function nearestCruisesAction($count = 5)
 	{
-		$em = $this->getDoctrine()->getManager("cruise");
-		$cruiseRepository = $em->getRepository('CruiseBundle:Cruise');
-		//$cruises = $cruiseRepository->findAll();
-		//$cruises = $cruiseRepository->findBy(["archives"=>0],["dateStart"=>"ASC"],5);
-		$qb = $em->createQueryBuilder();
-		$cruises = $qb
-		->select('c')
-        ->from('CruiseBundle:Cruise','c')
-		//->leftJoin('c.motorship', 'm')
-		
-		//->leftJoin('c.cruiseDays','ccd')
-		//->leftJoin('ccd.port','port')
-		
-        ->where('c.motorship IS NOT NULL')
-		->andWhere('c.archives = 0')
-		->andWhere('c.forSale = 1')
-		->andWhere('c.dateStart > CURRENT_DATE()')
-		//->andWhere("m.name like '%бел%'")
-		->setMaxResults($count)
-		->orderBy('c.dateStart','ASC')
-        ->getQuery()
-        ->getResult();
-		;	
-		
-		
-		foreach($cruises as $cruise)
-		{
-			$days = 1 + (strtotime($cruise->getDateStop()->format("Y-m-d")) - strtotime($cruise->getDateStart()->format("Y-m-d")))/86400;
-			$cruise->days = $days;
-		}
-		
-
+		$cruises = $this->get("cruise_search")->getCruisesAction(['dateStart'=> new \DateTime()],$count,1);
 		return ["cruises" => $cruises];
-		
 	}
 
-
+	
 	
 	/**
 	 * @Template()
@@ -80,10 +48,7 @@ class CruiseController extends Controller
 		$countInPage = 25;
 		$countInPage = $request->query->get('in_p') != null ? (int)$request->query->get('in_p') : $countInPage ;
 		$firstResult = $request->query->get('p') != null ? (int)$request->query->get('p') : 0;
-		
-		
-		
-		
+
 		$form = $this->get('form.factory')->createNamedBuilder(null,FormType::class,null, ['csrf_protection' => false,'validation_groups' => false])
 		
 				->add('motorship',EntityType::class, [
@@ -137,118 +102,15 @@ class CruiseController extends Controller
 				->getForm()
 			;
 
-			
 		$form->handleRequest($request);	
-		
-
-		$em = $this->getDoctrine()->getManager("cruise");
-		$cruiseRepository = $em->getRepository('CruiseBundle:Cruise');
-		//$cruises = $cruiseRepository->findAll();
-		//$cruises = $cruiseRepository->findBy(["archives"=>0],["dateStart"=>"ASC"],5);
-		$qb = $em->createQueryBuilder();
-		 $qb
-		->select('c,m')
-        ->from('CruiseBundle:Cruise','c')
-		->leftJoin('c.motorship', 'm')
-		
-        ->where('c.motorship IS NOT NULL')
-		
-		->andWhere('c.archives = 0')
-		->andWhere('c.forSale = 1')
-		->andWhere('c.dateStop > CURRENT_DATE()')
-		;
-		
-		$qb->setMaxResults($countInPage);
-		$qb->setFirstResult($countInPage*$firstResult);		
-		
+				
+		$data = [];
 		if ($form->isSubmitted() /*&& $form->isValid()*/) 
 		{
 			$data = $form->getData();
-			// теплоходы
-			if(count($data['motorship']) > 0)
-			{
-				$in = [];
-				foreach($data['motorship'] as $motorship)
-				{	$in[] = $motorship->getId();	}
-				$qb->andWhere('c.motorship in ('.implode(",",$in).')');
-			}
-			// класс теплохода
-			if(count($data['class']) > 0)
-			{
-				$in = [];
-				foreach($data['class'] as $class)
-				{	$in[] = $class->getId();	}
-				$qb->andWhere('m.motorshipClass in ('.implode(",",$in).')');
-			}
-			// дней в круизе
-			if(null != $data['days'])
-			{
-				$days = $data['days'];
-				list($dmin,$dmax) = explode("-",$days);
-				$qb->andWhere("DATE_DIFF(c.dateStop ,c.dateStart )  >= $dmin - 1 ");
-				$qb->andWhere("DATE_DIFF(c.dateStop ,c.dateStart )  <= $dmax - 1 ");
-			}
-			
-			if(isset($data['sortable']) && null != $data['sortable'])
-			{
-				if($data['sortable'] == '1')
-				{
-					$qb->orderBy('c.dateStart','ASC');
-				}
-				if($data['sortable'] == '2')
-				{
-					$qb->orderBy('c.dateStart','DESC');
-				}
-				if($data['sortable'] == '3')
-				{
-					$qb->orderBy('c.dateStart','ASC');
-					
-					// сделать сортировку по цене
-					
-				}
-				if($data['sortable'] == '4')
-				{
-					$qb->orderBy('c.dateStart','ASC');
-					
-					// сделать сортировку по цене
-					
-				}
-			}
-			else
-			{
-				$qb->orderBy('c.dateStart','ASC');
-			}
-		}			
 
-		    $paginator  = $this->get('knp_paginator');
-			$cruises = $paginator->paginate(
-				$qb, 
-				$request->query->getInt('page', 1)/*page number*/,
-				$countInPage 
-			);
-
-		
-		if(null != $request->query->get('ajax')) return new Response(count($cruises));
-				
-		$cruiseRoomStatusRepository = $em->getRepository('CruiseBundle:CruiseRoomStatus');
-		foreach($cruises as $cruise)
-		{
-
-			if(false !==  $countFreeRoom = $this->get('memcache.default')->get('countFreeRoom'.$cruise->getId()) )
-			{$cruise->freeCountRoom = $countFreeRoom;}
-			else
-			{
-				$cruise->freeCountRoom = $cruiseRoomStatusRepository->countFreeRoom($cruise->getId());
-				$this->get('memcache.default')->set('countFreeRoom'.$cruise->getId(),$cruise->freeCountRoom,0,60*60*1);  // час 
-			}
-			
-			$days = 1 + (strtotime($cruise->getDateStop()->format("Y-m-d")) - strtotime($cruise->getDateStart()->format("Y-m-d")))/86400;
-			$cruise->days = $days;			
-		}
-		
-		
-		
-		
+		}	
+		$cruises = $this->get("cruise_search")->getCruisesAction($data,$countInPage,$firstResult);
 		return ["cruises" => $cruises, "form"=> $form->createView()];
 	}
 	

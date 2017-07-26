@@ -1,0 +1,43 @@
+{% for cruise in cruises %}
+	
+<div class="block cruise-row">
+	<div>
+		<div class="cruise-days-cont">
+			<div class="cruise-days">
+				{{cruise.days}}  {{cruise.days | numeral('день','дня','дней') }}
+			</div>
+		</div>
+		<div class="cruise-options-cont">
+			<div class="cruise-options-switch"></div>
+			<div class="cruise-options">
+				<div class="cruise-option">
+					ТАРИФ ПЕНСИОННЫЙ
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="cruise-table">
+		<div class="descr-block">
+			<div class="cruise-header">
+				<a href="{{ path('cruise_detail',{'id':cruise.id}) }}">{{ cruise.name }}</a>
+			</div>
+			<div class="cities">
+				Волгоград, Саратов, Самара, Казань, Чебоксары, Козьмодемьянск, Нижний Новгород, Макарьево, Мариинский Посад
+			</div>
+		</div>
+<div class="cruise-date">{{cruise.dateStart | localizeddate('full', 'none', null, null, 'dd') }}<span>{{cruise.dateStart | localizeddate('full', 'none', null, null, 'eee') }}<br />{{cruise.dateStart | localizeddate('full', 'none', null, null, 'MMM') }}</span> – {{cruise.dateStop | localizeddate('full', 'none', null, null, 'dd') }}<span>{{cruise.dateStop | localizeddate('full', 'none', null, null, 'eee') }}<br />{{cruise.dateStop | localizeddate('full', 'none', null, null, 'MMM') }}</span>
+							</div>
+		<div class="ship-block">
+			<div class="criuse-ship-header">
+				<a href="#">{{ cruise.motorship.name }}</a>
+			</div>
+			<div class="criuse-ship-places">
+				<span class="places-number">{{cruise.freeCountRoom}}</span>  {{cruise.freeCountRoom | numeral('свободное место','свободных места','свободных мест') }}
+			</div>
+		</div>
+		<div class="price">
+			37 800 <span>руб.</span>
+		</div>
+	</div>
+</div>
+{% endfor %}
