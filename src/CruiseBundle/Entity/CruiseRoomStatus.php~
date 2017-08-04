@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * CruiseRoomStatus
  *
- * @ORM\Table(name="cruise_room_status2")
+ * @ORM\Table(name="cruise_room_status")
  * @ORM\Entity(repositoryClass="CruiseBundle\Repository\CruiseRoomStatusRepository")
  */
 class CruiseRoomStatus

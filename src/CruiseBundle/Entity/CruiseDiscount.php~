@@ -21,18 +21,15 @@ class CruiseDiscount
      */
     private $id;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="cruise", type="integer")
-     */
-    private $cruise;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="discount", type="integer")
-     */
+	/**
+	 * @ORM\ManyToOne(targetEntity="Cruise", inversedBy="cruiseDiscount")
+	 */
+	private $cruise;
+
+	/**
+	 * @ORM\ManyToOne(targetEntity="Discount", fetch="EAGER"))
+	 */
     private $discount;
 
     /**
@@ -43,62 +40,16 @@ class CruiseDiscount
     private $value;
 
 
+
+
     /**
      * Get id
      *
-     * @return int
+     * @return integer
      */
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set cruise
-     *
-     * @param integer $cruise
-     *
-     * @return CruiseDiscount
-     */
-    public function setCruise($cruise)
-    {
-        $this->cruise = $cruise;
-
-        return $this;
-    }
-
-    /**
-     * Get cruise
-     *
-     * @return int
-     */
-    public function getCruise()
-    {
-        return $this->cruise;
-    }
-
-    /**
-     * Set discount
-     *
-     * @param integer $discount
-     *
-     * @return CruiseDiscount
-     */
-    public function setDiscount($discount)
-    {
-        $this->discount = $discount;
-
-        return $this;
-    }
-
-    /**
-     * Get discount
-     *
-     * @return int
-     */
-    public function getDiscount()
-    {
-        return $this->discount;
     }
 
     /**
@@ -123,5 +74,53 @@ class CruiseDiscount
     public function getValue()
     {
         return $this->value;
+    }
+
+    /**
+     * Set cruise
+     *
+     * @param \CruiseBundle\Entity\Cruise $cruise
+     *
+     * @return CruiseDiscount
+     */
+    public function setCruise(\CruiseBundle\Entity\Cruise $cruise = null)
+    {
+        $this->cruise = $cruise;
+
+        return $this;
+    }
+
+    /**
+     * Get cruise
+     *
+     * @return \CruiseBundle\Entity\Cruise
+     */
+    public function getCruise()
+    {
+        return $this->cruise;
+    }
+
+    /**
+     * Set discount
+     *
+     * @param \CruiseBundle\Entity\Discount $discount
+     *
+     * @return CruiseDiscount
+     */
+    public function setDiscount(\CruiseBundle\Entity\Discount $discount = null)
+    {
+        $this->discount = $discount;
+
+        return $this;
+    }
+
+    /**
+     * Get discount
+     *
+     * @return \CruiseBundle\Entity\Discount
+     */
+    public function getDiscount()
+    {
+        return $this->discount;
     }
 }

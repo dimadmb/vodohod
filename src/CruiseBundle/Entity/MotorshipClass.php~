@@ -182,4 +182,28 @@ class MotorshipClass
     {
         return $this->motorship;
     }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     *
+     * @return MotorshipClass
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
 }

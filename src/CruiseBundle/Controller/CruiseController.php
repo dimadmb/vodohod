@@ -33,7 +33,7 @@ class CruiseController extends Controller
      */		
 	public function nearestCruisesAction($count = 5)
 	{
-		$cruises = $this->get("cruise_search")->getCruisesAction(['dateStart'=> new \DateTime()],$count,1);
+		$cruises = $this->get("cruise_service")->searchAction(['dateStart'=> new \DateTime()],$count,1);
 		return ["cruises" => $cruises];
 	}
 
@@ -110,7 +110,7 @@ class CruiseController extends Controller
 			$data = $form->getData();
 
 		}	
-		$cruises = $this->get("cruise_search")->getCruisesAction($data,$countInPage,$firstResult);
+		$cruises = $this->get("cruise_service")->searchAction($data,$countInPage,$firstResult);
 		return ["cruises" => $cruises, "form"=> $form->createView()];
 	}
 	
@@ -121,50 +121,120 @@ class CruiseController extends Controller
      */		
 	public function cruisedetailAction($id)
 	{
+		$dump = [];
+		
+		$dump['init'] = round(memory_get_usage()/1024/1024,2);
+		
 		$em = $this->getDoctrine()->getManager("cruise");
 		$cruiseRepository = $em->getRepository('CruiseBundle:Cruise');
 
 		$cruiseRoomStatusRepository = $em->getRepository('CruiseBundle:CruiseRoomStatus');
-		$freeRooms = $cruiseRoomStatusRepository->getFreeRooms($id)	;	
+		$freeRooms = $cruiseRoomStatusRepository->getFreeRooms($id)	;
+		
+		
 		
 		$q = "
 			SELECT c,m,r
 			FROM CruiseBundle:Cruise c
 			LEFT JOIN c.motorship m
 			LEFT JOIN m.room r
+			LEFT JOIN r.roomType rt
 			WHERE c.motorship IS NOT NULL
 			AND c.archives = 0
 			AND c.id = :id
-
+			
+			ORDER BY rt.priority ASC, r.number ASC
 		";
 		/// добавить в селект выборку по свободной каюте
-		
 		// каюты можно грузить отдельно, чтоб не напрягать память дублями круиза и теплохода
-		
 		$query = $em->createQuery($q);
 		$query->setParameter('id', $id);
-		
 		$cruise = $query->getOneOrNullResult();
 		
-		//$cruise->freeCountRoom = $cruiseRoomStatusRepository->countFreeRoom($cruise->getId()); 
 		
+		$q = "SELECT p,rt,mr
+			FROM CruiseBundle:Price p
+			LEFT JOIN p.roomType rt
+			LEFT JOIN rt.motorshipRooms mr 
+			WHERE p.year = ".$cruise->getDateStart()->format("Y")."
+			AND p.motorship = ".$cruise->getmotorship()->getId()."
+			AND p.active = 1
+			AND p.additional = 0
+			AND p.cruise IS NULL 
+			
+			AND mr.motorship = ".$cruise->getmotorship()->getId()."
+
+			ORDER BY p.deck DESC , rt.priority ASC, p.roomPlacing ASC
+		";
+		$query = $em->createQuery($q);
+		$prices = $query->getResult();
+
+		
+		$days = 1 + (strtotime($cruise->getDateStop()->format("Y-m-d")) - strtotime($cruise->getDateStart()->format("Y-m-d")))/86400;
+		$cruise->days = $days;
+			
+		// установим priceDays 
+		if($cruise->getPriceDays() == 0)
+		{
+			// получим регион обслуживания
+			if($cruise->getRegion() != null)
+			{
+				$region = $cruise->getRegion();
+			}
+			else
+			{
+				$region = $cruise->getMotorship()->getRegion();
+			}
+			$cruise->priceDaysFinal = $cruise->days - 1 + (int)$region->getPriceTypeTariff() ;  
+			
+		}
+		else 
+		{
+			$cruise->priceDaysFinal = $cruise->getPriceDays();
+		}
+		$decks = [];
+		$priceMin = null;
+		foreach($prices as $price)
+		{
+			$priceMin = (null == $priceMin || $price->getValue() < $priceMin) ? $price->getValue() : $priceMin;
+			$arr_rooms = [];
+			foreach($cruise->getMotorship()->getRoom() as $room)
+			{
+				if($room->getDeck() == $price->getDeck() && $room->getRoomType() == $price->getRoomType())
+				{
+					$arr_rooms[] = $room;
+				}
+			}
+			$price->rooms = $arr_rooms; // список кают в данном прайсе.ы
+			
+			$decks[$price->getDeck()->getName()][] = $price;
+			
+		}
+		$cruise->setPriceMin(ceil($cruise->priceDaysFinal * $cruise->getPriceKoef() * $priceMin/100)*100);
+		$em->persist($cruise);
+		$em->flush();
+		
+		$freeRoomsArray = [];
 		foreach($freeRooms as $room)
 		{
 			$freeRoomsArray[$room["room_id"]] = $room["final_reserve"];
 		}
-		
 		foreach($cruise->getMotorship()->getRoom() as $room)
 		{
 			$room->setStatus(  isset($freeRoomsArray[$room->getId()]) ? $freeRoomsArray[$room->getId()] : 1   );
-			
-			// разбить каюты по палубам и по типам (скорее по ценам )
 		}
 		
-		/// вывести список кают на круиз
-		$rooms = [];
+		
+		$cruise->tariffs = $this->get('cruise_service')->getTariffs($cruise);
 		
 		
-		return ["cruise" => $cruise, "rooms" => $rooms];
+		$dump['return'] = round(memory_get_usage()/1024/1024,2);
+
+		
+
+		
+		
+		return ["cruise" => $cruise, 'dump'=>$dump, 'freeRoomsArray'=>$freeRoomsArray , 'decks' => $decks,  "prices"=>$prices, 'bannerImg'=>'cruisetopbg.jpg', 'bannerHtml' => $this->renderView("CruiseBundle:Cruise:cruiseh1.html.twig",["cruise" => $cruise])];
 	}
 }
 

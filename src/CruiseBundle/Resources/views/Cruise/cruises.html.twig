@@ -2,7 +2,7 @@
 
 
 {% block body %}
-
+{#{dump(cruises)}#}
 
 <div class="container">	
 {{ form_start(form) }}
@@ -127,6 +127,9 @@
 			</div>
 		</div>
 	{{ form_end(form) }}
+	
+	
+	{#{dump(cruises)}#}
 
 	{% include 'CruiseBundle:Cruise:cruise_table.html.twig'  with {'cruises':cruises} %}
 

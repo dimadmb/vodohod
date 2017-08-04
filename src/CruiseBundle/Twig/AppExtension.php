@@ -8,6 +8,7 @@ class AppExtension extends \Twig_Extension
     {
         return array(
             new \Twig_SimpleFilter('numeral', array($this, 'numeralFilter')),
+            new \Twig_SimpleFilter('ports', array($this, 'portsFilter')),
         );
     }
 
@@ -24,12 +25,14 @@ class AppExtension extends \Twig_Extension
 		return $ok;
     }
 	
+    public function portsFilter($port_name)
+    {
+		$port_name=str_replace("Городец (Галанино)", "Городец", $port_name);
+		$port_name=str_replace("Москва (Северный речной вокзал)", "Москва (СРВ)", $port_name);
+		$port_name=str_replace("Санкт-Петербург (причал \"Уткина заводь\")", "Санкт-Петербург (причал «Уткина заводь»)", $port_name);
+		return $port_name;
+    }
 	
-	
-	public function getName()
-	{
-		return "numeral";
-	}	
 	
 	
 }

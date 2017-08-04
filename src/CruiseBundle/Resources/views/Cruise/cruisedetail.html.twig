@@ -1,10 +1,156 @@
 {% extends 'base.html.twig' %}
 
+{% block callback %}
+<div id="callback-form">
+	<div class="cbf-container">
+		<h2>ЗАКАЗ КРУИЗА</h2>
+		<div class="closeform"><i class="icon icon-cancel"></i></div>
+		<form class="formcontact">
+			<h4>{{cruise.name}}</h4>
+			<div class="cruise-days">{{cruise.days}} {{cruise.days | numeral('день','дня','дней') }}</div>
+			<div class="dates">{{cruise.dateStart | localizeddate('full', 'none', null, null, 'dd') }}<span>{{cruise.dateStart | localizeddate('full', 'none', null, null, 'eee') }}<br />{{cruise.dateStart | localizeddate('full', 'none', null, null, 'MMM') }}</span> – {{cruise.dateStop | localizeddate('full', 'none', null, null, 'dd') }}<span>{{cruise.dateStop | localizeddate('full', 'none', null, null, 'eee') }}<br />{{cruise.dateStop | localizeddate('full', 'none', null, null, 'MMM') }}</span></div>
+			<div class="cabin-name"></div>
+			<div class="tickets"></div>
+			<div class="cabin-cost"><span class="summ"></span> руб.</div>
+			<input type="hidden" id="ih-cabin">
+			<input type="hidden" id="ih-tickets">
+			<input type="hidden" id="ih-cost">
+			<input type="text" name="name" placeholder="Ваше имя"><br />
+			<input type="text" name="email" placeholder="E-mail"><br />
+			<input type="text" name="phone" placeholder="Ваш телефон"><br />
+			<button class="btn btn-blue">ОТПРАВИТЬ ЗАКАЗ</button>
+		</form>
+	</div>
+</div>
+{% endblock %}
 
 {% block body %}
-	{{dump(cruise)}}
-	{{dump(rooms)}}
-	
-	
 
+
+<section class="content">
+<div class="container">	
+
+{{dump(dump)}}
+
+
+
+	<div class="row">
+
+
+
+				
+
+	{% for nameDeck,prices in decks %}
+	<h2>{{nameDeck}} палуба</h2>
+
+		{% for price in prices %}
+
+			
+		<div class="block cabin-row">
+			<div class="cabin-table">
+				<div class="cabin-photo">
+				
+					{#{ render(controller('BaseBundle:Motorship:getRoomImages')) }#}
+				
+
+				</div>
+				<div class="descr-block">
+					<div class="cabin-header">{% if price.name != "" %} {{price.name}} {% else %}  {{price.roomType.comment}} {% endif %}</div>
+					<div class="cabin-places">
+						Свободно: 
+						
+				{% for room in price.rooms %}
+				{% if room.status == 0 %}
+				{% if (price.roomPlacing.places == room.roomType.placesMax) or ((room.roomType.placesMax >= price.roomPlacing.places) and room.smaller == 1) %}
+					
+					<span class="places-number"   >{{room.number}}</span> 
+					
+				{% endif %}	
+				{% endif %}	
+				{% endfor %}
+					</div>
+					<div class="cabin-descr">
+						{% for motorshipRoom in price.roomType.motorshipRooms %}
+							<div>{{motorshipRoom.comment | nl2br}}</div>
+						{% endfor %}
+						<hr>
+						<div class="cabin-form">
+							<div class="price-variants">
+							
+			{% for tariff in cruise.tariffs %}
+				{% if(tariff.isTariffPrivilege <= price.privilege) %}
+				{% if(tariff.isTariffChildren <= price.children) %}
+			
+
+				
+								<div class="price-var-li">
+									<div class="var-name">{{tariff.name}}</div>
+									<select>
+										{% for i in 0..price.roomPlacing.places %}
+										
+											<option value="{{i}}">{{i}}</option>
+										
+										{% endfor %}
+									</select>
+									<div class="var-price"><i class="icon icon-cancel"></i>{{((price.value * cruise.priceKoef * cruise.priceDaysFinal  ) | round(-2,"ceil") * (100 + tariff.value)/100 ) | number_format(0, ' ', ' ') }} руб.</div>
+									<input type="hidden" class="varprice" value="{{((price.value * cruise.priceKoef * cruise.priceDaysFinal  ) | round(-2,'ceil') * (100 + tariff.value)/100 ) | number_format(0, '', '') }}">
+									<div style="clear: both;"></div>
+								</div>
+												
+				
+				{% endif %}
+				{% endif %}
+			{% endfor %}
+						
+
+								
+								
+
+							</div>
+							<div class="price-result"><span class="summ">0</span> руб.</div>
+							<div class="price-but">
+								<a class="btn btn-blue order-button" 
+									data-cname="1-местная каюта (1-местное размещение в 2-местной двухъярусной каюте)" 
+									data-tickets="не выбрано" 
+									data-ccost="0">
+										ЗАКАЗАТЬ
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				
+				
+			{% for tariff in cruise.tariffs %}
+				{% if(tariff.isTariffPrivilege <= price.privilege) %}
+				{% if(tariff.isTariffChildren <= price.children) %}
+			
+				<div class="cabin-price">
+					<div class="price">{{((price.value * cruise.priceKoef * cruise.priceDaysFinal  ) | round(-2,"ceil") * (100 + tariff.value)/100 ) | number_format(0, ' ', ' ') }} <span>руб.</span></div>
+					<div>{{tariff.name}}</div>
+				</div>
+				
+				{% endif %}
+				{% endif %}
+			{% endfor %}
+
+				
+				
+				<div class="expand-lnk"></div>
+				<div class="close-lnk hidden"><i class="icon icon-cancel"></i>свернуть</div>
+				<div style="clear: both;"></div>
+			</div>
+		</div>			
+			
+		{% endfor %}
+		
+	{% endfor %}	
+
+		
+	{#{dump(cruise)}}
+	{{dump(prices)}#}		
+	</div>
+</div>
+</section>
 {% endblock %}

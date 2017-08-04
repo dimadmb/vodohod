@@ -48,4 +48,3 @@ page:
     defaults: { _controller: BaseBundle:Page:page }
     requirements:
         url: .*$
-    methods: [GET]

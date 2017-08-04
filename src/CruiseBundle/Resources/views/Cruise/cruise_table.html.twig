@@ -22,10 +22,14 @@
 				<a href="{{ path('cruise_detail',{'id':cruise.id}) }}">{{ cruise.name }}</a>
 			</div>
 			<div class="cities">
-				Волгоград, Саратов, Самара, Казань, Чебоксары, Козьмодемьянск, Нижний Новгород, Макарьево, Мариинский Посад
+				{% for port in cruise.portsPlus %}
+					{% if loop.first %} + {% endif %}{{port | ports}}{% if not loop.last %}, {% endif %}
+				{% endfor %}
 			</div>
 		</div>
 <div class="cruise-date">{{cruise.dateStart | localizeddate('full', 'none', null, null, 'dd') }}<span>{{cruise.dateStart | localizeddate('full', 'none', null, null, 'eee') }}<br />{{cruise.dateStart | localizeddate('full', 'none', null, null, 'MMM') }}</span> – {{cruise.dateStop | localizeddate('full', 'none', null, null, 'dd') }}<span>{{cruise.dateStop | localizeddate('full', 'none', null, null, 'eee') }}<br />{{cruise.dateStop | localizeddate('full', 'none', null, null, 'MMM') }}</span>
+<span style="text-align:center;">{{cruise.dateStart | date('Y')}}</span>
+
 							</div>
 		<div class="ship-block">
 			<div class="criuse-ship-header">
@@ -36,7 +40,7 @@
 			</div>
 		</div>
 		<div class="price">
-			37 800 <span>руб.</span>
+			{{cruise.priceMin | number_format(0, ' ', ' ')}} <span>руб.</span>
 		</div>
 	</div>
 </div>

@@ -1295,10 +1295,10 @@ section.content .block.bottom-pager {
 /*---------- Cruises ----------*/
 section.content .block.cabin-row {
   padding: 0;
-  height: 125px;
+  min-height: 125px;
 }
 section.content .block.cabin-row.expanded {
-  height: 315px;
+  /*height: 315px;*/
 }
 .cabin-row .cabin-table {
   width: 100%;

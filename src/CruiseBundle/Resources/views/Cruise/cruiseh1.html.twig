@@ -1,0 +1,10 @@
+<h1 class="top-80">{{cruise.name}}</h1>
+<p class="cruise-dates">{{cruise.dateStart | localizeddate('full', 'none', null, null, 'dd MMMM') }}  - {{cruise.dateStop | localizeddate('full', 'none', null, null, 'dd MMMM Y') }}</p>
+
+
+<div class="ship">
+	<div class="ship-icon" style="background-image: url('{{('/images/fleet/'~cruise.motorship.code~'/main.jpg') | imagine_filter('thumb_70')}}');"></div><br>
+	<div>Теплоход</div><br>
+	<div class="ship-name">{{cruise.motorship.name}}</div>
+</div>
+

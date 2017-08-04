@@ -17,7 +17,7 @@ class CruiseRoomStatusRepository extends \Doctrine\ORM\EntityRepository
 		
 		$sql = "
 		SELECT COUNT(*) `count_free`
-		FROM `cruise_room_status2` `crs_2`
+		FROM `cruise_room_status` `crs_2`
 		INNER JOIN (
 		SELECT
 			`crs_1`.`id` AS `id`,
@@ -27,7 +27,7 @@ class CruiseRoomStatusRepository extends \Doctrine\ORM\EntityRepository
 			`cruise`.`date_stop` `cruise_stop`,
 			`cruise`.`id` `cruise_id`
 		   FROM
-			`cruise_room_status2` `crs_1`
+			`cruise_room_status` `crs_1`
 			LEFT JOIN `cruise` ON `cruise`.`id` = $cruise
 			INNER JOIN `room` ON `room`.`motorship_id` = `cruise`.`motorship_id` AND `crs_1`.`room_id` = `room`.`id`
 		   WHERE
@@ -37,9 +37,9 @@ class CruiseRoomStatusRepository extends \Doctrine\ORM\EntityRepository
 		) AS `date_start_max`	ON `date_start_max`.`date` = `crs_2`.`date` AND `date_start_max`.`room_id` = `crs_2`.`room_id`
 		LEFT JOIN `room_status` ON `room_status`.`id` = `crs_2`.`status_id`
 		LEFT JOIN (
-			SELECT `cruise_room_status2`.`id` `id` , `cruise_room_status2`.`date` `date`, `room_status`.`reserve` `reserve`
-			FROM `cruise_room_status2` 
-			LEFT JOIN `room_status` ON `room_status`.`id` = `cruise_room_status2`.`status_id`
+			SELECT `cruise_room_status`.`id` `id` , `cruise_room_status`.`date` `date`, `room_status`.`reserve` `reserve`
+			FROM `cruise_room_status` 
+			LEFT JOIN `room_status` ON `room_status`.`id` = `cruise_room_status`.`status_id`
 		) `crs_3`  ON `crs_3`.`id` = `date_start_max`.`id`  AND ( `crs_3`.`date` BETWEEN `date_start_max`.`cruise_start` AND `date_start_max`.`cruise_stop`  )
 		LEFT JOIN `cruise_room_block` ON `crs_2`.`room_id` = `cruise_room_block`.`room_id` AND `cruise_room_block`.`cruise_id` = `date_start_max`.`cruise_id`
 		WHERE  `cruise_room_block`.`id` IS NULL
@@ -62,7 +62,7 @@ class CruiseRoomStatusRepository extends \Doctrine\ORM\EntityRepository
 
 		IF(`cruise_room_block`.`id` IS NULL , IF(`crs_3`.`reserve` IS NULL, `room_status`.`reserve`, 1 ) , 1) as `final_reserve`
 
-		FROM `cruise_room_status2` `crs_2`
+		FROM `cruise_room_status` `crs_2`
 
 		INNER JOIN (
 
@@ -74,7 +74,7 @@ class CruiseRoomStatusRepository extends \Doctrine\ORM\EntityRepository
 			`cruise`.`date_stop` `cruise_stop`,
 			`cruise`.`id` `cruise_id`
 		   FROM
-			`cruise_room_status2` `crs_1`
+			`cruise_room_status` `crs_1`
 			LEFT JOIN `cruise` ON `cruise`.`id` = $cruise
 			
 			INNER JOIN `room` ON `room`.`motorship_id` = `cruise`.`motorship_id` AND `crs_1`.`room_id` = `room`.`id`
@@ -90,9 +90,9 @@ class CruiseRoomStatusRepository extends \Doctrine\ORM\EntityRepository
 		LEFT JOIN `room_status` ON `room_status`.`id` = `crs_2`.`status_id`
 
 		LEFT JOIN (
-			SELECT `cruise_room_status2`.`id` `id` , `cruise_room_status2`.`date` `date`, `room_status`.`reserve` `reserve`
-			FROM `cruise_room_status2` 
-			LEFT JOIN `room_status` ON `room_status`.`id` = `cruise_room_status2`.`status_id`
+			SELECT `cruise_room_status`.`id` `id` , `cruise_room_status`.`date` `date`, `room_status`.`reserve` `reserve`
+			FROM `cruise_room_status` 
+			LEFT JOIN `room_status` ON `room_status`.`id` = `cruise_room_status`.`status_id`
 		) `crs_3`  ON `crs_3`.`id` = `date_start_max`.`id`  AND ( `crs_3`.`date` BETWEEN `date_start_max`.`cruise_start` AND `date_start_max`.`cruise_stop`  )
 
 

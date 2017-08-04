@@ -30,7 +30,7 @@ framework:
         engines: ['twig']
     default_locale:  "%locale%"
 #    trusted_hosts:   ~
-    trusted_proxies: ~
+#    trusted_proxies: ~
     session:
         # http://symfony.com/doc/current/reference/configuration/framework.html#handler-id
         handler_id:  session.handler.native_file
@@ -66,7 +66,7 @@ twig:
     form_themes: ['bootstrap_3_layout.html.twig']
     globals: 
         upload_path: "/files/"
-        upload_web_path: "/web/files/%"
+        upload_web_path: "/web/files/"
 
 services:
     twig.extension.intl:
@@ -162,10 +162,17 @@ liip_imagine :
         my_thumb_photo_gal:
             filters :
                 thumbnail  : { size : [255, 255] }
-                #relative_resize: { heighten: 200 }
+            post_processors:
+                jpegoptim: { strip_all: true, max: 70, progressive: true }    
+
         my_thumb_165 :
             filters :
                 thumbnail  : { size : [165, 165] }
+                #relative_resize: { heighten: 200 }
+
+        thumb_70 :
+            filters :
+                thumbnail  : { size : [70, 70] }
                 #relative_resize: { heighten: 200 }
 
         show : 
@@ -190,7 +197,7 @@ ivory_ck_editor:
 fm_elfinder:
     instances:
         default:
-            locale: %locale% # defaults to current request locale
+            locale: "%locale%" # defaults to current request locale
             editor: ckeditor # other options are tinymce, tinymce4, fm_tinymce, form, simple, custom
             #editor_template: custom template for your editor # default null
             #path_prefix: / # for setting custom assets path prefix, useful for non vhost configurations, i.e. http://127.0.0.1/mysite/
@@ -240,7 +247,6 @@ lsw_memcache:
             servers:
               - { host: "127.0.0.1", tcp_port: 11211 }
 
-lsw_memcache:
     doctrine:
         metadata_cache:
             pool: default

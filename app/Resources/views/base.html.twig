@@ -43,6 +43,7 @@
 		{% block admin %}
 		{% endblock %}
 {#{dump()}#}	
+{% block callback %}{% endblock %}
 <header {% if bannerImg is defined %}class="banhead" style="background-image: url({{ (upload_path~bannerImg) | imagine_filter('banner') }});" {% endif %}>
 <div id="headbar" class="hidden-sm hidden-xs">
 	<div class="navbar navbar-default">
@@ -139,6 +140,12 @@
 <section class="content {% block mainPage %}{% endblock %}">
 	{% block body %}{% endblock %}
 </section>
+<div class="lbox-mask">
+	<div class="lbox-container">
+		<iframe src="/back.html" frameborder="0" allowfullscreen></iframe>
+		<div class="closeform"><i class="icon icon-cancel"></i>	</div>
+	</div>
+</div>
 <footer>
 	<div class="container">
 		<div class="row foot-srch-mob">

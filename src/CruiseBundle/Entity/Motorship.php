@@ -59,7 +59,7 @@ class Motorship
     /**
      * @var string
      *
-     * @ORM\Column(name="code", type="string", length=255)
+     * @ORM\Column(name="code", type="string", length=255, nullable=true)
      */
     private $code;
 
@@ -80,21 +80,21 @@ class Motorship
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="text")
+     * @ORM\Column(name="description", type="text", nullable=true)
      */
     private $description;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="properties", type="text")
+     * @ORM\Column(name="properties", type="text", nullable=true)
      */
     private $properties;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="url", type="string", length=255)
+     * @ORM\Column(name="url", type="string", length=255, nullable=true)
      */
     private $url;
 
@@ -108,21 +108,21 @@ class Motorship
     /**
      * @var string
      *
-     * @ORM\Column(name="parameter", type="string", length=255)
+     * @ORM\Column(name="parameter", type="string", length=255, nullable=true)
      */
     private $parameter;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="rooms_description", type="string", length=255)
+     * @ORM\Column(name="rooms_description", type="string", length=255, nullable=true)
      */
     private $roomsDescription;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="manager", type="string", length=255)
+     * @ORM\Column(name="manager", type="string", length=255, nullable=true)
      */
     private $manager;
 	

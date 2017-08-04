@@ -20,9 +20,9 @@
 							<div class="descr-block">
 								<div class="row">
 									<div class="col-xs-6 hidden-md cities">
-									{% for days in cruise.cruiseDays %}
-										{{days.port.name}}, 
-									{% endfor %}
+										{% for port in cruise.portsPlus %}
+											{% if loop.first %} + {% endif %}{{port | ports}}{% if not loop.last %}, {% endif %}
+										{% endfor %}
 									</div>
 									<div class="col-lg-6 col-md-12 col-sm-6 col-xs-6 price">33 100 <span>руб.</span></div>
 								</div>
@@ -35,6 +35,6 @@
 					
 
 					<div class="button-holder">
-						<a class="btn btn-contred" href="#">ЕЩЁ</a>
+						<a class="btn btn-contred" href="{{path('cruises')}}">ЕЩЁ</a>
 					</div>
 				</div>

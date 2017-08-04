@@ -40,8 +40,8 @@ class ShipController extends Controller
 		$ship->setProperties(explode(PHP_EOL,$ship->getProperties()));
 		$ship->setDescription(explode(PHP_EOL,$ship->getDescription()));
 
-		$cruiseSearch = $this->get("cruise_search");
-		$cruises = $cruiseSearch->getCruisesAction(['motorship'=>[$ship]]);
+		$cruiseSearch = $this->get("cruise_service");
+		$cruises = $cruiseSearch->searchAction(['motorship'=>[$ship]]);
 		$parameters = [];
 		$parameters['page'] = $page;
 		$parameters['ship'] = $ship;

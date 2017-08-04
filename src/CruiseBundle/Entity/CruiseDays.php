@@ -65,6 +65,12 @@ class CruiseDays
     private $comment;
 
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="code_1s", type="string", length=50, nullable=true)
+     */
+    private $code1s;
 
     /**
      * Get id
@@ -242,5 +248,29 @@ class CruiseDays
     public function getPort()
     {
         return $this->port;
+    }
+
+    /**
+     * Set code1s
+     *
+     * @param string $code1s
+     *
+     * @return CruiseDays
+     */
+    public function setCode1s($code1s)
+    {
+        $this->code1s = $code1s;
+
+        return $this;
+    }
+
+    /**
+     * Get code1s
+     *
+     * @return string
+     */
+    public function getCode1s()
+    {
+        return $this->code1s;
     }
 }

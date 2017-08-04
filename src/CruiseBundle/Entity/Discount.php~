@@ -56,54 +56,6 @@ class Discount
      */
     private $valueFromCruise;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="isTariff", type="boolean")
-     */
-    private $isTariff;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="isTariffChildren", type="boolean")
-     */
-    private $isTariffChildren;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="isTariffPrivilege", type="boolean")
-     */
-    private $isTariffPrivilege;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="isTariffWithoutPlace", type="boolean")
-     */
-    private $isTariffWithoutPlace;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="withoutFatername", type="boolean")
-     */
-    private $withoutFatername;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="tariffPrice", type="decimal", precision=10, scale=2)
-     */
-    private $tariffPrice;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="tariffFactor", type="integer")
-     */
-    private $tariffFactor;
 
     /**
      * @var int
@@ -182,6 +134,14 @@ class Discount
      */
     private $forAgency;
 
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="ageLimit", type="integer", nullable=true)
+     */
+    private $ageLimit;	
+	
     /**
      * @var int
      *
@@ -189,12 +149,6 @@ class Discount
      */
     private $placesLimit;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="calculationType", type="integer")
-     */
-    private $calculationType;
 
     /**
      * @var bool
@@ -210,11 +164,19 @@ class Discount
      */
     private $forAgenciesFromList;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="code_1s", type="string", length=50)
+     */
+    private $code1s;
+
+
 
     /**
      * Get id
      *
-     * @return int
+     * @return integer
      */
     public function getId()
     {
@@ -262,7 +224,7 @@ class Discount
     /**
      * Get validation
      *
-     * @return bool
+     * @return boolean
      */
     public function getValidation()
     {
@@ -334,179 +296,11 @@ class Discount
     /**
      * Get valueFromCruise
      *
-     * @return bool
+     * @return boolean
      */
     public function getValueFromCruise()
     {
         return $this->valueFromCruise;
-    }
-
-    /**
-     * Set isTariff
-     *
-     * @param boolean $isTariff
-     *
-     * @return Discount
-     */
-    public function setIsTariff($isTariff)
-    {
-        $this->isTariff = $isTariff;
-
-        return $this;
-    }
-
-    /**
-     * Get isTariff
-     *
-     * @return bool
-     */
-    public function getIsTariff()
-    {
-        return $this->isTariff;
-    }
-
-    /**
-     * Set isTariffChildren
-     *
-     * @param boolean $isTariffChildren
-     *
-     * @return Discount
-     */
-    public function setIsTariffChildren($isTariffChildren)
-    {
-        $this->isTariffChildren = $isTariffChildren;
-
-        return $this;
-    }
-
-    /**
-     * Get isTariffChildren
-     *
-     * @return bool
-     */
-    public function getIsTariffChildren()
-    {
-        return $this->isTariffChildren;
-    }
-
-    /**
-     * Set isTariffPrivilege
-     *
-     * @param boolean $isTariffPrivilege
-     *
-     * @return Discount
-     */
-    public function setIsTariffPrivilege($isTariffPrivilege)
-    {
-        $this->isTariffPrivilege = $isTariffPrivilege;
-
-        return $this;
-    }
-
-    /**
-     * Get isTariffPrivilege
-     *
-     * @return bool
-     */
-    public function getIsTariffPrivilege()
-    {
-        return $this->isTariffPrivilege;
-    }
-
-    /**
-     * Set isTariffWithoutPlace
-     *
-     * @param boolean $isTariffWithoutPlace
-     *
-     * @return Discount
-     */
-    public function setIsTariffWithoutPlace($isTariffWithoutPlace)
-    {
-        $this->isTariffWithoutPlace = $isTariffWithoutPlace;
-
-        return $this;
-    }
-
-    /**
-     * Get isTariffWithoutPlace
-     *
-     * @return bool
-     */
-    public function getIsTariffWithoutPlace()
-    {
-        return $this->isTariffWithoutPlace;
-    }
-
-    /**
-     * Set withoutFatername
-     *
-     * @param boolean $withoutFatername
-     *
-     * @return Discount
-     */
-    public function setWithoutFatername($withoutFatername)
-    {
-        $this->withoutFatername = $withoutFatername;
-
-        return $this;
-    }
-
-    /**
-     * Get withoutFatername
-     *
-     * @return bool
-     */
-    public function getWithoutFatername()
-    {
-        return $this->withoutFatername;
-    }
-
-    /**
-     * Set tariffPrice
-     *
-     * @param string $tariffPrice
-     *
-     * @return Discount
-     */
-    public function setTariffPrice($tariffPrice)
-    {
-        $this->tariffPrice = $tariffPrice;
-
-        return $this;
-    }
-
-    /**
-     * Get tariffPrice
-     *
-     * @return string
-     */
-    public function getTariffPrice()
-    {
-        return $this->tariffPrice;
-    }
-
-    /**
-     * Set tariffFactor
-     *
-     * @param integer $tariffFactor
-     *
-     * @return Discount
-     */
-    public function setTariffFactor($tariffFactor)
-    {
-        $this->tariffFactor = $tariffFactor;
-
-        return $this;
-    }
-
-    /**
-     * Get tariffFactor
-     *
-     * @return int
-     */
-    public function getTariffFactor()
-    {
-        return $this->tariffFactor;
     }
 
     /**
@@ -526,7 +320,7 @@ class Discount
     /**
      * Get type
      *
-     * @return int
+     * @return integer
      */
     public function getType()
     {
@@ -550,7 +344,7 @@ class Discount
     /**
      * Get hideInTables
      *
-     * @return bool
+     * @return boolean
      */
     public function getHideInTables()
     {
@@ -574,7 +368,7 @@ class Discount
     /**
      * Get plus
      *
-     * @return bool
+     * @return boolean
      */
     public function getPlus()
     {
@@ -670,7 +464,7 @@ class Discount
     /**
      * Get active
      *
-     * @return bool
+     * @return boolean
      */
     public function getActive()
     {
@@ -694,7 +488,7 @@ class Discount
     /**
      * Get toAllCruises
      *
-     * @return bool
+     * @return boolean
      */
     public function getToAllCruises()
     {
@@ -766,7 +560,7 @@ class Discount
     /**
      * Get forAgency
      *
-     * @return bool
+     * @return boolean
      */
     public function getForAgency()
     {
@@ -790,35 +584,11 @@ class Discount
     /**
      * Get placesLimit
      *
-     * @return int
+     * @return integer
      */
     public function getPlacesLimit()
     {
         return $this->placesLimit;
-    }
-
-    /**
-     * Set calculationType
-     *
-     * @param integer $calculationType
-     *
-     * @return Discount
-     */
-    public function setCalculationType($calculationType)
-    {
-        $this->calculationType = $calculationType;
-
-        return $this;
-    }
-
-    /**
-     * Get calculationType
-     *
-     * @return int
-     */
-    public function getCalculationType()
-    {
-        return $this->calculationType;
     }
 
     /**
@@ -838,7 +608,7 @@ class Discount
     /**
      * Get isInShop
      *
-     * @return bool
+     * @return boolean
      */
     public function getIsInShop()
     {
@@ -862,10 +632,58 @@ class Discount
     /**
      * Get forAgenciesFromList
      *
-     * @return bool
+     * @return boolean
      */
     public function getForAgenciesFromList()
     {
         return $this->forAgenciesFromList;
+    }
+
+    /**
+     * Set ageLimit
+     *
+     * @param integer $ageLimit
+     *
+     * @return Discount
+     */
+    public function setAgeLimit($ageLimit)
+    {
+        $this->ageLimit = $ageLimit;
+
+        return $this;
+    }
+
+    /**
+     * Get ageLimit
+     *
+     * @return integer
+     */
+    public function getAgeLimit()
+    {
+        return $this->ageLimit;
+    }
+
+    /**
+     * Set code1s
+     *
+     * @param string $code1s
+     *
+     * @return Discount
+     */
+    public function setCode1s($code1s)
+    {
+        $this->code1s = $code1s;
+
+        return $this;
+    }
+
+    /**
+     * Get code1s
+     *
+     * @return string
+     */
+    public function getCode1s()
+    {
+        return $this->code1s;
     }
 }

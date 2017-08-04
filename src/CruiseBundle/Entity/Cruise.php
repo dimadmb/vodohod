@@ -25,7 +25,7 @@ class Cruise
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     private $name;
 
@@ -175,6 +175,17 @@ class Cruise
 	 * @ORM\OneToMany(targetEntity="Price", mappedBy="cruise")
 	 */
 	private $price;
+	
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="CruiseTariff", mappedBy="cruise")
+	 */
+	private $cruiseTariff;	
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="CruiseDiscount", mappedBy="cruise")
+	 */
+	private $cruiseDiscount;
 	
 	
 	public function __construct()
@@ -910,5 +921,73 @@ class Cruise
     public function getPrice()
     {
         return $this->price;
+    }
+
+    /**
+     * Add cruiseTariff
+     *
+     * @param \CruiseBundle\Entity\CruiseTariff $cruiseTariff
+     *
+     * @return Cruise
+     */
+    public function addCruiseTariff(\CruiseBundle\Entity\CruiseTariff $cruiseTariff)
+    {
+        $this->cruiseTariff[] = $cruiseTariff;
+
+        return $this;
+    }
+
+    /**
+     * Remove cruiseTariff
+     *
+     * @param \CruiseBundle\Entity\CruiseTariff $cruiseTariff
+     */
+    public function removeCruiseTariff(\CruiseBundle\Entity\CruiseTariff $cruiseTariff)
+    {
+        $this->cruiseTariff->removeElement($cruiseTariff);
+    }
+
+    /**
+     * Get cruiseTariff
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCruiseTariff()
+    {
+        return $this->cruiseTariff;
+    }
+
+    /**
+     * Add cruiseDiscount
+     *
+     * @param \CruiseBundle\Entity\CruiseDiscount $cruiseDiscount
+     *
+     * @return Cruise
+     */
+    public function addCruiseDiscount(\CruiseBundle\Entity\CruiseDiscount $cruiseDiscount)
+    {
+        $this->cruiseDiscount[] = $cruiseDiscount;
+
+        return $this;
+    }
+
+    /**
+     * Remove cruiseDiscount
+     *
+     * @param \CruiseBundle\Entity\CruiseDiscount $cruiseDiscount
+     */
+    public function removeCruiseDiscount(\CruiseBundle\Entity\CruiseDiscount $cruiseDiscount)
+    {
+        $this->cruiseDiscount->removeElement($cruiseDiscount);
+    }
+
+    /**
+     * Get cruiseDiscount
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCruiseDiscount()
+    {
+        return $this->cruiseDiscount;
     }
 }

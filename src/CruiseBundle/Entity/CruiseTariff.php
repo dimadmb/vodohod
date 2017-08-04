@@ -1,0 +1,122 @@
+<?php
+
+namespace CruiseBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * CruiseTariff
+ *
+ * @ORM\Table(name="cruise_tariff")
+ * @ORM\Entity(repositoryClass="CruiseBundle\Repository\CruiseTariffRepository")
+ */
+class CruiseTariff
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+	/**
+	 * @ORM\ManyToOne(targetEntity="Cruise", inversedBy="cruiseTariff")
+	 */
+	private $cruise;
+
+	/**
+	 * @ORM\ManyToOne(targetEntity="Tariff", inversedBy="cruiseTariff", fetch="EAGER")
+	 */
+    private $tariff;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="value", type="decimal", precision=10, scale=2)
+     */
+    private $value;	
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set value
+     *
+     * @param string $value
+     *
+     * @return CruiseTariff
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get value
+     *
+     * @return string
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * Set cruise
+     *
+     * @param \CruiseBundle\Entity\Cruise $cruise
+     *
+     * @return CruiseTariff
+     */
+    public function setCruise(\CruiseBundle\Entity\Cruise $cruise = null)
+    {
+        $this->cruise = $cruise;
+
+        return $this;
+    }
+
+    /**
+     * Get cruise
+     *
+     * @return \CruiseBundle\Entity\Cruise
+     */
+    public function getCruise()
+    {
+        return $this->cruise;
+    }
+
+    /**
+     * Set tariff
+     *
+     * @param \CruiseBundle\Entity\Tariff $tariff
+     *
+     * @return CruiseTariff
+     */
+    public function setTariff(\CruiseBundle\Entity\Tariff $tariff = null)
+    {
+        $this->tariff = $tariff;
+
+        return $this;
+    }
+
+    /**
+     * Get tariff
+     *
+     * @return \CruiseBundle\Entity\Tariff
+     */
+    public function getTariff()
+    {
+        return $this->tariff;
+    }
+}
