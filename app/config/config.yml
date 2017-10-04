@@ -179,6 +179,8 @@ liip_imagine :
             filters : 
                 #relative_resize: { heighten: 800 }
                 downscale: { max: [1024, 1024] }
+            post_processors:
+                jpegoptim: { strip_all: true, max: 70, progressive: true } 
 
 ivory_ck_editor: 
     default_config:  default

@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+{{dump()}}
+
+{% for item in basket %}
+		<div class="contract-item">
+			<div class="row">
+				<div class="col-md-2 col-sm-3">
+					<div class="blue"><a href="{{path('fleet_ship',{'shipcode':item.cruise.motorship.code})}}">{{item.cruise.motorship.name}}</a></div>
+					
+				</div>
+				<div class="col-md-7 col-sm-6 center-block">
+					<div class="blue"><a href="{{path('cruise_detail',{'id':item.cruise.id})}}">{{item.cruise.name}}</a></div>
+					{{item.cruise.dateStart | localizeddate('full', 'none', null, null, 'dd MMMM (eee)') }} -
+					{{item.cruise.dateStop | localizeddate('full', 'none', null, null, 'dd MMMM (eee) Y') }} 
+				</div>
+				<div class="col-sm-3">
+					
+					
+					
+					<div class="blue">Каюта {{item.room.number}} {{item.room.deck.name}} палуба</div>
+					
+					{% if item.price.name != "" %}
+						<div>{{item.price.name}}</div>
+					{% else %}
+						<div>{{item.room.roomType.name}}</div>
+					{% endif %}
+					
+					
+					
+					<div>{{item.price.roomPlacing.name}}</div>
+					
+					
+				</div>
+			</div>
+		</div>
+{% endfor %}
+
+{% endblock %}
+

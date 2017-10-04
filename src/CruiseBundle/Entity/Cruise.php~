@@ -800,6 +800,14 @@ class Cruise
 
         return $this;
     }
+	
+	
+    public function setCruiseDay($cruiseDays)
+    {
+        $this->cruiseDays = $cruiseDays;
+
+        return $this;
+    }
 
     /**
      * Remove cruiseDay
@@ -921,5 +929,73 @@ class Cruise
     public function getPrice()
     {
         return $this->price;
+    }
+
+    /**
+     * Add cruiseTariff
+     *
+     * @param \CruiseBundle\Entity\CruiseTariff $cruiseTariff
+     *
+     * @return Cruise
+     */
+    public function addCruiseTariff(\CruiseBundle\Entity\CruiseTariff $cruiseTariff)
+    {
+        $this->cruiseTariff[] = $cruiseTariff;
+
+        return $this;
+    }
+
+    /**
+     * Remove cruiseTariff
+     *
+     * @param \CruiseBundle\Entity\CruiseTariff $cruiseTariff
+     */
+    public function removeCruiseTariff(\CruiseBundle\Entity\CruiseTariff $cruiseTariff)
+    {
+        $this->cruiseTariff->removeElement($cruiseTariff);
+    }
+
+    /**
+     * Get cruiseTariff
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCruiseTariff()
+    {
+        return $this->cruiseTariff;
+    }
+
+    /**
+     * Add cruiseDiscount
+     *
+     * @param \CruiseBundle\Entity\CruiseDiscount $cruiseDiscount
+     *
+     * @return Cruise
+     */
+    public function addCruiseDiscount(\CruiseBundle\Entity\CruiseDiscount $cruiseDiscount)
+    {
+        $this->cruiseDiscount[] = $cruiseDiscount;
+
+        return $this;
+    }
+
+    /**
+     * Remove cruiseDiscount
+     *
+     * @param \CruiseBundle\Entity\CruiseDiscount $cruiseDiscount
+     */
+    public function removeCruiseDiscount(\CruiseBundle\Entity\CruiseDiscount $cruiseDiscount)
+    {
+        $this->cruiseDiscount->removeElement($cruiseDiscount);
+    }
+
+    /**
+     * Get cruiseDiscount
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCruiseDiscount()
+    {
+        return $this->cruiseDiscount;
     }
 }

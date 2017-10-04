@@ -108,8 +108,6 @@ class Page
 
     /**
      * @ORM\Column(type="string")
-     *
-     * @Assert\NotBlank(message="Please, upload the product brochure as a PDF file.")
      * @Assert\File(mimeTypes={ "image/jpeg" })
      */
 
@@ -635,5 +633,29 @@ class Page
     public function getBannerHtml()
     {
         return $this->bannerHtml;
+    }
+
+    /**
+     * Set bannerImg
+     *
+     * @param string $bannerImg
+     *
+     * @return Page
+     */
+    public function setBannerImg($bannerImg)
+    {
+        $this->bannerImg = $bannerImg;
+
+        return $this;
+    }
+
+    /**
+     * Get bannerImg
+     *
+     * @return string
+     */
+    public function getBannerImg()
+    {
+        return $this->bannerImg;
     }
 }

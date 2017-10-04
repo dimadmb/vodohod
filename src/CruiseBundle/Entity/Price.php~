@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Price
  *
- * @ORM\Table(name="price")
+ * @ORM\Table(name="price", uniqueConstraints={@ORM\UniqueConstraint(name="price_uniq", columns={"active","additional","persons", "year","motorship_id","deck_id","room_type_id","room_placing_id","cruise_id"})})
  * @ORM\Entity(repositoryClass="CruiseBundle\Repository\PriceRepository")
  */
 class Price

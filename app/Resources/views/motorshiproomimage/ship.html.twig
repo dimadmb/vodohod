@@ -1,0 +1,43 @@
+{% extends 'baseadmin.html.twig' %}
+
+{% block body %}
+
+	{#{dump()}#}
+	
+	
+	{% for price in prices %}
+	<div class="row" style="border:1px solid #ccc; border-radius:5px;">
+		{% set mri = null %}
+		{% for motorshipRoomImage in motorshipRoomImages  %}
+			{% if( (motorshipRoomImage.deck == price.deck.id) and (motorshipRoomImage.roomType == price.roomType.id) ) %}
+				{% set mri = motorshipRoomImage %}
+				
+			{% endif %}
+		{% endfor %}
+		
+		{% if(mri != null) %}
+			{#{dump(mri)}#}
+			
+			<p>
+				<a href="{{path('motorshiproomimage_edit',{'id':mri.id})}}"> Редактировать  {{price.deck.name}} {{price.roomType.name}}  </a>
+			</p>
+			
+			{% for image in mri.file %}
+			<a class="photo" title="{{ image.title }}" href="{{ (upload_path~image.filename) | imagine_filter('show') }}" rel="group" >
+				<img class="img-responsive" style="float:left; margin-right:5px;" alt="{{ image.title }}" title="{{ image.title }}" src="{{ (upload_path~image.filename) | imagine_filter('thumb_70') }}" />
+			</a>
+			
+			{% endfor %}
+			
+		{% else %}	
+			{#{dump(price)}#}
+			{# предложить создать эту сущность #}
+			
+			<a href="{{path('motorshiproomimage_new',{'ship_code':ship.code, 'deck':price.deck.id, 'roomType': price.roomType.id})}}"> Создать тип каюты {{price.deck.name}} {{price.roomType.name}}  </a><br>
+			
+		{% endif %}
+	</div>
+	{% endfor %}
+	
+
+{% endblock %}

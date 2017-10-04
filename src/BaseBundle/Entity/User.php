@@ -105,4 +105,52 @@ class User extends BaseUser
     {
         return $this->lastName;
     }
+
+    /**
+     * Set fatherName
+     *
+     * @param string $fatherName
+     *
+     * @return User
+     */
+    public function setFatherName($fatherName)
+    {
+        $this->fatherName = $fatherName;
+
+        return $this;
+    }
+
+    /**
+     * Get fatherName
+     *
+     * @return string
+     */
+    public function getFatherName()
+    {
+        return $this->fatherName;
+    }
+
+    /**
+     * Set emailNew
+     *
+     * @param string $emailNew
+     *
+     * @return User
+     */
+    public function setEmailNew($emailNew)
+    {
+        $this->emailNew = $emailNew;
+
+        return $this;
+    }
+
+    /**
+     * Get emailNew
+     *
+     * @return string
+     */
+    public function getEmailNew()
+    {
+        return $this->emailNew;
+    }
 }

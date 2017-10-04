@@ -36,6 +36,9 @@ class ShipController extends Controller
 		}
 
 		$page = $this->getDoctrine()->getRepository('BaseBundle:Page')->findOneByFullUrl("fleet/".$shipcode);
+		if ($page == null) {
+			throw $this->createNotFoundException("Страница не найдена.");
+		}		
 		
 		$ship->setProperties(explode(PHP_EOL,$ship->getProperties()));
 		$ship->setDescription(explode(PHP_EOL,$ship->getDescription()));

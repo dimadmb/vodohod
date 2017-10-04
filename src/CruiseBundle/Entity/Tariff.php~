@@ -189,6 +189,12 @@ class Tariff
      * @ORM\Column(name="code_1s", type="string", length=50)
      */
     private $code1s;
+	
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="CruiseTariff", mappedBy="tariff")
+	 */
+	private $cruiseTariff;
 
 
 

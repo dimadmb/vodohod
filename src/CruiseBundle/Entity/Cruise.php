@@ -800,6 +800,14 @@ class Cruise
 
         return $this;
     }
+	
+	
+    public function setCruiseDay($cruiseDays)
+    {
+        $this->cruiseDays = $cruiseDays;
+
+        return $this;
+    }
 
     /**
      * Remove cruiseDay

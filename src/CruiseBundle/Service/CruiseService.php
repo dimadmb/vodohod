@@ -22,53 +22,266 @@ class CruiseService
         $this->knp_paginator = $knp_paginator;
         $this->memcacheDefault = $memcacheDefault;
     }
-	
 
-	public function getTariffs($cruise, $all = false)
+	public function getProgramm($cruise)
 	{
 		$em = $this->doctrine->getManager('cruise');
-		$tariffs = [];
-		$tariffs = $em->getRepository('CruiseBundle:Tariff')->findBy([
-										'toAllCruises'=>true,
-										'active'=> true,
-										'hideInTables' => false,
-										'isInShop' => true
-										]);
+		
+		$cruiseTimeStamp = strtotime($cruise->getDateStart()->format("Y-m-d"));
+		
+		$cruise->cruiseTimeStamp = $cruiseTimeStamp;
 		
 		
 		$qb = $em->createQueryBuilder();
 		$qb
-		->select('ct,t')
-		->from('CruiseBundle:Tariff','t')
-		->leftJoin('t.cruiseTariff', 'ct')
-		->where('t.active = 1')
-		->andWhere('ct.cruise = :cruise')
+		->select('d,p')
+		->from('CruiseBundle:CruiseDays','d')
+		->leftJoin('d.port','p')
+		->where('d.cruise = :cruise')
 		->setParameter('cruise', $cruise)
 		;
+		$qb->orderBy('d.day','ASC');
+		$qb->addOrderBy('d.timeStart','ASC');
 		
-		if(!$all) $qb->andWhere('t.hideInTables = 0');
+		$days = $qb->getQuery()->getResult();
+		
+		$programms = [];
+		foreach($days as $day)
+		{
+			//	вывод экскурсии
+			$excursion_name = "";
+			if(trim($day->getComment())!= "")
+			{
+				$excursion_name = $day->getComment();
+			} 
+			else 
+			{
+				if(null !==  $day->getExcursion()){
+					$excursion_name=$day->getExcursion()->getDescription();
+				} else {
+					$excursion_name="Программа уточняется.";
+				}
+			}
+			
+			 
+			// обработать  $excursion_name
+			
+		$excursion_name= "<p>".implode("</p><p>", (explode("\n",$excursion_name)))	. "</p>";
+			
+		//$excursion_name=str_replace("\n", "</p><p>", $excursion_name);
+		
+		$excursion_name=str_replace("Круиз+", "Круиз +", $excursion_name);
+		$excursion_name=str_replace(" Круиз +:", " «Круиз +»:", $excursion_name);
+		$excursion_name=str_replace(" \"Круиз +:\"", " «Круиз +»:", $excursion_name);
+		
+		$excursion_name=str_replace("\"шведский стол\"", "«шведский стол»", $excursion_name);
+		
+		$excursion_name=str_replace(" - ", " &mdash; ", $excursion_name);
+		$excursion_name=str_replace(" – ", " &mdash; ", $excursion_name);
+		
+		if( mb_strpos($excursion_name, "Дополнитель")>-1){
+			
+			if(mb_strpos($excursion_name, "Дополнительная услуга")>-1 or mb_strpos($excursion_name, "Дополнительная экскурсия")>-1 or mb_strpos($excursion_name, "Дополнительные экскурсии")>-1 or mb_strpos($excursion_name, "Дополнительная программа:")>-1){
+				
 
-		$qb->orderBy('t.priority','ASC');
+				$was_line=true;
+				//$excursion_name=str_replace("Дополнительная услуга:", "</p><div style=\"color:red;\"><p><strong>Дополнительная услуга:</strong>", $excursion_name."</div>");
+				//$excursion_name=str_replace("Дополнительная экскурсия:", "</p><div style=\"color:#365f91;\"><p><strong>Дополнительная экскурсия:</strong>", $excursion_name."</div>");
+				//$excursion_name=str_replace("Дополнительные экскурсии:", "</p><div style=\"color:red;\"><p><strong>Дополнительные экскурсии:</strong>", $excursion_name."</div>");
+				//$excursion_name=str_replace("Дополнительные экскурсии.", "</p><div style=\"color:red;\"><p><strong>Дополнительные экскурсии.</strong>", $excursion_name."</div>");
+				//$excursion_name=str_replace("Дополнительная экскурсия ", "</p><div style=\"color:red;\"><p><strong>Дополнительная экскурсия</strong> ", $excursion_name."</div>");
+				//$excursion_name=str_replace("Дополнительные экскурсии ", "</p><div style=\"color:red;\"><p><strong>Дополнительные экскурсии</strong> ", $excursion_name."</div>");
+				//$excursion_name=str_replace("Дополнительные программы:", "</p><div style=\"color:red;\"><p><strong>Дополнительные программы:</strong> ", $excursion_name."</div>");
+				//$excursion_name=str_replace("Дополнительная программа:", "</p><div style=\"color:red;\"><p><strong>Дополнительная программа:</strong> ", $excursion_name."</div>");
+			}
+			$excursion_name=str_replace("Дополнительная программа «Круиз +»:", ($was_line ? "" : "</p><p style=\"color:red;\">")."<strong>Дополнительная программа «Круиз +»:</strong>", $excursion_name);
+			if(mb_strpos($excursion_name, "«Круиз +»")>-1){
+				$excursion_name=str_replace("Основная программа:", "</p><p>Основная программа:", $excursion_name);
+			}
+			//$excursion_name=ereg_replace("Дополнительн", "Дополнительн", $excursion_name.$to_link."</div>");
+		}
+		//$excursion_name=str_replace("<p>&nbsp;</p>", "", $excursion_name);
 		
-		$cruiseTariffs = $qb->getQuery()->getResult();		
+		$excursion_name=str_replace("\" ", "» ", $excursion_name);
+		$excursion_name=str_replace("(\"", "(«", $excursion_name);
+		$excursion_name=str_replace(" \"", " «", $excursion_name);
+		$excursion_name=str_replace("\".", "».", $excursion_name);
+		$excursion_name=str_replace("\",", "»,", $excursion_name);
+		$excursion_name=str_replace("\")", "»)", $excursion_name);
+		$excursion_name=str_replace("¶", "</p></p>", $excursion_name);
+		$excursion_name=str_replace("еленая ", "елёная ", $excursion_name);
+		$excursion_name=str_replace("Зелёная стоянка", "«Зелёная стоянка»", $excursion_name);
+		$excursion_name=str_replace("\"Зелёная стоянка\"", "«Зелёная стоянка»", $excursion_name);
+		$excursion_name=str_replace("зелёная стоянка", "«зелёная стоянка»", $excursion_name);
+		$excursion_name=str_replace("««", "«", $excursion_name);
+		$excursion_name=str_replace("»»", "»", $excursion_name);
+		$excursion_name=str_replace("сухой паек", "сухой паёк", $excursion_name);			
+			
+			
+			
+			$day->finalDescription = $excursion_name;
+						
+			
+			$datetime = new \DateTime();
+			$datetime->setTimestamp($day->getTimeStart()->getTimestamp() + $cruiseTimeStamp + 10800 + ($day->getDay()-1)*86400 );
+			$day->setTimeStart($datetime);
+			
+		}
 		
-		// можно взять тарифф и приклеить слева cruiseTriff 
 		
-		//SELECT * FROM `tariff` 
-		//right outer join `cruise_tariff` on `cruise_tariff`.`tariff_id` = `tariff`.`id` 
-		//WHERE  `cruise_tariff`.`cruise_id` = 3533
-		
-		// тогда получим на выходе список тарифов 
-		
-		// не забыть про условия отбора 
-		
-		
-		
-		return array_merge($tariffs,$cruiseTariffs);
+		return $days;
 	}
 
+	public function getTariffs($cruise, $hide = false)
+	{
+		$sql = "
+			SELECT t
+			FROM CruiseBundle:Tariff t
+			LEFT JOIN t.cruiseTariff ct
+			WHERE t.hideInTables = ".(int)$hide."
+			AND   t.active = 1	
+			AND   (
+						(
+								  t.toAllCruises = 1 
+							AND   t.isInShop = 1
+						) 
+						OR
+						(
+							ct.cruise = ".$cruise->getId()."
+						)
+				  )
+		";
+		$query = $em->createQuery($sql);
+		return $query->getResult();
+	}
 
-	public function searchAction($search,$countInPage = 1000,$firstResult = 1)
+	public function getDiscounts($cruise)
+	{
+		$em = $this->doctrine->getManager('cruise');
+		$q = "SELECT d
+			FROM CruiseBundle:Discount d
+			WHERE d.toAllCruises = 1 
+			AND d.active = 1
+			AND d.hideInTables = 0 
+			AND d.isInShop = 1
+			AND (
+				(d.cruiseDateStart <= :cruiseDateStart	AND d.cruiseDateStop >= :cruiseDateStop) 
+				OR 
+				(d.cruiseDateStart = '000-00-00' AND (d.payingDateStart <= CURRENT_TIMESTAMP()	AND d.payingDateStop >= CURRENT_TIMESTAMP()))
+				)
+			ORDER BY d.priority
+		";
+		$query = $em->createQuery($q)
+		->setParameters([
+			'cruiseDateStart'=>$cruise->getDateStart(),
+			'cruiseDateStop'=>$cruise->getDateStop(),
+		]);
+
+		$discounts = $query->getResult();
+		
+		return $discounts;
+	}
+	
+	public function getPrices($cruise)
+	{
+		$em = $this->doctrine->getManager('cruise');
+		
+		$q = "SELECT p,rt,mr
+			FROM CruiseBundle:Price p
+			LEFT JOIN p.roomType rt
+			LEFT JOIN rt.motorshipRooms mr 
+			WHERE p.year = ".$cruise->getDateStart()->format("Y")."
+			AND p.motorship = ".$cruise->getmotorship()->getId()."
+			AND p.active = 1
+			AND p.additional = 0
+			AND p.cruise IS NULL 
+			".
+			"AND ( mr.motorship = ".$cruise->getmotorship()->getId()." OR mr.motorship IS NULL)
+			"."
+			ORDER BY p.deck DESC , rt.priority ASC, p.roomPlacing ASC
+		";
+		$query = $em->createQuery($q);
+		$prices = $query->getResult();
+			
+		$q = "SELECT p,rt,mr
+			FROM CruiseBundle:Price p
+			LEFT JOIN p.roomType rt
+			LEFT JOIN rt.motorshipRooms mr 
+			WHERE p.year = ".$cruise->getDateStart()->format("Y")."
+			AND p.motorship = ".$cruise->getmotorship()->getId()."
+			AND p.active = 1
+			AND p.additional = 0
+			AND p.cruise =  ".$cruise->getId()."
+			
+			AND ( mr.motorship = ".$cruise->getmotorship()->getId()." OR mr.motorship IS NULL)
+
+			ORDER BY p.deck DESC , rt.priority ASC, p.roomPlacing ASC
+		";
+		$query = $em->createQuery($q);
+		$prices_cruise = $query->getResult();	
+
+
+
+		$days = 1 + (strtotime($cruise->getDateStop()->format("Y-m-d")) - strtotime($cruise->getDateStart()->format("Y-m-d")))/86400;
+		$cruise->days = $days;
+		
+		// установим priceDays 
+		if($cruise->getPriceDays() == 0)
+		{
+			// получим регион обслуживания
+			if($cruise->getRegion() != null)
+			{
+				$region = $cruise->getRegion();
+			}
+			else
+			{
+				$region = $cruise->getMotorship()->getRegion();
+			}
+			$cruise->priceDaysFinal = $cruise->days - 1 + (int)$region->getPriceTypeTariff() ;  
+		}
+		else 
+		{
+			$cruise->priceDaysFinal = $cruise->getPriceDays();
+		}
+		
+		$koef = $cruise->priceDaysFinal * $cruise->getPriceKoef();
+		
+		foreach($prices as $price)
+		{
+			$price->price = (int)($price->getValue()*$koef);	
+			//print_r($price->getValue().'<hr style="border:1px solid #0f0;">');
+			
+			
+			
+			foreach($prices_cruise as $price_cruise)
+			{
+				if(
+				($price_cruise->getMotorship() == $price->getMotorship())  && 
+				($price_cruise->getDeck() == $price->getDeck())  && 
+				($price_cruise->getRoomType() == $price->getRoomType())  && 
+				($price_cruise->getRoomPlacing() == $price->getRoomPlacing())  && 
+				(true) 
+				)
+				{
+					$price->price = (int)($price_cruise->getValue());
+					//print_r($price->getValue().'<hr style="border:1px solid #f00;">');
+					
+				}
+				else
+				{
+
+					// $price->setValue($price->getValue()*$koef);	
+				}
+			}
+			
+			
+			//$price->setValue($price->getValue()*$koef);
+		}
+		
+		return $prices;
+	}
+
+	public function searchAction($search,$countInPage = 25,$firstResult = 1)
 	{
 		$request =  Request::createFromGlobals();
 		
@@ -202,37 +415,17 @@ class CruiseService
 			
 			if($cruise->getPriceMin() == 0 ) ///  Считаем минимальную цену, если нет
 			{
-				$prices = $em->getRepository('CruiseBundle:Price')->findBy([
-						"year"=>$cruise->getDateStart()->format("Y"),
-						"motorship"=>$cruise->getmotorship(),
-						"active"=>true,
-						"additional"=>false,
-						"cruise"=>null,
-						],["deck"=>"DESC"]);
-				// установим priceDays 
-				if($cruise->getPriceDays() == 0)
-				{
-					// получим регион обслуживания
-					if($cruise->getRegion() != null)
-					{
-						$region = $cruise->getRegion();
-					}
-					else
-					{
-						$region = $cruise->getMotorship()->getRegion();
-					}
-					$cruise->priceDaysFinal = $cruise->days - 1 + (int)$region->getPriceTypeTariff() ;  
-				}
-				else 
-				{
-					$cruise->priceDaysFinal = $cruise->getPriceDays();
-				}
+				
+				$prices = $this->getPrices($cruise);
+
+
 				$priceMin = null;
 				foreach($prices as $price)
 				{
-					$priceMin = (null == $priceMin || $price->getValue() < $priceMin) ? $price->getValue() : $priceMin;
+					$priceMin = (null == $priceMin || $price->price < $priceMin) ? $price->price : $priceMin;
 				}
-				$cruise->setPriceMin(ceil($cruise->priceDaysFinal * $cruise->getPriceKoef() * $priceMin/100)*100);
+				
+				$cruise->setPriceMin(ceil($priceMin/100)*100);
 				$em->persist($cruise);
 				$em->flush();				
 			}
@@ -243,5 +436,8 @@ class CruiseService
 
 		return 	$cruises ;
 	}
+	
+	
+	
 
 }

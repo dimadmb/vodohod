@@ -112,7 +112,10 @@ class ForumMessage
      */
     public function getBody()
     {
-        return $this->body;
+      
+		\Wkhooy\ObsceneCensorRus::filterText( $this->body ) ; 		
+		
+		return $this->body;
     }
 
     /**
@@ -136,7 +139,9 @@ class ForumMessage
      */
     public function getQuote()
     {
-        return $this->quote;
+        \Wkhooy\ObsceneCensorRus::filterText( $this->quote ) ; 		
+		
+		return $this->quote;
     }
 
     /**

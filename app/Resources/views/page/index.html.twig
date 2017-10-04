@@ -11,7 +11,7 @@
                   <span  class="name"> {{ page.name }} Адрес:  /{{ page.fullUrl }} </span>
 				   <a class="btn btn-success" href="{{ path('page_edit', { 'id': page.id }) }}">Редатировать</a> 
 				   <a class="btn btn-success" href="{{ path('page_new', { 'parent': page.id }) }}">Создать ребёнка</a> 
-				   <a class="btn btn-success" href="{{ path('page_delete', { 'id': page.id }) }}">Удалить</a> 
+				   <a class="btn btn-success confirm-del" href="{{ path('page_delete', { 'id': page.id }) }}">Удалить</a> 
 				   <a class="btn btn-success" href="{{ path('page', { 'url': page.fullUrl }) }}" target="_blank">Перейти на страницу</a> 
 
                 {% if page.children|length %}
@@ -52,7 +52,13 @@
 			$('ul[page-id='+id+']').toggle();
 			
 		})
-		$('ul ul').show();
+		$('.page-tree>ul>ul').show();
+		
+		$('a.confirm-del').click(function(){
+			conf = confirm("Вы действительно хотите удалить всё безвозвратно? Можно просто сделать страницу неакивной.");
+			return conf;
+		})
+		
 	})
 </script>
 

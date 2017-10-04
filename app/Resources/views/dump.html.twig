@@ -1,5 +1,10 @@
 {% extends 'baseadmin.html.twig' %}
 
 {% block body %}
+	
+	{% if dump is defined %}
 	{{dump(dump)}}
+	{% else %}
+	{{dump()}}
+	{% endif %}
 {% endblock %}

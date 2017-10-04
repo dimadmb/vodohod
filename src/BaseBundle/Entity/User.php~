@@ -30,7 +30,25 @@ class User extends BaseUser
      *
      * @ORM\Column(name="last_name", type="string", length=255, nullable=true)
      */
-    private $lastName;	
+    private $lastName;
+	
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="father_name", type="string", length=255, nullable=true)
+     */
+    private $fatherName;
+	
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="user_email_new", type="string", length=255, nullable=true)
+     */
+    private $emailNew;
+
+
+
+	
 
     public function __construct()
     {
@@ -86,5 +104,53 @@ class User extends BaseUser
     public function getLastName()
     {
         return $this->lastName;
+    }
+
+    /**
+     * Set fatherName
+     *
+     * @param string $fatherName
+     *
+     * @return User
+     */
+    public function setFatherName($fatherName)
+    {
+        $this->fatherName = $fatherName;
+
+        return $this;
+    }
+
+    /**
+     * Get fatherName
+     *
+     * @return string
+     */
+    public function getFatherName()
+    {
+        return $this->fatherName;
+    }
+
+    /**
+     * Set emailNew
+     *
+     * @param string $emailNew
+     *
+     * @return User
+     */
+    public function setEmailNew($emailNew)
+    {
+        $this->emailNew = $emailNew;
+
+        return $this;
+    }
+
+    /**
+     * Get emailNew
+     *
+     * @return string
+     */
+    public function getEmailNew()
+    {
+        return $this->emailNew;
     }
 }

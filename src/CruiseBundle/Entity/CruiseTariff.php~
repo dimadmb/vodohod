@@ -27,7 +27,7 @@ class CruiseTariff
 	private $cruise;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="Tariff", fetch="EAGER")
+	 * @ORM\ManyToOne(targetEntity="Tariff", inversedBy="cruiseTariff", fetch="EAGER")
 	 */
     private $tariff;
 

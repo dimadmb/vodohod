@@ -783,4 +783,45 @@ class Tariff
     {
         return $this->code1s;
     }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->cruiseTariff = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add cruiseTariff
+     *
+     * @param \CruiseBundle\Entity\CruiseTariff $cruiseTariff
+     *
+     * @return Tariff
+     */
+    public function addCruiseTariff(\CruiseBundle\Entity\CruiseTariff $cruiseTariff)
+    {
+        $this->cruiseTariff[] = $cruiseTariff;
+
+        return $this;
+    }
+
+    /**
+     * Remove cruiseTariff
+     *
+     * @param \CruiseBundle\Entity\CruiseTariff $cruiseTariff
+     */
+    public function removeCruiseTariff(\CruiseBundle\Entity\CruiseTariff $cruiseTariff)
+    {
+        $this->cruiseTariff->removeElement($cruiseTariff);
+    }
+
+    /**
+     * Get cruiseTariff
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCruiseTariff()
+    {
+        return $this->cruiseTariff;
+    }
 }

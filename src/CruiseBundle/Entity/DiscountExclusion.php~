@@ -1,0 +1,48 @@
+<?php
+
+namespace CruiseBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * DiscountExclusion
+ *
+ * @ORM\Table(name="discount_exclusion")
+ * @ORM\Entity(repositoryClass="CruiseBundle\Repository\DiscountExclusionRepository")
+ */
+class DiscountExclusion
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+	
+	
+	/**
+	* @ORM\ManyToOne(targetEntity="Discount")
+	*/
+    private $discount; 		
+	
+	/**
+	* @ORM\ManyToOne(targetEntity="Discount")
+	*/
+    private $discountExclusion; 	
+	
+	
+
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+}
+

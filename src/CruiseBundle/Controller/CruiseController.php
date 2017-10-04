@@ -22,9 +22,20 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class CruiseController extends Controller
 {
-	public function testAction($name = "")
+
+	/**
+	 * @Route("/cruisestest", name="cruisestest" )
+     */		
+	public function testAction()
 	{
-		return new Response("OKKKK ".$name);
+		
+		
+		$em_c=$this->getDoctrine()->getManager('cruise');
+		$dump = $em_c->getRepository("CruiseBundle:Cruise")->findAll();
+		
+		return $this->render('dump.html.twig',['dump'=>$dump]);
+		
+		return new Response("OKKKK ");
 	}
 	
 	
@@ -121,9 +132,7 @@ class CruiseController extends Controller
      */		
 	public function cruisedetailAction($id)
 	{
-		$dump = [];
-		
-		$dump['init'] = round(memory_get_usage()/1024/1024,2);
+		$em_base = $this->getDoctrine()->getManager();
 		
 		$em = $this->getDoctrine()->getManager("cruise");
 		$cruiseRepository = $em->getRepository('CruiseBundle:Cruise');
@@ -151,24 +160,13 @@ class CruiseController extends Controller
 		$query->setParameter('id', $id);
 		$cruise = $query->getOneOrNullResult();
 		
+		if(null == $cruise)
+		{
+			throw $this->createNotFoundException("Круиз не найден");
+		}
 		
-		$q = "SELECT p,rt,mr
-			FROM CruiseBundle:Price p
-			LEFT JOIN p.roomType rt
-			LEFT JOIN rt.motorshipRooms mr 
-			WHERE p.year = ".$cruise->getDateStart()->format("Y")."
-			AND p.motorship = ".$cruise->getmotorship()->getId()."
-			AND p.active = 1
-			AND p.additional = 0
-			AND p.cruise IS NULL 
-			
-			AND mr.motorship = ".$cruise->getmotorship()->getId()."
-
-			ORDER BY p.deck DESC , rt.priority ASC, p.roomPlacing ASC
-		";
-		$query = $em->createQuery($q);
-		$prices = $query->getResult();
-
+		$cruise->tariffs = $this->get('cruise_service')->getTariffs($cruise);
+		$prices = $this->get("cruise_service")->getPrices($cruise);
 		
 		$days = 1 + (strtotime($cruise->getDateStop()->format("Y-m-d")) - strtotime($cruise->getDateStart()->format("Y-m-d")))/86400;
 		$cruise->days = $days;
@@ -192,27 +190,6 @@ class CruiseController extends Controller
 		{
 			$cruise->priceDaysFinal = $cruise->getPriceDays();
 		}
-		$decks = [];
-		$priceMin = null;
-		foreach($prices as $price)
-		{
-			$priceMin = (null == $priceMin || $price->getValue() < $priceMin) ? $price->getValue() : $priceMin;
-			$arr_rooms = [];
-			foreach($cruise->getMotorship()->getRoom() as $room)
-			{
-				if($room->getDeck() == $price->getDeck() && $room->getRoomType() == $price->getRoomType())
-				{
-					$arr_rooms[] = $room;
-				}
-			}
-			$price->rooms = $arr_rooms; // список кают в данном прайсе.ы
-			
-			$decks[$price->getDeck()->getName()][] = $price;
-			
-		}
-		$cruise->setPriceMin(ceil($cruise->priceDaysFinal * $cruise->getPriceKoef() * $priceMin/100)*100);
-		$em->persist($cruise);
-		$em->flush();
 		
 		$freeRoomsArray = [];
 		foreach($freeRooms as $room)
@@ -221,20 +198,106 @@ class CruiseController extends Controller
 		}
 		foreach($cruise->getMotorship()->getRoom() as $room)
 		{
-			$room->setStatus(  isset($freeRoomsArray[$room->getId()]) ? $freeRoomsArray[$room->getId()] : 1   );
+			$room->statuses = isset($freeRoomsArray[$room->getId()]) ? $freeRoomsArray[$room->getId()] : 1   ;
+		}		
+		
+		$decks = [];
+		$decsJS = [];
+		$priceMin = null;
+		foreach($prices as $price)
+		{
+			$priceJS = [];
+			
+			$priceJS['id'] = $price->getId();
+			$priceJS['price'] = $price->price;
+			$priceJS['places']= $price->getRoomPlacing()->getPlaces();	
+			
+			
+			$tariffJS = [];
+			foreach($cruise->tariffs as $tariff)
+			{
+				if($tariff->getIsTariffPrivilege() <= $price->getPrivilege())
+				{
+				if($tariff->getIsTariffChildren() <= $price->getChildren()) 
+				{
+					
+					$tariffJS['name'] = $tariff->getName();
+					$tariffJS['price'] = ceil($price->price/100) * (100 + $tariff->getValue());
+				
+				$priceJS['tariff'][] = $tariffJS;
+				}
+				}	
+			}
+			
+			
+			$decription = '';
+			foreach($price->getRoomType()->getMotorshipRooms() as $motorshipRooms)
+			{
+				$decription = $motorshipRooms->getComment();
+			}			
+			$priceJS['decription'] = $decription;
+			
+			
+			$priceMin = (null == $priceMin || $price->price < $priceMin) ? $price->price : $priceMin;
+			$arr_rooms = [];
+			$arr_roomsJS = [];
+			
+			foreach($cruise->getMotorship()->getRoom() as $room)
+			{
+				if($room->getDeck() == $price->getDeck() && $room->getRoomType() == $price->getRoomType())
+				{
+					$arr_rooms[] = $room;
+					
+					if($room->statuses == 0 )
+					{
+						if (  ($price->getRoomPlacing()->getPlaces() == $room->getRoomType()->getPlacesMax()) or (($room->getRoomType()->getPlacesMax() >= $price->getRoomPlacing()->getPlaces()) and $room->getSmaller() == 1)	)				
+						{	
+							$arr_roomsJS[] = ['number'=>$room->getNumber() , 'id' => $room->getId()] ;
+						}
+					}
+					
+				}
+			}
+			$price->rooms = $arr_rooms; // список кают в данном прайсе.ы
+			$priceJS['rooms'] = $arr_roomsJS; // список кают в данном прайсе.ы
+			$priceJS['name'] = $price->getName() != "" ? $price->getName() : $price->getRoomType()->getComment();			
+			// нужно добавить фотки 
+			$images = $em_base->getRepository("BaseBundle:MotorshipRoomImage")->findOneBy([
+							'motorship'=> $price->getMotorship()->getId(),
+							'deck'=> $price->getDeck()->getId(),
+							'roomType'=> $price->getRoomType()->getId(),
+						],
+						[
+							'sort'=>'ASC',
+							'id'  =>'ASC'
+						]);
+			$price->images = $images;
+			
+			$decks[$price->getDeck()->getName()][] = $price;
+			$decksJS[$price->getDeck()->getName()][] = $priceJS;
+			
 		}
-		
-		
-		$cruise->tariffs = $this->get('cruise_service')->getTariffs($cruise);
-		
-		
-		$dump['return'] = round(memory_get_usage()/1024/1024,2);
-
+		$cruise->setPriceMin(ceil( (int)$priceMin/100)*100);
+		$em->persist($cruise);
+		$em->flush();
 		
 
 		
 		
-		return ["cruise" => $cruise, 'dump'=>$dump, 'freeRoomsArray'=>$freeRoomsArray , 'decks' => $decks,  "prices"=>$prices, 'bannerImg'=>'cruisetopbg.jpg', 'bannerHtml' => $this->renderView("CruiseBundle:Cruise:cruiseh1.html.twig",["cruise" => $cruise])];
+		
+		
+		$cruise->programm = $this->get("cruise_service")->getProgramm($cruise);
+		$cruise->discount = $this->get("cruise_service")->getDiscounts($cruise);
+		$cruise->tariffsHidden = $this->get('cruise_service')->getTariffs($cruise, true);
+		
+		return [
+					"cruise" => $cruise,
+					'decksJS' => $decksJS,
+					'decks' => $decks,
+					'bannerImg'=>'cruisetopbg.jpg',
+					'bannerHtml' => $this->renderView("CruiseBundle:Cruise:cruiseh1.html.twig",["cruise" => $cruise])
+					
+					];
 	}
 }
 

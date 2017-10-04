@@ -250,13 +250,27 @@ class PageController extends Controller
             return $this->redirectToRoute('page', array('url' => $page->getFullUrl()));
             return $this->redirectToRoute('page_edit', array('id' => $page->getId()));
         }
-
 		
 		if("" !== $page->getBannerImg())
-		{
-			$page->setBannerImg(
-				new File($this->getParameter('upload_directory').'/'.$page->getBannerImg())
-			);
+		{		
+			if(!is_file($this->getParameter('upload_directory').'/'.$page->getBannerImg()))
+			{
+				if(is_file($this->getParameter('upload_directory').'/../media/cache/banner/files/'.$page->getBannerImg()))
+				{
+					// скопируем его на место
+					copy($this->getParameter('upload_directory').'/../media/cache/banner/files/'.$page->getBannerImg(),$this->getParameter('upload_directory').'/'.$page->getBannerImg() );
+
+					$page->setBannerImg(
+						new File($this->getParameter('upload_directory').'/'.$page->getBannerImg())
+					);							
+				}
+			}
+			else
+			{
+				$page->setBannerImg(
+					new File($this->getParameter('upload_directory').'/'.$page->getBannerImg())
+				);				
+			}
 		}		
 		
         return $this->render('page/edit.html.twig', array(
@@ -279,6 +293,11 @@ class PageController extends Controller
 		
 		$dump = $images = $page->getFile();
 		
+		
+		if($this->isGranted('ROLE_SUPER_ADMIN'))
+		{
+			
+
 		foreach($images as $image)
 		{
 			// проверку на существование
@@ -288,7 +307,12 @@ class PageController extends Controller
 		}
         $em->remove($page);
         $em->flush();
-
+		} // суперадмин (разрешено удаление)
+		else 
+		{
+			$page->setActive(false);
+			$em->flush();
+		}
         return $this->redirectToRoute('page_index');
 		
     }

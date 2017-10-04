@@ -360,6 +360,16 @@ class ForumController extends Controller
 			throw $this->createNotFoundException("Страница не найдена.");
 		}
 		$countAnswers = $em->getRepository('ForumBundle:ForumTheme')->getCountAnswers($theme->getId());
+		/*
+		foreach($theme->getForumMessages() as $forumMessage)
+		{
+			$text = $forumMessage->getBody();
+			\Wkhooy\ObsceneCensorRus::filterText( $text ) ; 
+			$forumMessage->setBody($text);
+		}
+		
+		*/
+		
 		return ['forumTheme'=>$theme, 'p'=> $p ,  'count'=>ceil($countAnswers/20)];
 	}
 

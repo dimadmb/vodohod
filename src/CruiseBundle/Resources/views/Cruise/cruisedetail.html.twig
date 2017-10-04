@@ -22,7 +22,86 @@
 		</form>
 	</div>
 </div>
+
+
 {% endblock %}
+
+{% block javascriptsonload %}
+
+
+
+
+	var svgObject = document.getElementById("svg");
+	if (svgObject.contentDocument) {
+		var svgDocument = svgObject.contentDocument;
+	} else {
+		try {
+			var svgDocument = svgObject.getSVGDocument();
+		} catch(e) {alert(e);}
+	}
+	
+	//console.log($(svgDocument).find('[id^=rn]'));
+	
+	
+
+	
+	$(svgDocument).find('[id^=rn]').
+	
+	css({cursor:'pointer',display:'none'}).
+	
+	hover(
+	function(){ 
+	$(this).css({fill: "#f00"}); 
+	$('body').append('<div class="room-desc" style="background:#fff; padding:15px; border:3px solid #ccc; border-radius:5px; position:absolute; max-width:500px; left:'+($(this).offset().left + $('#svg').offset().left +20)+'px; top:'+($(this).offset().top + $('#svg').offset().top+20)+'px">'+$(this).attr('desc')+'</div>');
+	},
+	function(){
+	$(this).css({fill: "#000"});  
+	$('.room-desc').remove();
+	}).
+	
+	click(function(){
+		//$(this).attr('')
+		console.log($(this).attr('id'));
+		
+		if ($(this).css('stroke') == 'none')
+		{
+			$(this).css('stroke','#f00');
+		}
+		else
+		{
+			$(this).css('stroke','none');
+		}
+	})
+	;
+
+	{% for deck in decks %}
+		{% for price in deck %}
+			
+			{% if  price.roomType.motorshipRooms[0] is defined %}
+				{% set descriptionBlock =  price.roomType.motorshipRooms[0] %}
+			{% endif %}
+			
+			{% for room in price.rooms if room.statuses == 0 %}
+				if($(svgDocument).find("#rn-{{room.number}}") !== null)
+				{
+					descr  = "{{ descriptionBlock.comment | nl2br  | raw  | nl2js | raw}}" ;
+					;
+					$(svgDocument).find('#rn-{{room.number}}').css("display", "block")      .attr('desc',descr);  
+				}
+				else 
+				{	
+					console.log('{{room.number}}')
+				}		
+			{% endfor %}
+		{% endfor %}
+	{% endfor %}
+
+
+
+
+
+{% endblock %}	
+
 
 {% block body %}
 
@@ -30,37 +109,59 @@
 <section class="content">
 <div class="container">	
 
-{{dump(dump)}}
+{#{dump(dump)}#}
+
+<object id="svg" type="image/svg+xml" data="{{'/images/fleet/'~cruise.motorship.code~'/'~cruise.motorship.code~'-decks.svg'}}" style="width: 100%;" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">Your browser does not support SVGs</object>
 
 
 
-	<div class="row">
 
 
+<form action="{{path('cruise_order')}}" method="post" >
 
-				
+<!--<input type="hidden" name="cruise_id" value="{{cruise.id}}">	-->			
 
 	{% for nameDeck,prices in decks %}
 	<h2>{{nameDeck}} палуба</h2>
 
 		{% for price in prices %}
 
+		
+	
+		
+		
+		
 			
 		<div class="block cabin-row">
 			<div class="cabin-table">
 				<div class="cabin-photo">
+				{% if(null != price.images ) %}	
+					
+				<div class="photo-prev" style="background-image: url('{{(upload_path~price.images.file[0].filename) | imagine_filter('show')}}');"></div>
 				
-					{#{ render(controller('BaseBundle:Motorship:getRoomImages')) }#}
+				<div class="owl-carousel">
+					{% for image in price.images.file %}
+					<div class="slide" style="background-image: url('{{(upload_path~image.filename) | imagine_filter('show')}}');"></div>
+					{% endfor %}
+				
+				</div>
+				{% endif %}	
+
+				</div><!--.cabin-photo-->
+				
+				
+			
 				
 
-				</div>
+				
+				
 				<div class="descr-block">
 					<div class="cabin-header">{% if price.name != "" %} {{price.name}} {% else %}  {{price.roomType.comment}} {% endif %}</div>
 					<div class="cabin-places">
 						Свободно: 
 						
 				{% for room in price.rooms %}
-				{% if room.status == 0 %}
+				{% if room.statuses == 0 %}
 				{% if (price.roomPlacing.places == room.roomType.placesMax) or ((room.roomType.placesMax >= price.roomPlacing.places) and room.smaller == 1) %}
 					
 					<span class="places-number"   >{{room.number}}</span> 
@@ -73,50 +174,45 @@
 						{% for motorshipRoom in price.roomType.motorshipRooms %}
 							<div>{{motorshipRoom.comment | nl2br}}</div>
 						{% endfor %}
+
+						
 						<hr>
 						<div class="cabin-form">
 							<div class="price-variants">
-							
-			{% for tariff in cruise.tariffs %}
-				{% if(tariff.isTariffPrivilege <= price.privilege) %}
-				{% if(tariff.isTariffChildren <= price.children) %}
-			
+								
+											
+										
 
+					
+			{% for room in price.rooms %}
+				{% if room.statuses == 0 %}
+				{% if (price.roomPlacing.places == room.roomType.placesMax) or ((room.roomType.placesMax >= price.roomPlacing.places) and room.smaller == 1) %}
+					
+					<label for="">{{room.number}}</label><input type="checkbox" name="{{cruise.id}}-{{room.id}}" value="{{price.id}}">
+					
 				
-								<div class="price-var-li">
-									<div class="var-name">{{tariff.name}}</div>
-									<select>
-										{% for i in 0..price.roomPlacing.places %}
-										
-											<option value="{{i}}">{{i}}</option>
-										
-										{% endfor %}
-									</select>
-									<div class="var-price"><i class="icon icon-cancel"></i>{{((price.value * cruise.priceKoef * cruise.priceDaysFinal  ) | round(-2,"ceil") * (100 + tariff.value)/100 ) | number_format(0, ' ', ' ') }} руб.</div>
-									<input type="hidden" class="varprice" value="{{((price.value * cruise.priceKoef * cruise.priceDaysFinal  ) | round(-2,'ceil') * (100 + tariff.value)/100 ) | number_format(0, '', '') }}">
-									<div style="clear: both;"></div>
-								</div>
-												
+
+			
 				
 				{% endif %}
 				{% endif %}
 			{% endfor %}
-						
-
-								
+																	
 								
 
 							</div>
-							<div class="price-result"><span class="summ">0</span> руб.</div>
+							
 							<div class="price-but">
-								<a class="btn btn-blue order-button" 
-									data-cname="1-местная каюта (1-местное размещение в 2-местной двухъярусной каюте)" 
-									data-tickets="не выбрано" 
-									data-ccost="0">
-										ЗАКАЗАТЬ
-								</a>
+
+								
+								
+								<input class="btn btn-blue order-button" type="submit" value="ЗАКАЗАТЬ">
+								
+								
 							</div>
-						</div>
+						</div>						
+						
+						
 					</div>
 				</div>
 
@@ -127,7 +223,7 @@
 				{% if(tariff.isTariffChildren <= price.children) %}
 			
 				<div class="cabin-price">
-					<div class="price">{{((price.value * cruise.priceKoef * cruise.priceDaysFinal  ) | round(-2,"ceil") * (100 + tariff.value)/100 ) | number_format(0, ' ', ' ') }} <span>руб.</span></div>
+					<div class="price">{{((price.price ) | round(-2,"ceil") * (100 + tariff.value)/100 ) | number_format(0, ' ', ' ') }} <span>руб.</span></div>
 					<div>{{tariff.name}}</div>
 				</div>
 				
@@ -146,11 +242,89 @@
 		{% endfor %}
 		
 	{% endfor %}	
+</form>
+		<div class="block itinerary">
+			<h2>РАСПИСАНИЕ КРУИЗА</h2>
+			
+			{% if cruise.programm | length == 0 %}
+			
+			
+				<h2 style="color:green;">РАСПИСАНИЕ УТОЧНЯЕТСЯ</h2>
+			
+			{% endif %}
 
+
+			{% for day in cruise.programm %}
+			<div class="itinerary-row">
+				<div class="it-date">{{day.timeStart | localizeddate('full', 'none', null, null, 'dd') }}<span>{{day.timeStart | localizeddate('full', 'none', null, null, 'eee') }}<br>{{day.timeStart | localizeddate('full', 'none', null, null, 'MMM') }}</span></div>
+				<div class="it-city">
+					<div class="city-name"><a href="#">{{day.port.name}}</a></div>
+					<div class="city-arrival">
+					
+						{% if (day.timeStart | localizeddate('full', 'none', null, null, 'HH:mm')) == '00:00'  %} 
+							Отправление <span class="ar-time">{{day.timeStop | localizeddate('full', 'none', null, null, 'HH:mm') }}</span> 
+						{% elseif (day.timeStop | localizeddate('full', 'none', null, null, 'HH:mm')) == '00:00' %} Прибытие <span class="ar-time">{{day.timeStart | localizeddate('full', 'none', null, null, 'HH:mm')}}</span> 
+						{% else %}  
+							<span class="ar-time">{{day.timeStart | localizeddate('full', 'none', null, null, 'HH:mm') }}</span> —
+							<span class="ar-time">{{day.timeStop | localizeddate('full', 'none', null, null, 'HH:mm') }}</span>
+						{% endif %} 
+						
+					</div>
+				</div>
+				<div class="it-descr">{{day.finalDescription | raw | nl2br}}</div>
+			</div>
+			{% endfor %}
+		</div>	
+<div class="row">
+			<div class="col-md-6">
+				<div class="block bg-sand">
+					<h2>Дополнительные тарифы на круиз</h2>
+					<ul>
+						{% for tariff in cruise.tariffsHidden %}
+						<li>{{tariff.name}}</li>
+						{% endfor %}
+					</ul>
+				</div>
+				
+				{% if cruise.comment != "" %}
+				
+				<div class="block bord-red">
+					{{cruise.comment | nl2p | raw}}
+				</div>
+				{% endif %}
+				
+			</div>
+			<div class="col-md-6">
+				<div class="block">
+					<h2>Круиз класса «Комфорт»</h2>
+					<ul>
+						<li>теплоход-пансионат (к услугам массаж, лечебная физкультура, фиточай, кислородный коктейль);</li>
+						<li>питание в две смены (при полной посадке);</li>
+						<li>завтрак — буфет («шведский стол») свободная рассадка;</li>
+						<li>обед и ужин — заказная система со второго дня круиза;</li>
+						<li>приветственный коктейль с запуском воздушных шаров;</li>
+						<li>в каюте — бутилированная питьевая вода в день посадки;</li>
+						<li>холодильники и телевизоры только в каютах класса «Люкс»;</li>
+						<li>заключительный капитанский ужин;</li>
+						<li>детский клуб.</li>
+					</ul>
+				</div>
+				<div class="block">
+					<h2>Скидки на этот круиз (на сегодняшний день)</h2>
+					<ul>
+					{% for discount in cruise.discount %}
+						<li>{{discount.name}}</li>
+					{% endfor %}
+					</ul>
+				</div>
+			</div>
+		</div>
 		
-	{#{dump(cruise)}}
-	{{dump(prices)}#}		
-	</div>
+	{{dump(cruise)}} 
+	{#{dump(decks)}#} 
+	{{dump(decksJS)}} 
+	
+	
 </div>
 </section>
 {% endblock %}

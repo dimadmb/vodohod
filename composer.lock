@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ab9e827da1e881689eccc95ce5cc7500",
+    "content-hash": "c505a52e5b986f4254093bc734b573c8",
     "packages": [
         {
             "name": "components/elfinder",
@@ -3523,6 +3523,54 @@
                 "templating"
             ],
             "time": "2017-07-04T13:19:31+00:00"
+        },
+        {
+            "name": "vearutop/php-obscene-censor-rus",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vearutop/php-obscene-censor-rus.git",
+                "reference": "f0f489ae0eac4ee15c0c8130dea97e47303fe5e0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vearutop/php-obscene-censor-rus/zipball/f0f489ae0eac4ee15c0c8130dea97e47303fe5e0",
+                "reference": "f0f489ae0eac4ee15c0c8130dea97e47303fe5e0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Wkhooy\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Viacheslav Poturaev",
+                    "email": "vearutop@gmail.com",
+                    "homepage": "https://github.com/vearutop"
+                }
+            ],
+            "description": "Класс для фильтрации нецензурных выражений (матов).",
+            "homepage": "https://github.com/vearutop/php-obscene-censor-rus/",
+            "keywords": [
+                "censor",
+                "антимат",
+                "модерация",
+                "хуй",
+                "цензура"
+            ],
+            "time": "2016-04-23T03:09:44+00:00"
         }
     ],
     "packages-dev": [

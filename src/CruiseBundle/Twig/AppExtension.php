@@ -9,6 +9,8 @@ class AppExtension extends \Twig_Extension
         return array(
             new \Twig_SimpleFilter('numeral', array($this, 'numeralFilter')),
             new \Twig_SimpleFilter('ports', array($this, 'portsFilter')),
+            new \Twig_SimpleFilter('nl2js', array($this, 'nl2jsFilter')),
+            new \Twig_SimpleFilter('nl2p', array($this, 'nl2pFilter')),
         );
     }
 
@@ -31,6 +33,14 @@ class AppExtension extends \Twig_Extension
 		$port_name=str_replace("Москва (Северный речной вокзал)", "Москва (СРВ)", $port_name);
 		$port_name=str_replace("Санкт-Петербург (причал \"Уткина заводь\")", "Санкт-Петербург (причал «Уткина заводь»)", $port_name);
 		return $port_name;
+    }	
+	
+    public function nl2pFilter($text)
+    {
+		
+		$arr = explode(PHP_EOL,$text);
+
+		return '<p>'.implode('</p><p>',$arr).'</p>';
     }
 	
 	

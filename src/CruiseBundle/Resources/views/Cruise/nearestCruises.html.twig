@@ -13,7 +13,7 @@
 							<div class="cruise-days-cont">
 								<div class="cruise-days">{{cruise.days}} {{cruise.days | numeral('день','дня','дней') }}</div>
 							</div>
-							<div class="cruise-header">{{cruise.name}}</div>
+							<div class="cruise-header"><a href="{{ path('cruise_detail',{'id':cruise.id}) }}">{{ cruise.name }}</a></div>
 						</div>
 						<div class="col-xs-12 cruise-table">
 							<div class="cruise-date">{{cruise.dateStart | localizeddate('full', 'none', null, null, 'dd') }}<span>{{cruise.dateStart | localizeddate('full', 'none', null, null, 'eee') }}<br />{{cruise.dateStart | localizeddate('full', 'none', null, null, 'MMM') }}</span> – {{cruise.dateStop | localizeddate('full', 'none', null, null, 'dd') }}<span>{{cruise.dateStop | localizeddate('full', 'none', null, null, 'eee') }}<br />{{cruise.dateStop | localizeddate('full', 'none', null, null, 'MMM') }}</span></div>
@@ -24,7 +24,7 @@
 											{% if loop.first %} + {% endif %}{{port | ports}}{% if not loop.last %}, {% endif %}
 										{% endfor %}
 									</div>
-									<div class="col-lg-6 col-md-12 col-sm-6 col-xs-6 price">33 100 <span>руб.</span></div>
+									<div class="col-lg-6 col-md-12 col-sm-6 col-xs-6 price">{{cruise.priceMin | number_format(0, ' ', ' ')}} <span>руб.</span></div>
 								</div>
 							</div>
 						</div>
