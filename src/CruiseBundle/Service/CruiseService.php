@@ -134,6 +134,7 @@ class CruiseService
 
 	public function getTariffs($cruise, $hide = false)
 	{
+		$em = $this->doctrine->getManager('cruise');
 		$sql = "
 			SELECT t
 			FROM CruiseBundle:Tariff t

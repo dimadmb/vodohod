@@ -35,11 +35,16 @@ class AppExtension extends \Twig_Extension
 		return $port_name;
     }	
 	
-    public function nl2pFilter($text)
+    public function nl2jsFilter($text)
     {
 		
+		return str_replace(PHP_EOL,'<br>',$text);
+    }	
+	
+	
+    public function nl2pFilter($text)
+    {
 		$arr = explode(PHP_EOL,$text);
-
 		return '<p>'.implode('</p><p>',$arr).'</p>';
     }
 	
