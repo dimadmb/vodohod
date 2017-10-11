@@ -81,10 +81,12 @@ class CruiseService
 		
 		if( mb_strpos($excursion_name, "Дополнитель")>-1){
 			
+			
+			$was_line=true;
 			if(mb_strpos($excursion_name, "Дополнительная услуга")>-1 or mb_strpos($excursion_name, "Дополнительная экскурсия")>-1 or mb_strpos($excursion_name, "Дополнительные экскурсии")>-1 or mb_strpos($excursion_name, "Дополнительная программа:")>-1){
 				
 
-				$was_line=true;
+				
 				//$excursion_name=str_replace("Дополнительная услуга:", "</p><div style=\"color:red;\"><p><strong>Дополнительная услуга:</strong>", $excursion_name."</div>");
 				//$excursion_name=str_replace("Дополнительная экскурсия:", "</p><div style=\"color:#365f91;\"><p><strong>Дополнительная экскурсия:</strong>", $excursion_name."</div>");
 				//$excursion_name=str_replace("Дополнительные экскурсии:", "</p><div style=\"color:red;\"><p><strong>Дополнительные экскурсии:</strong>", $excursion_name."</div>");
@@ -148,11 +150,30 @@ class CruiseService
 						) 
 						OR
 						(
-							ct.cruise = ".$cruise->getId()."
+								t.toAllCruises = 0
+							AND	ct.cruise = ".$cruise->getId()."
 						)
 				  )
+			AND (
+					(
+							t.cruiseDateStart = '0000-00-00' 
+						AND t.cruiseDateStop = '0000-00-00'
+					) 
+					OR 
+					(
+							:cruiseDateStart > t.cruiseDateStart
+						AND :cruiseDateStart < t.cruiseDateStop
+					)
+				) 
+			  
 		";
-		$query = $em->createQuery($sql);
+		if(!$hide) $sql .= " AND t.isTariffWithoutPlace = 0 ";
+		// добавить временнЫе ограничения
+		$query = $em->createQuery($sql)		
+		->setParameters([
+			'cruiseDateStart'=>$cruise->getDateStart(),
+			//'cruiseDateStop'=>$cruise->getDateStop(),
+		]);
 		return $query->getResult();
 	}
 

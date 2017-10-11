@@ -30,15 +30,19 @@ class CruiseCategory
     private $name;
 	
 	
-	/**
-	 * @ORM\ManyToMany(targetEntity="Cruise", mappedBy="category" )
-	 */
-	private $cruise;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="code", type="string", length=255)
+     */
+    private $code;
+	
+	
+	
+	
+
     
-	public function __construct()
-	{
-		$cruise = new ArrayCollection();
-	}
+
 
 	public function __toString()
 	{
@@ -79,37 +83,5 @@ class CruiseCategory
         return $this->name;
     }
 
-    /**
-     * Add cruise
-     *
-     * @param \CruiseBundle\Entity\Cruise $cruise
-     *
-     * @return CruiseCategory
-     */
-    public function addCruise(\CruiseBundle\Entity\Cruise $cruise)
-    {
-        $this->cruise[] = $cruise;
 
-        return $this;
-    }
-
-    /**
-     * Remove cruise
-     *
-     * @param \CruiseBundle\Entity\Cruise $cruise
-     */
-    public function removeCruise(\CruiseBundle\Entity\Cruise $cruise)
-    {
-        $this->cruise->removeElement($cruise);
-    }
-
-    /**
-     * Get cruise
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getCruise()
-    {
-        return $this->cruise;
-    }
 }

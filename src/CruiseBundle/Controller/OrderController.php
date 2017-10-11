@@ -49,7 +49,7 @@ class OrderController extends Controller
 		// определиться с форматом корзины в сессии 
 		
 		
-		return ['request'=>$request, get_class_methods($session) ];
+		return ['request'=>$request ];
 	}	
 	
 	
@@ -65,21 +65,30 @@ class OrderController extends Controller
 		
 		$session = new Session();
 		$basketS = $session->get('basket');
+		$basket = [];
+		$cruises = [];
 		
-		foreach($basketS as $key => $price_id)
+		if(null != $basketS)
 		{
-			
-			list($cruise_id,$room_id) = explode('-',$key);
-			
-			$basket[] = [
-			'cruise' => $em->getRepository('CruiseBundle:Cruise')->findOneById($cruise_id) , 
-			'room' => $em->getRepository('CruiseBundle:Room')->findOneById($room_id) , 
-			'price' => $em->getRepository('CruiseBundle:Price')->findOneById($price_id) , 
-			];
+			foreach($basketS as $key => $price_id)
+			{
+				
+				list($cruise_id,$room_id) = explode('-',$key);
+				
+				$cruises[$cruise_id] = "";
+				
+				$basket[] = [
+				'cruise' => $em->getRepository('CruiseBundle:Cruise')->findOneById($cruise_id) , 
+				'room' => $em->getRepository('CruiseBundle:Room')->findOneById($room_id) , 
+				'price' => $em->getRepository('CruiseBundle:Price')->findOneById($price_id) , 
+				];
+			}		
 		}
-
 		
-		return ['request'=>$request , 'basket'=>$basket];
+		$allowNext = count($cruises) == 1 ;
+	
+
+		return ['request'=>$request , 'basket'=>$basket, 'allowNext'=>$allowNext ];
 	}
 }
 

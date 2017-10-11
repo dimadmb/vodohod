@@ -1,0 +1,3 @@
+{% for ship in ships %}
+<div class="col-xs-6"><a href="{{path('page',{'url':ship.fullUrl})}}" class="main-ship-li">{{ship.name}} </a></div>
+{% endfor %}

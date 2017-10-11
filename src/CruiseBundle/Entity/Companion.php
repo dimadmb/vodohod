@@ -3,15 +3,14 @@
 namespace CruiseBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * CruiseCategory
+ * Companion
  *
- * @ORM\Table(name="cruise_category")
- * @ORM\Entity(repositoryClass="CruiseBundle\Repository\CruiseCategoryRepository")
+ * @ORM\Table(name="companion")
+ * @ORM\Entity(repositoryClass="CruiseBundle\Repository\CompanionRepository")
  */
-class CruiseCategory
+class Companion
 {
     /**
      * @var int
@@ -28,20 +27,14 @@ class CruiseCategory
      * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
-	
-	
+
     /**
      * @var string
      *
-     * @ORM\Column(name="code", type="string", length=255)
+     * @ORM\Column(name="companion_1s_code", type="string", length=50)
      */
-    private $code;
-	
+    private $companion1sCode;
 
-	public function __toString()
-	{
-		return $this->getName();
-	}	
 
     /**
      * Get id
@@ -58,7 +51,7 @@ class CruiseCategory
      *
      * @param string $name
      *
-     * @return CruiseCategory
+     * @return Companion
      */
     public function setName($name)
     {
@@ -77,29 +70,27 @@ class CruiseCategory
         return $this->name;
     }
 
-
-
     /**
-     * Set code
+     * Set companion1sCode
      *
-     * @param string $code
+     * @param string $companion1sCode
      *
-     * @return CruiseCategory
+     * @return Companion
      */
-    public function setCode($code)
+    public function setCompanion1sCode($companion1sCode)
     {
-        $this->code = $code;
+        $this->companion1sCode = $companion1sCode;
 
         return $this;
     }
 
     /**
-     * Get code
+     * Get companion1sCode
      *
      * @return string
      */
-    public function getCode()
+    public function getCompanion1sCode()
     {
-        return $this->code;
+        return $this->companion1sCode;
     }
 }

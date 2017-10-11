@@ -156,10 +156,6 @@ class Cruise
      */
     private $textCategories;
 	
-	/**
-	 * @ORM\ManyToMany(targetEntity="CruiseCategory", inversedBy="cruise")
-	 */
-	private $category;
 	
 	/**
 	 * @ORM\OneToMany(targetEntity="CruiseDays", mappedBy="cruise")
@@ -499,29 +495,7 @@ class Cruise
         return $this->region;
     }
 
-    /**
-     * Set category
-     *
-     * @param integer $category
-     *
-     * @return Cruise
-     */
-    public function setCategory($category)
-    {
-        $this->category = $category;
 
-        return $this;
-    }
-
-    /**
-     * Get category
-     *
-     * @return int
-     */
-    public function getCategory()
-    {
-        return $this->category;
-    }
 
     /**
      * Set code1s
@@ -763,29 +737,6 @@ class Cruise
         return $this->cruiseClass;
     }
 
-    /**
-     * Add category
-     *
-     * @param \CruiseBundle\Entity\CruiseCategory $category
-     *
-     * @return Cruise
-     */
-    public function addCategory(\CruiseBundle\Entity\CruiseCategory $category)
-    {
-        $this->category[] = $category;
-
-        return $this;
-    }
-
-    /**
-     * Remove category
-     *
-     * @param \CruiseBundle\Entity\CruiseCategory $category
-     */
-    public function removeCategory(\CruiseBundle\Entity\CruiseCategory $category)
-    {
-        $this->category->removeElement($category);
-    }
 
     /**
      * Add cruiseDay

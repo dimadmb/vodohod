@@ -3,6 +3,10 @@
 
 {% block body %}
 
+
+
+<div class="container">
+
 {{dump()}}
 
 {% for item in basket %}
@@ -39,5 +43,14 @@
 		</div>
 {% endfor %}
 
+
+
+{% if allowNext %}
+<button>Далее</button>
+{% else %}
+<p>Все каюты должны быть в одном круизе.</p>
+{% endif %}
+
+</div>
 {% endblock %}
 
