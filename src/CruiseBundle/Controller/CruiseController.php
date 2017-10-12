@@ -87,7 +87,10 @@ class CruiseController extends Controller
 				},
 				'choice_label' => 'name',				
 				] )
-				
+				->add('months',ChoiceType::class, [
+						'placeholder' => 'Любой',
+						'required' => false,
+						'choices'  => $this->get("cruise_service")->getMonths(),])				
 				
 				->add('days',ChoiceType::class, [
 						'placeholder' => 'все',
@@ -99,6 +102,16 @@ class CruiseController extends Controller
 							'11-14' => '11-14',
 							'15-23' => '15-23'
 						],])
+				->add('citys',ChoiceType::class, [
+						'placeholder' => 'Город отправления',
+						'required' => false,
+						//'multiple' =>true,
+						'choices'  => $this->get("cruise_service")->getCitys(),])	
+				->add('tariff',ChoiceType::class, [
+						'placeholder' => 'Тариф',
+						'required' => false,
+						'multiple' =>true,
+						'choices'  => $this->get("cruise_service")->getTariff(),])						
 				
 				->add('sortable',ChoiceType::class, [
 						'choices'  => [

@@ -122,6 +122,10 @@ doctrine:
                 connection:       cruise
                 mappings:
                     CruiseBundle: ~
+                dql:
+                    string_functions:
+                        MONTH: DoctrineExtensions\Query\Mysql\Month
+                        YEAR: DoctrineExtensions\Query\Mysql\Year
 
 #       auto_generate_proxy_classes: "%kernel.debug%"
 #       naming_strategy: doctrine.orm.naming_strategy.underscore
@@ -168,6 +172,10 @@ liip_imagine :
         my_thumb_165 :
             filters :
                 thumbnail  : { size : [165, 165] }
+
+        captain :
+            filters :
+                thumbnail  : { size : [165, 165], position : -20 }
                 #relative_resize: { heighten: 200 }
 
         thumb_70 :

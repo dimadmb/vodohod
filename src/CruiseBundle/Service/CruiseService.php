@@ -10,17 +10,28 @@ use Symfony\Component\HttpFoundation\Request;
 //use Symfony\Component\Config\Definition\Exception\Exception;
 //use Symfony\Component\DependencyInjection\Container;
 
+
+
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+
 class CruiseService
 {
     private $doctrine;
     private $knp_paginator;
     private $memcacheDefault;
+    private $form;
+    private $twig;
 
-    public function __construct($doctrine,$knp_paginator,$memcacheDefault)
+    public function __construct($doctrine,$knp_paginator,$memcacheDefault,$form,$twig)
     {
         $this->doctrine = $doctrine;
         $this->knp_paginator = $knp_paginator;
         $this->memcacheDefault = $memcacheDefault;
+        $this->form = $form;
+        $this->twig = $twig;
     }
 
 	public function getProgramm($cruise)
@@ -361,6 +372,41 @@ class CruiseService
 				$qb->setParameter('datestart', $dateStart);
 			}
 			
+			
+			
+			// порты отправления
+			if(isset($data['citys']) && null != $data['citys'])
+			{
+				$citys = $data['citys'];
+				
+				if(is_string($citys))
+				{
+					$qb->andWhere("c.name like '$citys%'");
+					//$qb->setParameter('citys', $citys);					
+				}
+				elseif(is_array($citys))
+				{
+					
+				}
+
+			}
+			
+			// месяц
+			if(isset($data['months']) && null != $data['months'])
+			{
+				$months = $data['months'];
+				$qb->andWhere("c.dateStart like '$months%'");
+			}		
+			
+			// тарифы
+			if(isset($data['tariff']) && null != $data['tariff'])
+			{
+				$tariff = $data['tariff'];
+				$qb->leftJoin('c.cruiseTariff', 'ct');
+				$qb->andWhere("ct.tariff IN (:tariff) ");
+				$qb->setParameter('tariff', $tariff);
+			}			
+			
 			if(isset($data['sortable']) && null != $data['sortable'])
 			{
 				if($data['sortable'] == '1')
@@ -459,7 +505,95 @@ class CruiseService
 		return 	$cruises ;
 	}
 	
-	
-	
+	public function miniFormSearchAction()
+	{
+		
+		$request =  Request::createFromGlobals();
 
+
+		$form = $this->form->createNamedBuilder(null,FormType::class,null, ['csrf_protection' => false,'validation_groups' => false])
+		
+				->add('days',ChoiceType::class, [
+						'placeholder' => 'Количество дней',
+						'required' => false,
+						'choices'  => [
+							'1-4' => '1-4',
+							'5-7' => '5-7',
+							'8-10' =>'8-10',
+							'11-14' => '11-14',
+							'15-23' => '15-23'
+						],])		
+				->add('months',ChoiceType::class, [
+						'placeholder' => 'Месяц',
+						'required' => false,
+						'choices'  => $this->getMonths(),])		
+				->add('citys',ChoiceType::class, [
+						'placeholder' => 'Город отправления',
+						'required' => false,
+						'choices'  => $this->getCitys(),])
+
+				->add('submit', SubmitType::class,array('attr'=>[ 'class'=> 'btn btn-red full-width']))
+				->setMethod('GET')
+				//->setAction($this->generateUrl('cruises'))
+				->getForm()	
+		;
+				
+		$form->handleRequest($request);	
+				
+		$data = [];
+		if ($form->isSubmitted() /*&& $form->isValid()*/) 
+		{
+			$data = $form->getData();
+
+		}	
+		return [ "form"=> $form->createView()];						
+	 
+	}	
+	
+	public function getMonths()
+	{
+		$em = $this->doctrine->getManager('cruise');
+		$sql = "
+			SELECT c.dateStart, MONTH(c.dateStart) AS month, YEAR(c.dateStart) AS year
+			FROM CruiseBundle:Cruise c
+			WHERE c.dateStop >= CURRENT_TIMESTAMP()
+			GROUP BY year,month
+		";
+		$query = $em->createQuery($sql);
+		
+		$cruises = $query->getResult();
+		
+		$res = [];
+		foreach($cruises as $cruise)
+		{
+			$res[$this->twig->render("CruiseBundle:Service:date.html.twig", ['cruise'=>$cruise])] = $cruise['dateStart']->format("Y-m");
+		}
+		//dump($cruises);
+		
+		return $res;
+	}
+
+	public function getCitys()
+	{
+		return [
+			'Москва' => 'Москва',
+			'Санкт-Петербург' => 'Санкт-Петербург', 
+			'Астрахань' => 'Астрахань',
+			'Волгоград' => 'Волгоград',
+			'Казань' => 'Казань',
+			'Нижний Новгород' => 'Нижний Новгород',
+			'Самара' => 'Самара',
+			'Саратов' => 'Саратов',
+		];
+	} 
+	
+	public function getTariff()
+	{
+		return [
+			'Пенсионный' => 13,
+			'Студенческий' => 15,
+			'Школьный' => 17,
+		];
+	} 
+	
 }

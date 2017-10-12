@@ -15,4 +15,4 @@ services:
 
     cruise_service:
         class: CruiseBundle\Service\CruiseService
-        arguments: ['@doctrine','@knp_paginator','@memcache.default']
+        arguments: ['@doctrine','@knp_paginator','@memcache.default','@form.factory','@twig']

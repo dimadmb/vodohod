@@ -1,6 +1,8 @@
 <h1 class="top-80">{{ship.name}}</h1>
 <div class="ship top-220">
-	<div class="ship-icon" style="background-image: url('images/captic.jpg');"></div><br>
+	<a class="photo" href="{{ ('/images/fleet/'~ship.code~'/captain.jpg') | imagine_filter('banner') }}">
+		<div class="ship-icon" style="background-image: url('{{ ('/images/fleet/'~ship.code~'/captain.jpg') | imagine_filter('captain') }}');"></div>
+	</a><br>
 	<div>Капитан</div><br>
 	<div class="ship-name">Кистэнь Виталий Венедиктович</div>
 </div>

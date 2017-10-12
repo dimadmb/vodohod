@@ -2,7 +2,7 @@
 
 
 {% block body %}
-{#{dump(cruises)}#}
+{{dump()}}
 
 <div class="container">	
 {{ form_start(form) }}
@@ -22,29 +22,13 @@
 									<option value="">Круизы в Москву</option>
 								</select>
 							</div>
-							<label>Порт</label>
+							<label>Порт отправления</label>
 							<div class="input-box">
-								<select class="chosen-select">
-									<option value="" selected>Любой порт</option>
-									<option value="">Москва</option>
-									<option value="">Нижний Новгород</option>
-									<option value="">Санк-Петербург</option>
-									<option value="">Астрахань</option>
-								</select>
+								{{ form_widget(form.citys, {'attr':{'class':'chosen-select'}} ) }}
 							</div>
 							<label class="month">Месяц</label>
 							<div class="input-box month">
-								<select class="chosen-select">
-										<option value="" selected>Любой месяц</option>
-										<option value="">Апрель</option>
-										<option value="">Май</option>
-										<option value="">Июнь</option>
-										<option value="">Июль</option>
-										<option value="">Август</option>
-										<option value="">Сентябрь</option>
-										<option value="">Октябрь</option>
-										<option value="">Ноябрь</option>
-								</select>
+								{{ form_widget(form.months, {'attr':{'class':'chosen-select'}} ) }}
 							</div>
 							<label class="days">Дней</label>
 							<div class="input-box days">
@@ -73,12 +57,7 @@
 							</div>
 							<label>Тариф</label>
 							<div class="input-box">
-								<select class="chosen-select">
-									<option value="" selected>Любой тариф</option>
-									<option value="">Пенсионный</option>
-									<option value="">Студенческий</option>
-									<option value="">Школьный</option>
-								</select>
+								{{ form_widget(form.tariff, {'attr':{'class':'chosen-select'}} ) }}
 							</div>
 							<label>Посетить</label>
 							<div class="input-box">

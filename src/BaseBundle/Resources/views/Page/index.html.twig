@@ -7,46 +7,34 @@
 	<div class="head-search">
 		<div class="container">
 			<div class="row">
-				<form class="search-main">
+				{{ form_start(form, {'attr':{'class':'search-main', 'action':path('cruises')}}) }}
 					<div class="col-md-3">
-						<select class="chosen-select">
-							<option value="" disabled selected hidden>Месяц</option>
-							<option value="">Любой месяц</option>
-							<option value="">Январь</option>
-							<option value="">Февраль</option>
-							<option value="">Март</option>
-							<option value="">Апрель</option>
-						</select>
+						{{ form_widget(form.months, {'attr':{'class':'chosen-select'}} ) }}
 					</div>
 					<div class="col-md-3">
-						<select class="chosen-select">
-							<option value="" disabled selected hidden>Город отправления</option>
-							<option value="">Любой город</option>
-							<option value="">Москва</option>
-							<option value="">Ярославль</option>
-							<option value="">Нижний Новгород</option>
-							<option value="">Астрахань</option>
-						</select>
+						{{ form_widget(form.citys, {'attr':{'class':'chosen-select'}} ) }}
 					</div>
 					<div class="col-md-3">
-						<select class="chosen-select">
-							<option value="" disabled selected hidden>Количество дней</option>
-							<option value="">Не важно</option>
-							<option value="">1-4</option>
-							<option value="">5-7</option>
-							<option value="">8-10</option>
-							<option value="">11-14</option>
-							<option value="">15-22</option>
-						</select>
+						{{ form_widget(form.days, {'attr':{'class':'chosen-select'}} ) }}
 					</div>
 					<div class="col-md-3 search-submit-box">
-						<button type="submit" class="btn btn-red">ПОИСК</button>
+						{{ form_widget(form.submit,{'label': 'ПОИСК'}) }}
 					</div>
-				</form>
+					
+				{{ form_end(form) }}
 			</div>
 		</div>
 	</div>
+	<div class="head-search">
+		<div class="container">
+			<div class="row">
 
+
+
+				
+			</div>
+		</div>
+	</div>
 {% endblock %}
 
 {% block body %}
@@ -61,7 +49,7 @@
 
 <div class="row">
 	
-	{{ render(controller('BaseBundle:Ship:getShips')) }}
+	{{ render(controller('CruiseBundle:Ship:getShips')) }}
 </div>
 
 
