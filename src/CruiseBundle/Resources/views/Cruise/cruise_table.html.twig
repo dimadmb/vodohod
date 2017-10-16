@@ -1,3 +1,6 @@
+{{dump(cruises)}}
+
+
 {% for cruise in cruises %}
 	
 <div class="block cruise-row">
@@ -7,12 +10,15 @@
 				{{cruise.days}}  {{cruise.days | numeral('день','дня','дней') }}
 			</div>
 		</div>
-		<div class="cruise-options-cont">
-			<div class="cruise-options-switch"></div>
-			<div class="cruise-options">
-				<div class="cruise-option">
-					ТАРИФ ПЕНСИОННЫЙ
+		<div class="cruise-options-cont expanded">
+			<div class="cruise-options-switch expanded"></div>
+			<div class="cruise-options expanded">
+		
+			{% for ts in cruise.ts %}
+				<div class="cruise-option ">
+					{{ts.name}}
 				</div>
+			{% endfor %}	
 			</div>
 		</div>
 	</div>

@@ -145,15 +145,17 @@ class CruiseService
 		return $days;
 	}
 
-	public function getTariffs($cruise, $hide = false)
+	public function getTariffs($cruise, $hide = false, $toAllCruises = true)
 	{
 		$em = $this->doctrine->getManager('cruise');
+		$parameters = ['cruiseDateStart'=>$cruise->getDateStart()];
 		$sql = "
 			SELECT t
 			FROM CruiseBundle:Tariff t
 			LEFT JOIN t.cruiseTariff ct
 			WHERE t.hideInTables = ".(int)$hide."
 			AND   t.active = 1	
+			
 			AND   (
 						(
 								  t.toAllCruises = 1 
@@ -176,15 +178,18 @@ class CruiseService
 						AND :cruiseDateStart < t.cruiseDateStop
 					)
 				) 
-			  
 		";
 		if(!$hide) $sql .= " AND t.isTariffWithoutPlace = 0 ";
+		if(false == $toAllCruises) 
+		{
+			$sql .= " AND t.toAllCruises = :toAllCruises ";
+			$parameters['toAllCruises'] = $toAllCruises;
+		}
 		// добавить временнЫе ограничения
 		$query = $em->createQuery($sql)		
-		->setParameters([
-			'cruiseDateStart'=>$cruise->getDateStart(),
-			//'cruiseDateStop'=>$cruise->getDateStop(),
-		]);
+		->setParameters($parameters);
+		
+		
 		return $query->getResult();
 	}
 
@@ -417,6 +422,16 @@ class CruiseService
 				$qb->andWhere("cc.id IN (:direction) ");
 				$qb->setParameter('direction', $direction);
 			}			
+			// category
+			if(isset($data['category']) && null != $data['category'])
+			{
+				$category = $data['category'];
+				//$qb->add("LEFT JOIN c.category" , "cc");
+				
+				$qb->leftJoin('c.category', 'cc');
+				$qb->andWhere("cc.id IN (:category) ");
+				$qb->setParameter('category', $category);
+			}			
 			
 			if(isset($data['sortable']) && null != $data['sortable'])
 			{
@@ -468,6 +483,21 @@ class CruiseService
 				$cruise->freeCountRoom = $cruiseRoomStatusRepository->countFreeRoom($cruise->getId());
 				$this->memcacheDefault->set('countFreeRoom'.$cruise->getId(),$cruise->freeCountRoom,0,60*60*1);  // час 
 			}
+			
+
+			if(false !==  $ts = $this->memcacheDefault->get('tariffToNoAllCruises'.$cruise->getId()) )
+			{$cruise->ts = $ts;}
+			else
+			{
+				dump($this->getCruiseCategory($cruise));
+				
+				$cruise->ts = array_merge($this->getTariffs($cruise,false,false),$this->getCruiseCategory($cruise));
+				$this->memcacheDefault->set('tariffToNoAllCruises'.$cruise->getId(),$cruise->ts,0,60*60*1);  // час 
+			}
+
+			
+			///$cruise->ts=$this->getTariffs($cruise,false,false);
+			
 			
 			$days = 1 + (strtotime($cruise->getDateStop()->format("Y-m-d")) - strtotime($cruise->getDateStart()->format("Y-m-d")))/86400;
 			$cruise->days = $days;
@@ -637,6 +667,28 @@ class CruiseService
 
 
 	
+	public function getCruiseCategory($cruise)	
+	{
+		$em = $this->doctrine->getManager('cruise');
+		$sql = "
+			SELECT cc
+			FROM CruiseBundle:CruiseCategory cc
+			LEFT JOIN cc.cruises c 
+			WHERE cc.name NOT LIKE '.%'
+			AND cc.name NOT LIKE '..%'
+			AND c.id = :cruise
+		";	
+		$query = $em->createQuery($sql)
+		->setParameters(['cruise'=>$cruise])
+		;
+		
+		$categories = $query->getResult();
+		
+		//dump($categories);
+		
+		return($categories);
+	}
+	
 	public function getCategory()
 	{
 		$em = $this->doctrine->getManager('cruise');
@@ -650,7 +702,6 @@ class CruiseService
 			AND c.id IS NOT NULL
 			GROUP BY cc.id
 		";
-
 		$query = $em->createQuery($sql);
 		
 		$categories = $query->getResult();
