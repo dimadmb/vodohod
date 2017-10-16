@@ -405,6 +405,17 @@ class CruiseService
 				$qb->leftJoin('c.cruiseTariff', 'ct');
 				$qb->andWhere("ct.tariff IN (:tariff) ");
 				$qb->setParameter('tariff', $tariff);
+			}
+			
+			// направления
+			if(isset($data['direction']) && null != $data['direction'])
+			{
+				$direction = $data['direction'];
+				//$qb->add("LEFT JOIN c.category" , "cc");
+				
+				$qb->leftJoin('c.category', 'cc');
+				$qb->andWhere("cc.id IN (:direction) ");
+				$qb->setParameter('direction', $direction);
 			}			
 			
 			if(isset($data['sortable']) && null != $data['sortable'])
@@ -537,6 +548,8 @@ class CruiseService
 				//->setAction($this->generateUrl('cruises'))
 				->getForm()	
 		;
+		
+		//$this->getDirection();
 				
 		$form->handleRequest($request);	
 				
@@ -594,6 +607,64 @@ class CruiseService
 			'Студенческий' => 15,
 			'Школьный' => 17,
 		];
+	}  
+	
+	public function getDirection()
+	{
+		$em = $this->doctrine->getManager('cruise');
+		$sql = "
+			SELECT cc,c
+			FROM CruiseBundle:CruiseCategory cc
+			LEFT JOIN cc.cruises c
+			WHERE cc.name LIKE '..%'
+			AND c.dateStart >= CURRENT_TIMESTAMP()
+			AND c.id IS NOT NULL
+			GROUP BY cc.id
+		";
+
+		$query = $em->createQuery($sql);
+		
+		$categories = $query->getResult();
+				
+		$res = [];
+		foreach($categories as $category)
+		{
+			$res[trim($category->getName(),'.')] = $category->getId();
+		}
+		
+		return $res;
 	} 
+
+
+	
+	public function getCategory()
+	{
+		$em = $this->doctrine->getManager('cruise');
+		$sql = "
+			SELECT cc,c
+			FROM CruiseBundle:CruiseCategory cc
+			LEFT JOIN cc.cruises c
+			WHERE cc.name NOT LIKE '.%'
+			AND cc.name NOT LIKE '..%'
+			AND c.dateStart >= CURRENT_TIMESTAMP()
+			AND c.id IS NOT NULL
+			GROUP BY cc.id
+		";
+
+		$query = $em->createQuery($sql);
+		
+		$categories = $query->getResult();
+				
+		$res = [];
+		foreach($categories as $category)
+		{
+			$res[trim($category->getName(),'.')] = $category->getId();
+		}
+		
+		return $res;
+	} 
+	
+	
+	
 	
 }

@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * CruiseCategory
  *
- * @ORM\Table(name="cruise_category")
+ * @ORM\Table(name="cruise_category", uniqueConstraints={@ORM\UniqueConstraint(name="code", columns={"code"})})
  * @ORM\Entity(repositoryClass="CruiseBundle\Repository\CruiseCategoryRepository")
  */
 class CruiseCategory
@@ -29,6 +29,11 @@ class CruiseCategory
      */
     private $name;
 	
+	/**
+	 * @ORM\OneToMany(targetEntity="CruiseCruiseCategory", mappedBy="cruiseCategoryCode")
+	 */
+	private $categories;
+	
 	
     /**
      * @var string
@@ -37,12 +42,6 @@ class CruiseCategory
      */
     private $code;
 	
-	
-	
-	
-
-    
-
 
 	public function __toString()
 	{
@@ -84,4 +83,28 @@ class CruiseCategory
     }
 
 
+
+    /**
+     * Set code
+     *
+     * @param string $code
+     *
+     * @return CruiseCategory
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
+    /**
+     * Get code
+     *
+     * @return string
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
 }

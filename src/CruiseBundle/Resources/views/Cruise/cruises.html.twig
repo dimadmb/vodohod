@@ -14,13 +14,7 @@
 						<div class="col-md-6">
 							<label>Направления</label>
 							<div class="input-box">
-								<select class="chosen-select">
-									<option value="" selected>Все направления</option>
-									<option value="">Круизы по Волге</option>
-									<option value="">Круизы по Каме</option>
-									<option value="">Круизы по Дону</option>
-									<option value="">Круизы в Москву</option>
-								</select>
+								{{ form_widget(form.direction, {'attr':{'class':'chosen-select'}} ) }}
 							</div>
 							<label>Порт отправления</label>
 							<div class="input-box">
@@ -46,14 +40,7 @@
 						<div class="col-md-6">
 							<label>Категория</label>
 							<div class="input-box">
-								<select class="chosen-select">
-									<option value="" selected>Любая категория</option>
-									<option value="">Тематический круиз</option>
-									<option value="">Бесплатное место для сопровождающего школьных гр.</option>
-									<option value="">Детское место в подарок</option>
-									<option value="">Дополнительные бонусные баллы</option>
-									<option value="">Круиз по выигранному сертификату</option>
-								</select>
+								{{ form_widget(form.category, {'attr':{'class':'chosen-select'}} ) }}
 							</div>
 							<label>Тариф</label>
 							<div class="input-box">

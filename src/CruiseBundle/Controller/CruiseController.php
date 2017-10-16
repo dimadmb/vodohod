@@ -111,7 +111,19 @@ class CruiseController extends Controller
 						'placeholder' => 'Тариф',
 						'required' => false,
 						'multiple' =>true,
-						'choices'  => $this->get("cruise_service")->getTariff(),])						
+						'choices'  => $this->get("cruise_service")->getTariff(),])			
+				->add('direction',ChoiceType::class, [
+						'placeholder' => 'Направление',
+						'required' => false,
+						'multiple' =>true,
+						'choices'  => $this->get("cruise_service")->getDirection(),])			
+				
+				
+				->add('category',ChoiceType::class, [
+						'placeholder' => 'Любая категория',
+						'required' => false,
+						'multiple' =>true,
+						'choices'  => $this->get("cruise_service")->getCategory(),])						
 				
 				->add('sortable',ChoiceType::class, [
 						'choices'  => [

@@ -8,15 +8,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * CruiseCategory
  *
- * @ORM\Table(name="cruise_category")
+ * @ORM\Table(name="cruise_category", uniqueConstraints={@ORM\UniqueConstraint(name="id", columns={"id"})})
  * @ORM\Entity(repositoryClass="CruiseBundle\Repository\CruiseCategoryRepository")
  */
 class CruiseCategory
 {
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="string", length=255)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -29,13 +29,13 @@ class CruiseCategory
      */
     private $name;
 	
+	/**
+	 * @ORM\ManyToMany(targetEntity="Cruise", inversedBy="category")
+	 */	
+    private $cruises;
 	
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="code", type="string", length=255)
-     */
-    private $code;
+	
+
 	
 
 	public function __toString()

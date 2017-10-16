@@ -183,6 +183,11 @@ class Cruise
 	 */
 	private $cruiseDiscount;
 	
+	/**
+	 * @ORM\ManyToMany(targetEntity="CruiseCategory", mappedBy="cruises")
+	 */	
+	private $category;
+	
 	
 	public function __construct()
 	{
