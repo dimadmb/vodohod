@@ -21,14 +21,17 @@ class OrderController extends Controller
 	{
 		
 		$session = new Session();
-		//$session->start(); autostart in symfony 
+		//$session->start(); //autostart in symfony 
 		
 		//$session->remove('basket');
 		
-		
+		$session->get('basket');
 		
 		if(null == $session->get('basket'))
 		{
+			
+			
+			
 			$session->set('basket',$request->request->all());
 		}
 		else 
@@ -77,19 +80,49 @@ class OrderController extends Controller
 				
 				$cruises[$cruise_id] = "";
 				
+				$cruise = $em->getRepository('CruiseBundle:Cruise')->findOneById($cruise_id);
+				$cruise->tariffs = array_merge(
+									$this->get("cruise_service")->getTariffs($cruise,true,false),
+									$this->get("cruise_service")->getTariffs($cruise)
+									);
+				$room = $em->getRepository('CruiseBundle:Room')->findOneById($room_id);
+				$price = $em->getRepository('CruiseBundle:Price')->findOneById($price_id);
 				$basket[] = [
-				'cruise' => $em->getRepository('CruiseBundle:Cruise')->findOneById($cruise_id) , 
-				'room' => $em->getRepository('CruiseBundle:Room')->findOneById($room_id) , 
-				'price' => $em->getRepository('CruiseBundle:Price')->findOneById($price_id) , 
+				'cruise' =>  $cruise, 
+				'room' => $room , 
+				'price' => $price , 
+				'priceBasket' => $this->get("cruise_service")->getPriceBasket($cruise, $room, $price),
+				'places' => $price->getRoomPlacing()->getPlaces()
 				];
 			}		
 		}
 		
 		$allowNext = count($cruises) == 1 ;
-	
+		$discounts = [];
+		if($allowNext)
+		{
+			$discounts = $this->get("cruise_service")->getDiscounts($cruise);
+			
+			// получить количество туристов, чтоб разрешить групповую скидку
+			
+		}
 
-		return ['request'=>$request , 'basket'=>$basket, 'allowNext'=>$allowNext ];
+		return ['request'=>$request , 'basket'=>$basket, 'allowNext'=>$allowNext, 'discounts'=>$discounts ];
 	}
+	
+    /**
+     * @Route("/cruise/basket/delete/{id}", name="basket_item_delete")
+     */
+    public function deleteAction(Request $request, $id)
+    {
+            $session = new Session();
+			$basket = $session->get('basket');
+			unset($basket[$id]);
+			$session->set('basket',$basket);
+
+        return $this->redirectToRoute('cruise_basket');
+    }	
+	
 }
 
 

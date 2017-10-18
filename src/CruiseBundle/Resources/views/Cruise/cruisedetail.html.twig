@@ -121,17 +121,11 @@
 
 <!--<input type="hidden" name="cruise_id" value="{{cruise.id}}">	-->			
 
-	{% for nameDeck,prices in decks %}
+	{% for nameDeck,prices in decksJS %}
 	<h2>{{nameDeck}} палуба</h2>
 
 		{% for price in prices %}
 
-		
-	
-		
-		
-		
-			
 		<div class="block cabin-row">
 			<div class="cabin-table">
 				<div class="cabin-photo">
@@ -146,92 +140,42 @@
 				
 				</div>
 				{% endif %}	
-
 				</div><!--.cabin-photo-->
 				
-				
-			
-				
-
-				
-				
 				<div class="descr-block">
-					<div class="cabin-header">{% if price.name != "" %} {{price.name}} {% else %}  {{price.roomType.comment}} {% endif %}</div>
+					<div class="cabin-header"> {{price.name}} </div>
 					<div class="cabin-places">
 						Свободно: 
-						
 				{% for room in price.rooms %}
-				{% if room.statuses == 0 %}
-				{% if (price.roomPlacing.places == room.roomType.placesMax) or ((room.roomType.placesMax >= price.roomPlacing.places) and room.smaller == 1) %}
-					
 					<span class="places-number"   >{{room.number}}</span> 
-					
-				{% endif %}	
-				{% endif %}	
 				{% endfor %}
 					</div>
 					<div class="cabin-descr">
-						{% for motorshipRoom in price.roomType.motorshipRooms %}
-							<div>{{motorshipRoom.comment | nl2br}}</div>
-						{% endfor %}
-
-						
+						<div>{{price.description | nl2br}}</div>
 						<hr>
 						<div class="cabin-form">
 							<div class="price-variants">
-								
-											
-										
-
 					
 			{% for room in price.rooms %}
-				{% if room.statuses == 0 %}
-				{% if (price.roomPlacing.places == room.roomType.placesMax) or ((room.roomType.placesMax >= price.roomPlacing.places) and room.smaller == 1) %}
-					
 					<label for="">{{room.number}}</label><input type="checkbox" name="{{cruise.id}}-{{room.id}}" value="{{price.id}}">
-					
-				
-
-			
-				
-				{% endif %}
-				{% endif %}
 			{% endfor %}
-																	
-								
-
+															
 							</div>
-							
 							<div class="price-but">
-
-								
-								
 								<input class="btn btn-blue order-button" type="submit" value="ЗАКАЗАТЬ">
-								
-								
 							</div>
 						</div>						
-						
-						
 					</div>
 				</div>
 
-				
-				
-			{% for tariff in cruise.tariffs %}
-				{% if(tariff.isTariffPrivilege <= price.privilege) %}
-				{% if(tariff.isTariffChildren <= price.children) %}
-			
+			{% for tariff in price.tariff %}
+
 				<div class="cabin-price">
-					<div class="price">{{((price.price ) | round(-2,"ceil") * (100 + tariff.value)/100 ) | number_format(0, ' ', ' ') }} <span>руб.</span></div>
+					<div class="price">{{tariff.price | number_format(0, ' ', ' ') }} <span>руб.</span></div>
 					<div>{{tariff.name}}</div>
 				</div>
-				
-				{% endif %}
-				{% endif %}
-			{% endfor %}
 
-				
+			{% endfor %}
 				
 				<div class="expand-lnk"></div>
 				<div class="close-lnk hidden"><i class="icon icon-cancel"></i>свернуть</div>
@@ -261,7 +205,9 @@
 					<div class="city-name"><a href="#">{{day.port.name}}</a></div>
 					<div class="city-arrival">
 					
-						{% if (day.timeStart | localizeddate('full', 'none', null, null, 'HH:mm')) == '00:00'  %} 
+						{% if (((day.timeStart | localizeddate('full', 'none', null, null, 'HH:mm')) == '00:00') and ((day.timeStop | localizeddate('full', 'none', null, null, 'HH:mm')) == '00:00')) %}
+						
+						{% elseif (day.timeStart | localizeddate('full', 'none', null, null, 'HH:mm')) == '00:00'  %} 
 							Отправление <span class="ar-time">{{day.timeStop | localizeddate('full', 'none', null, null, 'HH:mm') }}</span> 
 						{% elseif (day.timeStop | localizeddate('full', 'none', null, null, 'HH:mm')) == '00:00' %} Прибытие <span class="ar-time">{{day.timeStart | localizeddate('full', 'none', null, null, 'HH:mm')}}</span> 
 						{% else %}  
@@ -321,7 +267,7 @@
 		</div>
 		
 	{{dump(cruise)}} 
-	{#{dump(decks)}#} 
+	{{dump(decks)}} 
 	{{dump(decksJS)}} 
 	
 	

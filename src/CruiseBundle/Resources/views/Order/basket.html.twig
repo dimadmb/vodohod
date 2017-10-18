@@ -7,7 +7,7 @@
 
 <div class="container">
 
-{{dump()}}
+{{dump(basket)}}
 
 {% for item in basket %}
 		<div class="contract-item">
@@ -20,6 +20,25 @@
 					<div class="blue"><a href="{{path('cruise_detail',{'id':item.cruise.id})}}">{{item.cruise.name}}</a></div>
 					{{item.cruise.dateStart | localizeddate('full', 'none', null, null, 'dd MMMM (eee)') }} -
 					{{item.cruise.dateStop | localizeddate('full', 'none', null, null, 'dd MMMM (eee) Y') }} 
+					
+					<br>
+					
+					{#{dump(item.priceBasket)}#}
+					
+					
+					{% for i in 1..item.places %}
+						<select name="" id="">
+						{% for tariff in item.priceBasket %}
+							<option value="">{{tariff.name}}: {{tariff.price}}</option>
+						{% endfor %}
+						</select>
+						<br>
+					{% endfor %}
+					
+
+					<br>
+					<a href="{{path('basket_item_delete',{'id':item.cruise.id~'-'~item.room.id})}}">Удалить</a>
+					
 				</div>
 				<div class="col-sm-3">
 					
@@ -47,6 +66,13 @@
 
 {% if allowNext %}
 <button>Далее</button>
+
+<ul>
+	{% for discount in discounts %}
+		<li>{{discount.name}}</li>
+	{% endfor %}
+</ul>
+
 {% else %}
 <p>Все каюты должны быть в одном круизе.</p>
 {% endif %}

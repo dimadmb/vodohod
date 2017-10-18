@@ -48,13 +48,7 @@
 							</div>
 							<label>Посетить</label>
 							<div class="input-box">
-								<select class="chosen-select" multiple>
-									<option value="">Москва</option>
-									<option value="">Санкт-Петербург</option>
-									<option value="">Астрахань</option>
-									<option value="">Волгоград</option>
-									<option value="">Саратов</option>
-								</select>
+								{{ form_widget(form.ports, {'attr':{'class':'chosen-select'}} ) }}
 							</div>
 							<div class="row buttons">
 								<div class="col-xs-6">

@@ -193,7 +193,7 @@ class CruiseService
 		return $query->getResult();
 	}
 
-	public function getDiscounts($cruise)
+	public function getDiscounts($cruise,$exclusions = false)
 	{
 		$em = $this->doctrine->getManager('cruise');
 		$q = "SELECT d
@@ -219,49 +219,11 @@ class CruiseService
 		
 		return $discounts;
 	}
-	
-	public function getPrices($cruise)
+
+
+	public function getPriceKoef($cruise)
 	{
-		$em = $this->doctrine->getManager('cruise');
-		
-		$q = "SELECT p,rt,mr
-			FROM CruiseBundle:Price p
-			LEFT JOIN p.roomType rt
-			LEFT JOIN rt.motorshipRooms mr 
-			WHERE p.year = ".$cruise->getDateStart()->format("Y")."
-			AND p.motorship = ".$cruise->getmotorship()->getId()."
-			AND p.active = 1
-			AND p.additional = 0
-			AND p.cruise IS NULL 
-			".
-			"AND ( mr.motorship = ".$cruise->getmotorship()->getId()." OR mr.motorship IS NULL)
-			"."
-			ORDER BY p.deck DESC , rt.priority ASC, p.roomPlacing ASC
-		";
-		$query = $em->createQuery($q);
-		$prices = $query->getResult();
-			
-		$q = "SELECT p,rt,mr
-			FROM CruiseBundle:Price p
-			LEFT JOIN p.roomType rt
-			LEFT JOIN rt.motorshipRooms mr 
-			WHERE p.year = ".$cruise->getDateStart()->format("Y")."
-			AND p.motorship = ".$cruise->getmotorship()->getId()."
-			AND p.active = 1
-			AND p.additional = 0
-			AND p.cruise =  ".$cruise->getId()."
-			
-			AND ( mr.motorship = ".$cruise->getmotorship()->getId()." OR mr.motorship IS NULL)
-
-			ORDER BY p.deck DESC , rt.priority ASC, p.roomPlacing ASC
-		";
-		$query = $em->createQuery($q);
-		$prices_cruise = $query->getResult();	
-
-
-
-		$days = 1 + (strtotime($cruise->getDateStop()->format("Y-m-d")) - strtotime($cruise->getDateStart()->format("Y-m-d")))/86400;
-		$cruise->days = $days;
+		$cruise->days =  1 + (strtotime($cruise->getDateStop()->format("Y-m-d")) - strtotime($cruise->getDateStart()->format("Y-m-d")))/86400;
 		
 		// установим priceDays 
 		if($cruise->getPriceDays() == 0)
@@ -282,7 +244,54 @@ class CruiseService
 			$cruise->priceDaysFinal = $cruise->getPriceDays();
 		}
 		
-		$koef = $cruise->priceDaysFinal * $cruise->getPriceKoef();
+		return $koef = $cruise->priceDaysFinal * $cruise->getPriceKoef();		
+	}
+	
+	public function getPrices($cruise,$price = null)
+	{
+		$em = $this->doctrine->getManager('cruise');
+		
+		$priceWhere = (null === $price) ? "" : "AND p.id = ".$price->getId() ;
+		
+		$q = "SELECT p,rt,mr
+			FROM CruiseBundle:Price p
+			LEFT JOIN p.roomType rt
+			LEFT JOIN rt.motorshipRooms mr 
+			WHERE p.year = ".$cruise->getDateStart()->format("Y")."
+			AND p.motorship = ".$cruise->getmotorship()->getId()."
+			AND p.active = 1
+			AND p.additional = 0
+			AND p.cruise IS NULL 
+			".
+			"AND ( mr.motorship = ".$cruise->getmotorship()->getId()." OR mr.motorship IS NULL)
+			".$priceWhere."
+			ORDER BY p.deck DESC , rt.priority ASC, p.roomPlacing ASC
+		";
+		$query = $em->createQuery($q);
+		$prices = $query->getResult();
+			
+		$q = "SELECT p,rt,mr
+			FROM CruiseBundle:Price p
+			LEFT JOIN p.roomType rt
+			LEFT JOIN rt.motorshipRooms mr 
+			WHERE p.year = ".$cruise->getDateStart()->format("Y")."
+			AND p.motorship = ".$cruise->getmotorship()->getId()."
+			AND p.active = 1
+			AND p.additional = 0
+			AND p.cruise =  ".$cruise->getId()."
+			
+			AND ( mr.motorship = ".$cruise->getmotorship()->getId()." OR mr.motorship IS NULL)
+			".$priceWhere."
+			ORDER BY p.deck DESC , rt.priority ASC, p.roomPlacing ASC
+		";
+		$query = $em->createQuery($q);
+		$prices_cruise = $query->getResult();	
+
+		
+		$koef = $this->getPriceKoef($cruise);
+
+
+
 		
 		foreach($prices as $price)
 		{
@@ -432,6 +441,17 @@ class CruiseService
 				$qb->andWhere("cc.id IN (:category) ");
 				$qb->setParameter('category', $category);
 			}			
+						
+			// порты посетить 
+			if(isset($data['ports']) && null != $data['ports'])
+			{
+				$ports = $data['ports'];
+				//$qb->add("LEFT JOIN c.category" , "cc");
+				
+				$qb->leftJoin('c.cruiseDays', 'cd');
+				$qb->andWhere("cd.port IN (:ports) ");
+				$qb->setParameter('ports', $ports);
+			}			
 			
 			if(isset($data['sortable']) && null != $data['sortable'])
 			{
@@ -498,7 +518,7 @@ class CruiseService
 			
 			///$cruise->ts=$this->getTariffs($cruise,false,false);
 			
-			
+			/// её можно перенести в Entity\Cruise getDays()
 			$days = 1 + (strtotime($cruise->getDateStop()->format("Y-m-d")) - strtotime($cruise->getDateStart()->format("Y-m-d")))/86400;
 			$cruise->days = $days;
 					
@@ -514,7 +534,7 @@ class CruiseService
 			$portsPlus = [];
 			foreach($cruise->getCruiseDays() as $cruiseDays)
 			{
-				$port_for_array = str_replace(["Москва (Северный речной вокзал)","Санкт-Петербург (причал «Уткина заводь»)"],["Москва","Санкт-Петербург"],$cruiseDays->getPort()->getName()) ;
+				$port_for_array = str_replace(["Москва (Северный речной вокзал)","Санкт-Петербург (причал «Уткина заводь»)","Санкт-Петербург (причал «Соляной причал»)"],["Москва","Санкт-Петербург","Санкт-Петербург"],$cruiseDays->getPort()->getName()) ;
 				if( (! in_array($port_for_array, $array_port_from_cruise_name)) and $port_for_array!='День на борту'){
 					$array_port_from_cruise_name[] = $port_for_array;
 					$portsPlus[] = $port_for_array;
@@ -715,7 +735,151 @@ class CruiseService
 		return $res;
 	} 
 	
+	public function getPorts()
+	{
+		$em = $this->doctrine->getManager('cruise');
+		$sql = "
+			SELECT p
+			FROM CruiseBundle:Port p
+			LEFT JOIN p.cruiseDays cd 
+			LEFT JOIN cd.cruise c
+
+			WHERE c.dateStart >= CURRENT_TIMESTAMP()
+			AND c.id IS NOT NULL
+			
+			AND p.name NOT LIKE '%борт%'
+			
+			GROUP BY p.id
+			ORDER BY p.name
+		";
+		$query = $em->createQuery($sql);
+		
+		$ports = $query->getResult();
+				
+		$res = [];
+		foreach($ports as $port)
+		{
+			$res[trim($port->getName(),'.')] = $port->getId();
+		}
+		
+		return $res;
+	} 
+	
+	public function getPriceMatrix($cruise, $imagesOn = true)
+	{
+		$em_base = $this->doctrine->getManager();
+		$prices = $this->getPrices($cruise);
+
+		
+		$decks = [];
+		$decksJS = [];
+		$priceMin = null;
+		foreach($prices as $price)
+		{
+			$priceJS = [];
+			
+			$priceJS['id'] = $price->getId();
+			$priceJS['price'] = $price->price;
+			$priceJS['places']= $price->getRoomPlacing()->getPlaces();	
+			
+			
+			$tariffJS = [];
+			foreach($cruise->tariffs as $tariff)
+			{
+				if($tariff->getIsTariffPrivilege() <= $price->getPrivilege())
+				{
+				if($tariff->getIsTariffChildren() <= $price->getChildren()) 
+				{
+					
+					$tariffJS['name'] = $tariff->getName();
+					$tariffJS['price'] = ceil($price->price/100) * (100 + $tariff->getValue());
+				
+				$priceJS['tariff'][] = $tariffJS;
+				}
+				}	
+			}
+			
+			
+			$decription = '';
+			foreach($price->getRoomType()->getMotorshipRooms() as $motorshipRooms)
+			{
+				$decription = $motorshipRooms->getComment();
+			}			
+			$priceJS['description'] = $decription;
+			
+			
+			$priceMin = (null == $priceMin || $price->price < $priceMin) ? $price->price : $priceMin;
+			$arr_rooms = [];
+			$arr_roomsJS = [];
+			
+			foreach($cruise->getMotorship()->getRoom() as $room)
+			{
+				if($room->getDeck() == $price->getDeck() && $room->getRoomType() == $price->getRoomType())
+				{
+					$arr_rooms[] = $room;
+					
+					if($room->statuses == 0 )
+					{
+						if (  ($price->getRoomPlacing()->getPlaces() == $room->getRoomType()->getPlacesMax()) or (($room->getRoomType()->getPlacesMax() >= $price->getRoomPlacing()->getPlaces()) and $room->getSmaller() == 1)	)				
+						{	
+							$arr_roomsJS[] = ['number'=>$room->getNumber() , 'id' => $room->getId()] ;
+						}
+					}
+					
+				}
+			}
+			$price->rooms = $arr_rooms; // список кают в данном прайсе.ы
+			$priceJS['rooms'] = $arr_roomsJS; // список кают в данном прайсе.ы
+			$priceJS['name'] = $price->getName() != "" ? $price->getName() : $price->getRoomType()->getComment();			
+			
+			if($imagesOn)
+			{
+			// нужно добавить фотки 
+			$images = $em_base->getRepository("BaseBundle:MotorshipRoomImage")->findOneBy([
+							'motorship'=> $price->getMotorship()->getId(),
+							'deck'=> $price->getDeck()->getId(),
+							'roomType'=> $price->getRoomType()->getId(),
+						],
+						[
+							'sort'=>'ASC',
+							'id'  =>'ASC'
+						]);
+			$price->images = $images;
+			$priceJS['images'] = $images;
+			}
+			
+			$decks[$price->getDeck()->getName()][] = $price;
+			$decksJS[$price->getDeck()->getName()][] = $priceJS;
+			
+		}
+	return['decks'=>$decks, 'decksJS'=>$decksJS, 'priceMin'=>$priceMin ];
+	}
 	
 	
+	public function getPriceBasket($cruise, $room, $price)
+	{
+		//$price = $this->getPrices($cruise,$price)[0];
+		$koef = $this->getPriceKoef($cruise);
+		$price->price = (int)($price->getValue()*$koef);
+		
+			$priceJS = [];
+			foreach($cruise->tariffs as $tariff)
+			{
+				if($tariff->getIsTariffPrivilege() <= $price->getPrivilege())
+				{
+				if($tariff->getIsTariffChildren() <= $price->getChildren()) 
+				{
+					
+					$tariffJS['name'] = $tariff->getName();
+					$tariffJS['price'] = ceil($price->price/100) * (100 + $tariff->getValue());
+
+				
+				$priceJS[] = $tariffJS;
+				}
+				}	
+			}
+			
+		return $priceJS;
+	}
 	
 }
