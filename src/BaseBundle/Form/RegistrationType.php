@@ -16,6 +16,7 @@ class RegistrationType extends AbstractType
         $builder
 			->add('firstName',null,['label'=>'Имя'])
 			->add('lastName',null,['label'=>'Фамилия'])
+			->add('fatherName',null,['label'=>'Отчество'])
 		;	
     }
 

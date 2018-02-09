@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+
+
+<div class="container">
+
+{{dump(orders)}}
+
+<table class="table">
+{% for order in orders %}	
+	<tr>
+		<td>{{order.created | date("d.m.Y H:i")}}</td>
+		<td>статус</td>
+		<td>номер</td>
+		<td>{{order.cruise.id}}</td>
+		<td>{% for orderItem in order.orderItems %}{{orderItem.room.number}} {% endfor %}</td>
+		<td></td>
+		<td></td>
+	</tr>
+{% endfor %}	
+</table>
+
+
+</div>
+{% endblock %}
+
+
+{% block javascriptsonload %}
+
+{% endblock %}

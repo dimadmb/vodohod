@@ -45,7 +45,7 @@ assetic:
     use_controller: false
     bundles:        [ ]
     #java: /usr/bin/java
-    java: "/home/q/q12naswz/.local/bin/java"
+    #java: "/home/q/q12naswz/.local/bin/java"
     filters:
         cssrewrite: ~
 
@@ -141,6 +141,7 @@ swiftmailer:
     port:       "%mailer_port%"
     encryption: "%mailer_encryption%"
     spool:     { type: memory }
+    auth_mode:  login
 
 liip_imagine :
     resolvers :

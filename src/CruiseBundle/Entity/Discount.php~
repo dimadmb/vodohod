@@ -172,6 +172,11 @@ class Discount
     private $code1s;
 
 
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="DiscountExclusion", mappedBy="discount")
+	 */
+	private $exclusions;
 
     /**
      * Get id
@@ -685,5 +690,46 @@ class Discount
     public function getCode1s()
     {
         return $this->code1s;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->exclusions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add exclusion
+     *
+     * @param \CruiseBundle\Entity\DiscountExclusion $exclusion
+     *
+     * @return Discount
+     */
+    public function addExclusion(\CruiseBundle\Entity\DiscountExclusion $exclusion)
+    {
+        $this->exclusions[] = $exclusion;
+
+        return $this;
+    }
+
+    /**
+     * Remove exclusion
+     *
+     * @param \CruiseBundle\Entity\DiscountExclusion $exclusion
+     */
+    public function removeExclusion(\CruiseBundle\Entity\DiscountExclusion $exclusion)
+    {
+        $this->exclusions->removeElement($exclusion);
+    }
+
+    /**
+     * Get exclusions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getExclusions()
+    {
+        return $this->exclusions;
     }
 }

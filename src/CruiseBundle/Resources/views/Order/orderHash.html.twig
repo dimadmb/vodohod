@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+
+
+<div class="container">
+
+{{dump()}}
+
+<form class="form-horizontal" action="{{path('cruise_order')}}" method="post">
+
+{% for orderItem in order.orderItems %}
+		<div class="contract-item">
+			<div class="row">
+				<div class="col-md-2 col-sm-3">
+					<div class="blue"><a href="{{path('fleet_ship',{'shipcode':order.cruise.motorship.code})}}">{{order.cruise.motorship.name}}</a></div>
+					
+				</div>
+				<div class="col-md-7 col-sm-6 center-block">
+					<div class="blue"><a href="{{path('cruise_detail',{'id':order.cruise.id})}}">{{order.cruise.name}}</a></div>
+					{{order.cruise.dateStart | localizeddate('full', 'none', null, null, 'dd MMMM (eee)') }} -
+					{{order.cruise.dateStop | localizeddate('full', 'none', null, null, 'dd MMMM (eee) Y') }} 
+					
+					<br>
+					
+					{#{dump(item.priceBasket)}#}
+					
+					
+					{% for i in 1..orderItem.roomPlace.id %}
+						<select name="room[{{orderItem.room.id}}][]" id="">
+						{% for tariff in orderItem.priceBasket %}
+							<option value="{{tariff.id}}">{{tariff.name}}: {{tariff.price}}</option>
+						{% endfor %}
+						</select>
+						<br>
+					{% endfor %}
+					
+
+					<br>
+					<a href="{{path('basket_item_delete',{'id':order.cruise.id~'-'~orderItem.room.id})}}">Удалить</a>
+					
+				</div>
+				<div class="col-sm-3">
+					
+					
+					
+					<div class="blue">Каюта {{orderItem.room.number}} {{orderItem.room.deck.name}} палуба</div>
+					
+					{% if orderItem.price.name != "" %}
+						<div>{{orderItem.price.name}}</div>
+					{% else %}
+						<div>{{orderItem.room.roomType.name}}</div>
+					{% endif %}
+					
+					
+					
+					<div>{{orderItem.price.roomPlacing.name}}</div>
+					
+					
+				</div>
+			</div>
+		</div>
+{% endfor %}
+
+
+
+
+
+{% if allowNext %}
+<button>Далее</button>
+
+
+	{% for discount in discounts %}
+  <div class="form-group">
+
+      <div class="checkbox">	
+		<label><input type="checkbox" class="check_discount" data-id="{{discount.id}}" exclusions="{% for exclusion in discount.exclusions %}{{exclusion.discountExclusion.id}},{% endfor %}" name="discount_{{discount.id}}" id="discount_{{discount.id}}"> {{discount.name}}</label>
+      </div>
+
+  </div>		
+	{% endfor %}
+
+</form>
+
+{% else %}
+<p style="color:red; font-weight:900;">Все каюты должны быть в одном круизе.</p>
+{% endif %}
+
+</div>
+{% endblock %}
+
+
+{% block javascriptsonload %}
+
+$('input.check_discount').change(function(){
+	exclusions = $(this).attr('exclusions');
+	exclusions_array = exclusions.split(',');
+	for(var exclusion in exclusions_array)
+	{			
+		$('input.check_discount#discount_' + exclusions_array[exclusion]).attr('checked',false);
+	}
+});
+
+{% endblock %}

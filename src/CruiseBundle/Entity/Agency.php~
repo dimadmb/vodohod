@@ -1,0 +1,271 @@
+<?php
+
+namespace CruiseBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Agency
+ *
+ * @ORM\Table(name="agency")
+ * @ORM\Entity(repositoryClass="CruiseBundle\Repository\AgencyRepository")
+ */
+class Agency
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255)
+     */
+    private $name;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="type", type="string", length=255)
+     */
+    private $type;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nameShort", type="string", length=255)
+     */
+    private $nameShort;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="active", type="boolean")
+     */
+    private $active;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="status", type="integer")
+     */
+    private $status;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="url", type="string", length=255, nullable=true)
+     */
+    private $url;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="inn", type="string", length=255)
+     */
+    private $inn;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="okpo", type="string", length=255)
+     */
+    private $okpo;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="kpp", type="string", length=255)
+     */
+    private $kpp;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="bik", type="string", length=255)
+     */
+    private $bik;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="phone", type="string", length=255)
+     */
+    private $phone;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="bank", type="string", length=255)
+     */
+    private $bank;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="account_number", type="string", length=255)
+     */
+    private $accountNumber;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="account_number_corr", type="string", length=255)
+     */
+    private $accountNumberCorr;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="create", type="datetime")
+     */
+    private $create;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="update", type="datetime")
+     */
+    private $update;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="address", type="string", length=255)
+     */
+    private $address;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="address_post", type="string", length=255)
+     */
+    private $addressPost;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="address_factual", type="string", length=255)
+     */
+    private $addressFactual;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="email", type="string", length=255)
+     */
+    private $email;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="tax_light", type="string", length=5)
+     */
+    private $taxLight;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="user_id", type="integer", nullable=true)
+     */
+    private $userId;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="agency_1s_read_time", type="datetime")
+     */
+    private $agency1sReadTime;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="agency_1s_read", type="boolean")
+     */
+    private $agency1sRead;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="agency_1s_uploaded", type="boolean")
+     */
+    private $agency1sUploaded;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="agency_1s_id", type="string", length=20)
+     */
+    private $agency1sId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="agency_1s_code", type="string", length=50)
+     */
+    private $agency1sCode;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="agency_header_document", type="string", length=255)
+     */
+    private $agencyHeaderDocument;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="agency_header_state_genitive", type="string", length=255)
+     */
+    private $agencyHeaderStateGenitive;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="agency_header_fio_genitive", type="string", length=255)
+     */
+    private $agencyHeaderFioGenitive;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="agency_header_state", type="string", length=255)
+     */
+    private $agencyHeaderState;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="agency_header_fio", type="string", length=255)
+     */
+    private $agencyHeaderFio;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="agency_add_type", type="string", length=20)
+     */
+    private $agencyAddType;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="agency_added_type", type="string", length=20)
+     */
+    private $agencyAddedType;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ac_1s_code", type="string", length=50)
+     */
+    private $ac1sCode;
+
+
+}
+

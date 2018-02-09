@@ -8,17 +8,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * CruiseCategory
  *
- * @ORM\Table(name="cruise_category", uniqueConstraints={@ORM\UniqueConstraint(name="code", columns={"code"})})
+ * @ORM\Table(name="cruise_category", uniqueConstraints={@ORM\UniqueConstraint(name="id", columns={"id"})})
  * @ORM\Entity(repositoryClass="CruiseBundle\Repository\CruiseCategoryRepository")
  */
 class CruiseCategory
 {
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="string", length=255)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+
      */
     private $id;
 
@@ -30,17 +30,12 @@ class CruiseCategory
     private $name;
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="CruiseCruiseCategory", mappedBy="cruiseCategoryCode")
-	 */
-	private $categories;
+	 * @ORM\ManyToMany(targetEntity="Cruise", inversedBy="category")
+	 */	
+    private $cruises;
 	
 	
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="code", type="string", length=255)
-     */
-    private $code;
+
 	
 
 	public function __toString()
@@ -106,5 +101,60 @@ class CruiseCategory
     public function getCode()
     {
         return $this->code;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->cruises = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add cruise
+     *
+     * @param \CruiseBundle\Entity\Cruise $cruise
+     *
+     * @return CruiseCategory
+     */
+    public function addCruise(\CruiseBundle\Entity\Cruise $cruise)
+    {
+        $this->cruises[] = $cruise;
+
+        return $this;
+    }
+
+    /**
+     * Remove cruise
+     *
+     * @param \CruiseBundle\Entity\Cruise $cruise
+     */
+    public function removeCruise(\CruiseBundle\Entity\Cruise $cruise)
+    {
+        $this->cruises->removeElement($cruise);
+    }
+
+    /**
+     * Get cruises
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCruises()
+    {
+        return $this->cruises;
+    }
+
+    /**
+     * Set id
+     *
+     * @param string $id
+     *
+     * @return CruiseCategory
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 }

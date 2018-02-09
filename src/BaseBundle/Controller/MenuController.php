@@ -25,7 +25,7 @@ class MenuController extends Controller
 				$add = true;
 				foreach($parent->getChildren() as $p)
 				{
-					if($p = $page) 
+					if($p == $page) 
 					{
 						$add = false;
 					}

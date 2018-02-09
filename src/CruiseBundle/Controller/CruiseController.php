@@ -19,6 +19,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
+use Symfony\Component\HttpFoundation\Session\Session;
+
 
 class CruiseController extends Controller
 {
@@ -168,7 +170,6 @@ class CruiseController extends Controller
 	public function cruisedetailAction($id)
 	{
 		
-		
 		$em = $this->getDoctrine()->getManager("cruise");
 		$cruiseRepository = $em->getRepository('CruiseBundle:Cruise');
 
@@ -242,6 +243,7 @@ class CruiseController extends Controller
 		$decksJS = $priceMatrix['decksJS'];
 		$decks   = $priceMatrix['decks'];
 		$priceMin = $priceMatrix['priceMin'];
+		$rns = $priceMatrix['rns'];
 		
 		$cruise->setPriceMin(ceil( (int)$priceMin/100)*100);
 		$em->persist($cruise);
@@ -251,15 +253,37 @@ class CruiseController extends Controller
 		$cruise->discount = $this->get("cruise_service")->getDiscounts($cruise);
 		$cruise->tariffsHidden = $this->get('cruise_service')->getTariffs($cruise, true);
 		
+		$session = new Session();
+		dump($session);
+		dump($session->getId());		
+		$basket = $session->get('basket');
 		
+		$ordering = [];
+		if(null !== $basket)
+		{
+			foreach($basket as $key=>$item)
+			{
+				list($cruise_id,$room_id) = explode('-',$key);
+				if($cruise_id = $cruise->getId())
+				{
+					$room = $em->getRepository('CruiseBundle:Room')->findOneById($room_id);
+					$ordering[] = [
+					'offer'=>$item,
+					'room'=>$room->getNumber()
+					];
+				}
+			}			
+		}
+
 		
 		return [
 					"cruise" => $cruise,
 					'decksJS' => $decksJS,
 					'decks' => $decks,
+					'rns' => $rns,
 					'bannerImg'=>'cruisetopbg.jpg',
-					'bannerHtml' => $this->renderView("CruiseBundle:Cruise:cruiseh1.html.twig",["cruise" => $cruise])
-					
+					'bannerHtml' => $this->renderView("CruiseBundle:Cruise:cruiseh1.html.twig",["cruise" => $cruise]),
+					'ordering' => $ordering
 					];
 	}
 }

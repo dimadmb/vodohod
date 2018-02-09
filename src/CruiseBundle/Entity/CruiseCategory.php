@@ -18,7 +18,7 @@ class CruiseCategory
      *
      * @ORM\Column(name="id", type="string", length=255)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+
      */
     private $id;
 
@@ -101,5 +101,60 @@ class CruiseCategory
     public function getCode()
     {
         return $this->code;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->cruises = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add cruise
+     *
+     * @param \CruiseBundle\Entity\Cruise $cruise
+     *
+     * @return CruiseCategory
+     */
+    public function addCruise(\CruiseBundle\Entity\Cruise $cruise)
+    {
+        $this->cruises[] = $cruise;
+
+        return $this;
+    }
+
+    /**
+     * Remove cruise
+     *
+     * @param \CruiseBundle\Entity\Cruise $cruise
+     */
+    public function removeCruise(\CruiseBundle\Entity\Cruise $cruise)
+    {
+        $this->cruises->removeElement($cruise);
+    }
+
+    /**
+     * Get cruises
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCruises()
+    {
+        return $this->cruises;
+    }
+
+    /**
+     * Set id
+     *
+     * @param string $id
+     *
+     * @return CruiseCategory
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 }

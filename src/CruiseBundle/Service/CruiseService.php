@@ -150,7 +150,7 @@ class CruiseService
 		$em = $this->doctrine->getManager('cruise');
 		$parameters = ['cruiseDateStart'=>$cruise->getDateStart()];
 		$sql = "
-			SELECT t
+			SELECT t , ( CASE WHEN (t.id = 6) THEN 1 ELSE 0 END ) AS HIDDEN intur
 			FROM CruiseBundle:Tariff t
 			LEFT JOIN t.cruiseTariff ct
 			WHERE t.hideInTables = ".(int)$hide."
@@ -177,7 +177,9 @@ class CruiseService
 							:cruiseDateStart > t.cruiseDateStart
 						AND :cruiseDateStart < t.cruiseDateStop
 					)
-				) 
+				)
+			
+
 		";
 		if(!$hide) $sql .= " AND t.isTariffWithoutPlace = 0 ";
 		if(false == $toAllCruises) 
@@ -185,17 +187,25 @@ class CruiseService
 			$sql .= " AND t.toAllCruises = :toAllCruises ";
 			$parameters['toAllCruises'] = $toAllCruises;
 		}
+		
+		//$sql .= " ORDER BY intur DESC "; // для сортировки интуристов, скорее всего не пригодится 
 		// добавить временнЫе ограничения
 		$query = $em->createQuery($sql)		
 		->setParameters($parameters);
+		//dump($query);
 		
+		
+		//dump($query->getResult());
 		
 		return $query->getResult();
 	}
 
-	public function getDiscounts($cruise,$exclusions = false)
+	public function getDiscounts($cruise,$exclusions = false, $turistCount = 1)
 	{
 		$em = $this->doctrine->getManager('cruise');
+		
+		$addSql = ($turistCount > 1)? " AND d.placesLimit <= $turistCount " : "";
+		
 		$q = "SELECT d
 			FROM CruiseBundle:Discount d
 			WHERE d.toAllCruises = 1 
@@ -207,8 +217,28 @@ class CruiseService
 				OR 
 				(d.cruiseDateStart = '000-00-00' AND (d.payingDateStart <= CURRENT_TIMESTAMP()	AND d.payingDateStop >= CURRENT_TIMESTAMP()))
 				)
+			".$addSql."	
 			ORDER BY d.priority
 		";
+		if($exclusions)
+		{
+		$q = "SELECT d,de
+			FROM CruiseBundle:Discount d
+			LEFT JOIN d.exclusions de
+			WHERE d.toAllCruises = 1 
+			AND d.active = 1
+			AND d.hideInTables = 0 
+			AND d.isInShop = 1
+			AND (
+				(d.cruiseDateStart <= :cruiseDateStart	AND d.cruiseDateStop >= :cruiseDateStop) 
+				OR 
+				(d.cruiseDateStart = '000-00-00' AND (d.payingDateStart <= CURRENT_TIMESTAMP()	AND d.payingDateStop >= CURRENT_TIMESTAMP()))
+				)
+			".$addSql."		
+			ORDER BY d.priority
+		";			
+		}
+		
 		$query = $em->createQuery($q)
 		->setParameters([
 			'cruiseDateStart'=>$cruise->getDateStart(),
@@ -774,6 +804,9 @@ class CruiseService
 		$decks = [];
 		$decksJS = [];
 		$priceMin = null;
+		
+		$rns = [];
+		
 		foreach($prices as $price)
 		{
 			$priceJS = [];
@@ -812,6 +845,7 @@ class CruiseService
 			$arr_rooms = [];
 			$arr_roomsJS = [];
 			
+			
 			foreach($cruise->getMotorship()->getRoom() as $room)
 			{
 				if($room->getDeck() == $price->getDeck() && $room->getRoomType() == $price->getRoomType())
@@ -823,12 +857,14 @@ class CruiseService
 						if (  ($price->getRoomPlacing()->getPlaces() == $room->getRoomType()->getPlacesMax()) or (($room->getRoomType()->getPlacesMax() >= $price->getRoomPlacing()->getPlaces()) and $room->getSmaller() == 1)	)				
 						{	
 							$arr_roomsJS[] = ['number'=>$room->getNumber() , 'id' => $room->getId()] ;
+							$rns[$room->getNumber()][$price->getId()] =  $decription;
 						}
 					}
 					
 				}
 			}
 			$price->rooms = $arr_rooms; // список кают в данном прайсе.ы
+			//$priceJS['rns'] = $rns; // описания для JS 
 			$priceJS['rooms'] = $arr_roomsJS; // список кают в данном прайсе.ы
 			$priceJS['name'] = $price->getName() != "" ? $price->getName() : $price->getRoomType()->getComment();			
 			
@@ -852,7 +888,7 @@ class CruiseService
 			$decksJS[$price->getDeck()->getName()][] = $priceJS;
 			
 		}
-	return['decks'=>$decks, 'decksJS'=>$decksJS, 'priceMin'=>$priceMin ];
+	return['decks'=>$decks, 'decksJS'=>$decksJS, 'rns'=>$rns, 'priceMin'=>$priceMin ];
 	}
 	
 	
@@ -870,8 +906,10 @@ class CruiseService
 				if($tariff->getIsTariffChildren() <= $price->getChildren()) 
 				{
 					
+					$tariffJS['id'] = $tariff->getId();
 					$tariffJS['name'] = $tariff->getName();
 					$tariffJS['price'] = ceil($price->price/100) * (100 + $tariff->getValue());
+					
 
 				
 				$priceJS[] = $tariffJS;

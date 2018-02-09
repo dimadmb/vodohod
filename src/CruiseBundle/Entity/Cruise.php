@@ -954,4 +954,38 @@ class Cruise
     {
         return $this->cruiseDiscount;
     }
+
+    /**
+     * Add category
+     *
+     * @param \CruiseBundle\Entity\CruiseCategory $category
+     *
+     * @return Cruise
+     */
+    public function addCategory(\CruiseBundle\Entity\CruiseCategory $category)
+    {
+        $this->category[] = $category;
+
+        return $this;
+    }
+
+    /**
+     * Remove category
+     *
+     * @param \CruiseBundle\Entity\CruiseCategory $category
+     */
+    public function removeCategory(\CruiseBundle\Entity\CruiseCategory $category)
+    {
+        $this->category->removeElement($category);
+    }
+
+    /**
+     * Get category
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
 }

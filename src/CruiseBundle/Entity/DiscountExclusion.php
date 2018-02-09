@@ -23,7 +23,7 @@ class DiscountExclusion
 	
 	
 	/**
-	* @ORM\ManyToOne(targetEntity="Discount")
+	* @ORM\ManyToOne(targetEntity="Discount", inversedBy="exclusions")
 	*/
     private $discount; 		
 	

@@ -7,7 +7,9 @@
 
 <div class="container">
 
-{{dump(basket)}}
+{{dump()}}
+
+<form class="form-horizontal" action="{{path('cruise_order')}}" method="post">
 
 {% for item in basket %}
 		<div class="contract-item">
@@ -23,18 +25,7 @@
 					
 					<br>
 					
-					{#{dump(item.priceBasket)}#}
-					
-					
-					{% for i in 1..item.places %}
-						<select name="" id="">
-						{% for tariff in item.priceBasket %}
-							<option value="">{{tariff.name}}: {{tariff.price}}</option>
-						{% endfor %}
-						</select>
-						<br>
-					{% endfor %}
-					
+
 
 					<br>
 					<a href="{{path('basket_item_delete',{'id':item.cruise.id~'-'~item.room.id})}}">Удалить</a>
@@ -64,17 +55,18 @@
 
 
 
-{% if allowNext %}
-<button>Далее</button>
 
-<ul>
-	{% for discount in discounts %}
-		<li>{{discount.name}}</li>
-	{% endfor %}
-</ul>
+
+{% if allowNext %}
+
+{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+<a href="{{path('cruise_order')}}" class="btn btn-red ">Далее</a>
+{% else %}
+<p>Чтобы продолжить, необходимо <a href="{{path('cruise_order')}}" class="btn btn-red "> войти или зарегистрироваться</a></p>
+{% endif %}
 
 {% else %}
-<p>Все каюты должны быть в одном круизе.</p>
+<p style="color:red; font-weight:900;">Все каюты должны быть в одном круизе.</p>
 {% endif %}
 
 </div>

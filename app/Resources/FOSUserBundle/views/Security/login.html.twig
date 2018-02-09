@@ -1,6 +1,11 @@
 {% extends "FOSUserBundle::layout.html.twig" %}
 
+
+
 {% block fos_user_content %}
+
+
+{#{dump()}#}
 
 	{% trans_default_domain 'FOSUserBundle' %}
 
@@ -9,6 +14,7 @@
 	{% endif %}
 
 	<form action="{{ path("fos_user_security_check") }}" method="post">
+	
 	  <div class="form-group">
 		<input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
 

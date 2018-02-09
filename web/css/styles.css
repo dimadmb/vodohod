@@ -145,7 +145,7 @@ ul li {
 .btn-red {
   background-color: #fc5b63;
   border-color: #fc5b63;
-  color: #fff;
+  color: #fff !important;
 }
 .btn-red:hover {
   background-color: #e43740;
