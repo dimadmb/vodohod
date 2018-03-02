@@ -1202,4 +1202,29 @@ class Ordering
     {
         return $this->orderItems;
     }
+
+    /**
+     * Set hashCode
+     *
+     * @param string $hashCode
+     *
+     * @return Ordering
+	 * @ORM\PrePersist()		 
+     */
+    public function setHashCode()
+    {
+        $this->hashCode = md5(rand(1,99999).date("d-H-i-s"));
+
+        return $this;
+    }
+
+    /**
+     * Get hashCode
+     *
+     * @return string
+     */
+    public function getHashCode()
+    {
+        return $this->hashCode;
+    }
 }

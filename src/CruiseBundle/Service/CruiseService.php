@@ -200,11 +200,11 @@ class CruiseService
 		return $query->getResult();
 	}
 
-	public function getDiscounts($cruise,$exclusions = false, $turistCount = 1)
+	public function getDiscounts($cruise,$exclusions = false, $turistCount = null)
 	{
 		$em = $this->doctrine->getManager('cruise');
 		
-		$addSql = ($turistCount > 1)? " AND d.placesLimit <= $turistCount " : "";
+		$addSql = ($turistCount !== null)? " AND d.placesLimit <= $turistCount " : "";
 		
 		$q = "SELECT d
 			FROM CruiseBundle:Discount d
@@ -539,7 +539,7 @@ class CruiseService
 			{$cruise->ts = $ts;}
 			else
 			{
-				dump($this->getCruiseCategory($cruise));
+				//dump($this->getCruiseCategory($cruise));
 				
 				$cruise->ts = array_merge($this->getTariffs($cruise,false,false),$this->getCruiseCategory($cruise));
 				$this->memcacheDefault->set('tariffToNoAllCruises'.$cruise->getId(),$cruise->ts,0,60*60*1);  // час 

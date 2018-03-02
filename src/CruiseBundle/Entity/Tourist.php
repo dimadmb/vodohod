@@ -73,73 +73,84 @@ class Tourist
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="updated", type="datetime")
+     * @ORM\Column(name="updated", type="datetime", nullable=true)
      */
     private $updated;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="tourist_1s_id", type="string", length=11)
+     * @ORM\Column(name="tourist_1s_id", type="string", length=11, nullable=true)
      */
     private $tourist1sId;
 
     /**
      * @var bool
      *
-     * @ORM\Column(name="tourist_1s_read", type="boolean")
+     * @ORM\Column(name="tourist_1s_read", type="boolean", nullable=true)
      */
     private $tourist1sRead;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="tourist_1s_read_time", type="datetime")
+     * @ORM\Column(name="tourist_1s_read_time", type="datetime", nullable=true)
      */
     private $tourist1sReadTime;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="tourist_1s_code", type="string", length=50)
+     * @ORM\Column(name="tourist_1s_code", type="string", length=50, nullable=true)
      */
     private $tourist1sCode;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="tourist_1s_barcode", type="string", length=50)
+     * @ORM\Column(name="tourist_1s_barcode", type="string", length=50, nullable=true)
      */
     private $tourist1sBarcode;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="user_id", type="integer")
+     * @ORM\Column(name="user_id", type="integer", nullable=true)
      */
     private $userId;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="agency_id", type="integer")
+     * @ORM\Column(name="agency_id", type="integer", nullable=true)
      */
     private $agencyId;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="agency_id_temp", type="integer")
+     * @ORM\Column(name="agency_id_temp", type="integer", nullable=true)
      */
     private $agencyIdTemp;
 
     /**
      * @var bool
      *
-     * @ORM\Column(name="tourist_docs_full", type="boolean")
+     * @ORM\Column(name="tourist_docs_full", type="boolean", nullable=true)
      */
     private $touristDocsFull;
 
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="TouristDocument", mappedBy="tourist")
+	 */
+	private $touristDocuments; 
+	
+	
+	public function __toString()
+	{
+		return $this->lastname. " " . $this->name. " " . $this->fathername. " " .$this->dateBirth->format("d.m.Y");
+ 	}
 
     /**
      * Get id
@@ -557,5 +568,46 @@ class Tourist
     public function getTouristDocsFull()
     {
         return $this->touristDocsFull;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->touristDocuments = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add touristDocument
+     *
+     * @param \CruiseBundle\Entity\TouristDocument $touristDocument
+     *
+     * @return Tourist
+     */
+    public function addTouristDocument(\CruiseBundle\Entity\TouristDocument $touristDocument)
+    {
+        $this->touristDocuments[] = $touristDocument;
+
+        return $this;
+    }
+
+    /**
+     * Remove touristDocument
+     *
+     * @param \CruiseBundle\Entity\TouristDocument $touristDocument
+     */
+    public function removeTouristDocument(\CruiseBundle\Entity\TouristDocument $touristDocument)
+    {
+        $this->touristDocuments->removeElement($touristDocument);
+    }
+
+    /**
+     * Get touristDocuments
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTouristDocuments()
+    {
+        return $this->touristDocuments;
     }
 }

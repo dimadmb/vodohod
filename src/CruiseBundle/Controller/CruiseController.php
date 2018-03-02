@@ -165,7 +165,7 @@ class CruiseController extends Controller
 	
 	/**
 	 * @Template()
-	 * @Route("/cruises/{id}", name="cruise_detail" )
+	 * @Route("/cruises/{id}", name="cruise_detail", requirements={"id"="\d+"} )
      */		
 	public function cruisedetailAction($id)
 	{
@@ -254,8 +254,8 @@ class CruiseController extends Controller
 		$cruise->tariffsHidden = $this->get('cruise_service')->getTariffs($cruise, true);
 		
 		$session = new Session();
-		dump($session);
-		dump($session->getId());		
+		//dump($session);
+		//dump($session->getId());		
 		$basket = $session->get('basket');
 		
 		$ordering = [];

@@ -23,7 +23,8 @@ class OrderItem
 	
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="Ordering", inversedBy="orderItem")
+	 * @ORM\ManyToOne(targetEntity="Ordering", inversedBy="orderItems")
+	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	private $order;
 	
@@ -41,6 +42,11 @@ class OrderItem
 	 * @ORM\ManyToOne(targetEntity="Price")
 	 */
 	private $price;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="OrderItemPlace", mappedBy="orderItem")
+	 */
+	private $orderItemPlaces;
 
 
     /**
@@ -147,5 +153,46 @@ class OrderItem
     public function getPrice()
     {
         return $this->price;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->orderItemPlaces = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add orderItemPlace
+     *
+     * @param \CruiseBundle\Entity\OrderItemPlace $orderItemPlace
+     *
+     * @return OrderItem
+     */
+    public function addOrderItemPlace(\CruiseBundle\Entity\OrderItemPlace $orderItemPlace)
+    {
+        $this->orderItemPlaces[] = $orderItemPlace;
+
+        return $this;
+    }
+
+    /**
+     * Remove orderItemPlace
+     *
+     * @param \CruiseBundle\Entity\OrderItemPlace $orderItemPlace
+     */
+    public function removeOrderItemPlace(\CruiseBundle\Entity\OrderItemPlace $orderItemPlace)
+    {
+        $this->orderItemPlaces->removeElement($orderItemPlace);
+    }
+
+    /**
+     * Get orderItemPlaces
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getOrderItemPlaces()
+    {
+        return $this->orderItemPlaces;
     }
 }

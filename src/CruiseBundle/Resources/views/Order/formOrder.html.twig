@@ -1,0 +1,19 @@
+{{ form_start(form) }}
+<h3>Каюты</h3>
+
+{% for orderItem in form.orderItems %}
+		
+	<b>Каюта  {{ orderItem.vars.data.room.number }}</b>
+
+	{% for orderItemPlace in orderItem.orderItemPlaces %}
+		{{ form_row(orderItemPlace.tourist) }}
+		<a class="add_tourist">Добавить нового туриста</a>
+	{#{dump(orderItemPlace)}#}	
+
+	{% endfor %}
+	
+{% endfor %}
+
+
+{{ form_row(form.commentBuyer) }}
+{{ form_end(form) }}

@@ -12,6 +12,12 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 use CruiseBundle\Entity\Ordering;
 use CruiseBundle\Entity\OrderItem;
+use CruiseBundle\Entity\OrderItemPlace;
+use CruiseBundle\Entity\Tourist;
+
+
+use CruiseBundle\Form\OrderingType;
+use CruiseBundle\Form\TouristType;
 
 	/**
 	 * @Route("/cruise")
@@ -90,6 +96,18 @@ class OrderController extends Controller
 				;
 				$em->persist($orderItem);
 				$order->addOrderItem($orderItem);
+				for($i = 1; $i <= $price->getRoomPlacing()->getId();$i++)
+				{
+					$orderItemPlace = new OrderItemPlace;
+					$orderItemPlace 
+						->setOrderItem($orderItem)
+					
+					;
+					$em->persist($orderItemPlace);
+					$orderItem->addOrderItemPlace($orderItemPlace);
+				}
+				
+				
 			}	
 			
 			
@@ -137,10 +155,18 @@ class OrderController extends Controller
      */		
 	public function orderHashAction(Request $request, $code)
 	{
+		
+		dump($request);
+		
 		$em = $this->getDoctrine()->getManager("cruise");
 
-		$order = $em->getRepository("CruiseBundle:Ordering")->findOneByHashCode($code);
+		$order = $em->getRepository("CruiseBundle:Ordering")->findOneByOrder1sCode($code);
 		
+		if(null === $order)
+		{
+			$order = $em->getRepository("CruiseBundle:Ordering")->findOneByHashCode($code);
+		}
+
 		if(null === $order)
 		{
 			return $this->redirectToRoute('cruises'); // заказ не найден 
@@ -156,12 +182,51 @@ class OrderController extends Controller
 		
 		$turistCount = 0;
 		
+
+		
+		
+		$form =  $this->createForm(OrderingType::class, $order)	;
+		
+		$form->handleRequest($request);
+
 		foreach($order->getOrderItems() as $orderItem)
 		{
 			$orderItem->priceBasket = $this->get("cruise_service")->getPriceBasket($cruise, $orderItem->getRoom(), $orderItem->getPrice());
 			
 			$turistCount += $orderItem->getPrice()->getRoomPlacing()->getId();
-		}
+			
+			foreach($orderItem->getOrderItemPlaces() as $orderItemPlace )
+			{
+				if(null === $orderItemPlace->getTourist())
+				{
+					$tourist = new \CruiseBundle\Entity\Tourist;
+					$em->persist($tourist);
+					$orderItemPlace->setTourist($tourist);	
+				}
+
+			}
+			
+		}		
+		
+
+        if ($form->isSubmitted() && $form->isValid()) 
+		{	
+			$em->flush();
+		}	
+		
+		
+		if($request->isXmlHttpRequest())
+		{
+			return $this->render('CruiseBundle:Order:formOrder.html.twig', [
+            'form' => $form->createView(),
+			
+        ]);
+		}		
+		
+		$formOrderView = $this->renderView('CruiseBundle:Order:formOrder.html.twig', [
+            'form' => $form->createView(),
+        ]);		
+		
 		
 		$allowNext = true ;
 		$discounts = [];
@@ -169,10 +234,38 @@ class OrderController extends Controller
 		$discounts = $this->get("cruise_service")->getDiscounts($cruise,true,$turistCount);
 			// получить количество туристов, чтоб разрешить групповую скидку
 
-		return ['allowNext'=>$allowNext, 'discounts'=>$discounts, 'order' => $order, 'turistCount' => $turistCount ];
+		return [
+					'allowNext'=>$allowNext,
+					'discounts'=>$discounts,
+					'order' => $order,
+					'turistCount' => $turistCount,
+					'formOrderView' => $formOrderView,
+			];
 	}	
 	
-	
+	/**
+	 * @Route("/cruise/order/add_tourist", name="order_add_tourist")
+	 */
+	public function addTouristAction(Request $request)
+	{
+		$em = $this->getDoctrine()->getManager("cruise");
+		
+		$tourist = new Tourist();
+		
+		$form = $this->createForm(TouristType::class,$tourist,['action' => $this->generateUrl('order_add_tourist'),'attr'=>['class'=>'ajaxForm']]);
+		$form->handleRequest($request);
+		
+		if($form->isSubmitted() && $form->isValid())
+		{
+			$em->persist($tourist);
+			$em->flush();
+		}
+		// replace this example code with whatever you need
+        return $this->render('CruiseBundle:Order:formTourist.html.twig', [
+            'form' => $form->createView(),
+        ]);		
+		
+	}
 	
 	/**
 	 * @Template()
@@ -182,8 +275,8 @@ class OrderController extends Controller
 	{
 		$em = $this->getDoctrine()->getManager("cruise");
 		$session = new Session();
-		dump($session);
-		dump($session->getId());		
+		//dump($session);
+		//dump($session->getId());		
 		$basketS = $session->get('basket');
 		$basket = [];
 		$cruises = [];

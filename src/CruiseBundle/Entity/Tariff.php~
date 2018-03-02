@@ -197,6 +197,12 @@ class Tariff
 	private $cruiseTariff;
 
 
+	
+	public function __toString()
+	{
+		return $this->name;
+	}
+	
 
     /**
      * Get id

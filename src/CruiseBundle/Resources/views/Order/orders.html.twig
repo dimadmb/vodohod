@@ -11,10 +11,13 @@
 
 <table class="table">
 {% for order in orders %}	
+	
+	{% set code = (order.order1sCode != null) ? order.order1sCode : order.hashCode %}
+	
 	<tr>
 		<td>{{order.created | date("d.m.Y H:i")}}</td>
 		<td>статус</td>
-		<td>номер</td>
+		<td><a href="{{path('cruise_order_hash',{'code': code })}}">номер</a></td>
 		<td>{{order.cruise.id}}</td>
 		<td>{% for orderItem in order.orderItems %}{{orderItem.room.number}} {% endfor %}</td>
 		<td></td>
