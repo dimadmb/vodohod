@@ -23,7 +23,7 @@ class TouristType extends AbstractType
 		->add('lastname')
 		->add('name')
 		->add('fathername')
-		->add('dateBirth')
+		->add('dateBirth',null,['years' => range((date("Y")) , (date("Y") - 100))])
 		->add('address')
 		->add('email')
 		->add('phone')

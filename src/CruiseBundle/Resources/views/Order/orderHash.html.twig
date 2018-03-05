@@ -125,18 +125,23 @@
 
 
 
-	$('.add_tourist').click(function(){
+	$('body').on('click','.add_tourist', function(e){
 
-		var jqxhr = $.ajax({
+		
+		
+		$.ajax({
 			url: '{{path('order_add_tourist')}}',
 		})
 		.done(function(html){
 			$('#modal_add_tourist .modal-body').html(html);
 		})
 		.fail(function(){
-			console.log('fail')
-			console.log(this)
+			//console.log('fail')
+			//console.log(this)
 		})
+		
+		
+		//console.log(jqxhr);
 
 		$("#modal_add_tourist").modal('show');
 	})
@@ -147,34 +152,46 @@
 
         e.preventDefault();
  
-        $.ajax({
+       $.ajax({
             type: $(this).attr('method'),
             url: $(this).attr('action'),
             data: $(this).serialize()
         })
-        .done(function (data) {
+        .done(function (data,textStatus, jqXHR) {
             
-			console.log('done');
-			$('.modal-body').html();
-			$("#modal_add_tourist").modal('hide');
-			
+			if(jqXHR.status == 201)
+			{
+				$('.modal-body').html();
+				$("#modal_add_tourist").modal('hide');
+				
 			// тут обновляем основную форму
+				
+			$.ajax({
+					url: "{{path('cruise_order_hash',{'code':order.hashCode})}}",
+				})
+				.done(function(html){
+					$('form[name="cruisebundle_ordering"]').html(html);
+				})
+				.fail(function(html){
+					
+				})		
+			}
+			else
+			{
+				$('.modal-body').html(data);
+			}
 			
-		$.ajax({
-				url: "{{path('cruise_order_hash',{'code':order.hashCode})}}",
-			})
-			.done(function(html){
-				$('form[name="cruisebundle_ordering"]').html(html);
-			})
-			.fail(function(html){
-				console.log('fail')
-				console.log(html)
-			})		
+
+			
+
+			
 			
 			
 			
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
+		
+
             if (typeof jqXHR.responseJSON !== 'undefined') {
                 if (jqXHR.responseJSON.hasOwnProperty('form')) {
                     $('#form_body').html(jqXHR.responseJSON.form);
@@ -185,7 +202,7 @@
             } else {
                 alert(errorThrown);
             }
- 
+
         });
     });	
 	

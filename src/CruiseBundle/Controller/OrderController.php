@@ -255,15 +255,26 @@ class OrderController extends Controller
 		$form = $this->createForm(TouristType::class,$tourist,['action' => $this->generateUrl('order_add_tourist'),'attr'=>['class'=>'ajaxForm']]);
 		$form->handleRequest($request);
 		
+		
+		$response = new Response();
+		
+		
 		if($form->isSubmitted() && $form->isValid())
 		{
 			$em->persist($tourist);
 			$em->flush();
+			$response = new Response("",201);
+		}
+		elseif($form->isSubmitted() && !$form->isValid())
+		{
+        return $this->render('CruiseBundle:Order:formTourist.html.twig', [
+            'form' => $form->createView(), 
+        ]);					
 		}
 		// replace this example code with whatever you need
         return $this->render('CruiseBundle:Order:formTourist.html.twig', [
             'form' => $form->createView(),
-        ]);		
+        ],$response);		
 		
 	}
 	
