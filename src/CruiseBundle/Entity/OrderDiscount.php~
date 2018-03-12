@@ -7,7 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * OrderDiscount
  *
- * @ORM\Table(name="order_discount")
+ * @ORM\Table(name="order_discount",uniqueConstraints={
+ * @ORM\UniqueConstraint(name="order_discount_uniq", columns={"order_id", "discount_id"})})
  * @ORM\Entity(repositoryClass="CruiseBundle\Repository\OrderDiscountRepository")
  */
 class OrderDiscount
@@ -51,7 +52,7 @@ class OrderDiscount
 	
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="Ordering")
+	 * @ORM\ManyToOne(targetEntity="Ordering", inversedBy="discounts")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	private $order;
@@ -61,6 +62,13 @@ class OrderDiscount
 	 * @ORM\ManyToOne(targetEntity="Discount")
 	 */
 	private $discount;
+	
+	
+	
+	public function __toString()
+	{
+		return (null === $this->discount) ? "null" : $this->discount->getName();
+	}
 
 
     /**

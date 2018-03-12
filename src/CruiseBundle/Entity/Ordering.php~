@@ -98,6 +98,11 @@ class Ordering
      * @ORM\Column(name="summ_discounts", type="decimal", precision=10, scale=2, nullable=true)
      */
     private $summDiscounts;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="OrderDiscount", mappedBy="order")
+	 */
+	private $discounts;
 
     /**
      * @var \DateTime
@@ -1226,5 +1231,41 @@ class Ordering
     public function getHashCode()
     {
         return $this->hashCode;
+    }
+
+
+
+    /**
+     * Add discount
+     *
+     * @param \CruiseBundle\Entity\OrderDiscount $discount
+     *
+     * @return Ordering
+     */
+    public function addDiscount(\CruiseBundle\Entity\OrderDiscount $discount)
+    {
+        $this->discounts[] = $discount;
+
+        return $this;
+    }
+
+    /**
+     * Remove discount
+     *
+     * @param \CruiseBundle\Entity\OrderDiscount $discount
+     */
+    public function removeDiscount(\CruiseBundle\Entity\OrderDiscount $discount)
+    {
+        $this->discounts->removeElement($discount);
+    }
+
+    /**
+     * Get discounts
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDiscounts()
+    {
+        return $this->discounts;
     }
 }

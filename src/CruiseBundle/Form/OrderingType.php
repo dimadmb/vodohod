@@ -8,16 +8,23 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class OrderingType extends AbstractType
 {
+
+
+
+
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
-    {
-        $builder
+    {		
+		
+		$builder
 		->add('orderItems',CollectionType::class,
 			[
 				'entry_type' => OrderItemType::class,

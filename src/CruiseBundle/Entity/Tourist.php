@@ -112,12 +112,6 @@ class Tourist
      */
     private $tourist1sBarcode;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="user_id", type="integer", nullable=true)
-     */
-    private $userId;
 
     /**
      * @var int
@@ -474,29 +468,6 @@ class Tourist
         return $this->tourist1sBarcode;
     }
 
-    /**
-     * Set userId
-     *
-     * @param integer $userId
-     *
-     * @return Tourist
-     */
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
-
-        return $this;
-    }
-
-    /**
-     * Get userId
-     *
-     * @return int
-     */
-    public function getUserId()
-    {
-        return $this->userId;
-    }
 
     /**
      * Set agencyId

@@ -13,10 +13,19 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use CruiseBundle\Entity\Ordering;
 use CruiseBundle\Entity\OrderItem;
 use CruiseBundle\Entity\OrderItemPlace;
+use CruiseBundle\Entity\OrderDiscount;
 use CruiseBundle\Entity\Tourist;
+use CruiseBundle\Entity\TouristDocument;
+use CruiseBundle\Entity\Discount;
 
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 use CruiseBundle\Form\OrderingType;
+use CruiseBundle\Form\OrderDiscountType;
 use CruiseBundle\Form\TouristType;
 
 	/**
@@ -156,7 +165,7 @@ class OrderController extends Controller
 	public function orderHashAction(Request $request, $code)
 	{
 		
-		dump($request);
+		//dump($request);
 		
 		$em = $this->getDoctrine()->getManager("cruise");
 
@@ -178,43 +187,78 @@ class OrderController extends Controller
 					$this->get("cruise_service")->getTariffs($cruise),
 					$this->get("cruise_service")->getTariffs($cruise,true,false)
 					);
-
 		
 		$turistCount = 0;
 		
-
-		
-		
-		$form =  $this->createForm(OrderingType::class, $order)	;
-		
-		$form->handleRequest($request);
-
 		foreach($order->getOrderItems() as $orderItem)
 		{
 			$orderItem->priceBasket = $this->get("cruise_service")->getPriceBasket($cruise, $orderItem->getRoom(), $orderItem->getPrice());
 			
 			$turistCount += $orderItem->getPrice()->getRoomPlacing()->getId();
 			
-			foreach($orderItem->getOrderItemPlaces() as $orderItemPlace )
-			{
-				if(null === $orderItemPlace->getTourist())
-				{
-					$tourist = new \CruiseBundle\Entity\Tourist;
-					$em->persist($tourist);
-					$orderItemPlace->setTourist($tourist);	
-				}
-
-			}
-			
+			// foreach($orderItem->getOrderItemPlaces() as $orderItemPlace )
+			// {
+				// if(null === $orderItemPlace->getTourist())
+				// {
+					// $tourist = new \CruiseBundle\Entity\Tourist;
+					// $em->persist($tourist);
+					// $orderItemPlace->setTourist($tourist);	
+				// }
+			// }
 		}		
-		
 
+		$data_discounts = [];
+		foreach($order->getDiscounts() as $orderDiscount)
+		{
+			$data_discounts[] = $orderDiscount->getDiscount();
+		}
+		//dump($data_discounts);
+
+		$discounts = $this->get("cruise_service")->getDiscounts($cruise,true,$turistCount);
+
+		$form =  $this->createForm(OrderingType::class, $order)	;
+		
+		$form->add('discountAdd',EntityType::class,[
+				'class' => Discount::class,
+				'choice_label' => 'name',
+				'multiple' => true,
+				'expanded' => true,
+				'mapped' => false,	
+				'choices' => $discounts
+			])
+			->get('discountAdd')->setData($data_discounts)
+		; 
+		
+		//dump($form);
+
+		
+		$form->handleRequest($request);	
+		
+		//dump($form);
+		
         if ($form->isSubmitted() && $form->isValid()) 
 		{	
+			// dump($order->getDiscounts()->toArray());
+			// dump($form->get('discountAdd')->getData());
+			
+			
+			foreach(array_diff ($order->getDiscounts()->toArray(),$form->get('discountAdd')->getData()) as $orderDiscountRemove )
+			{
+				$em->remove($orderDiscountRemove);
+			}
+			//$em->flush();
+ 			foreach(array_diff ($form->get('discountAdd')->getData(),$order->getDiscounts()->toArray()) as $discount )
+			{
+				$orderDiscount = new OrderDiscount;
+				$orderDiscount->setOrder($order);
+				$orderDiscount->setDiscount($discount);
+				$em->persist($orderDiscount);
+				$order->addDiscount($orderDiscount);
+			} 
 			$em->flush();
 		}	
 		
-		
+
 		if($request->isXmlHttpRequest())
 		{
 			return $this->render('CruiseBundle:Order:formOrder.html.twig', [
@@ -228,17 +272,18 @@ class OrderController extends Controller
         ]);		
 		
 		
-		$allowNext = true ;
-		$discounts = [];
 
-		$discounts = $this->get("cruise_service")->getDiscounts($cruise,true,$turistCount);
-			// получить количество туристов, чтоб разрешить групповую скидку
+
+
+		//dump($form);	
+			
+			
 
 		return [
-					'allowNext'=>$allowNext,
+					//'allowNext'=>$allowNext,
 					'discounts'=>$discounts,
 					'order' => $order,
-					'turistCount' => $turistCount,
+					//'turistCount' => $turistCount,
 					'formOrderView' => $formOrderView,
 			];
 	}	
@@ -251,29 +296,70 @@ class OrderController extends Controller
 		$em = $this->getDoctrine()->getManager("cruise");
 		
 		$tourist = new Tourist();
+		$touristDocument = new TouristDocument();
+		
+		//$em->persist($touristDocument);
+		//$em->persist($tourist);
+		
+		$tourist->addTouristDocument($touristDocument);
+		$touristDocument->setTourist($tourist);
+		
+		
 		
 		$form = $this->createForm(TouristType::class,$tourist,['action' => $this->generateUrl('order_add_tourist'),'attr'=>['class'=>'ajaxForm']]);
 		$form->handleRequest($request);
 		
 		
 		$response = new Response();
+		$errors = [];
 		
+		//dump(get_class_methods($form));
 		
 		if($form->isSubmitted() && $form->isValid())
 		{
-			$em->persist($tourist);
-			$em->flush();
-			$response = new Response("",201);
+			
+			$tourist_existing = $em->getRepository("CruiseBundle:Tourist")->findOneBy([
+				'name'=>$tourist->getName(),
+				'lastname'=>$tourist->getLastname(),
+				'fathername'=>$tourist->getFathername(),
+				'dateBirth'=>$tourist->getDateBirth()
+			]);
+			
+			if(null !== $tourist_existing)  /// тут ошибка  //написать тест для создания туриста с документом и существующего туриста с документом
+			{
+				//$response = new Response("",200);
+				//$errors[] = "Турист уже есть в базе";
+				foreach($tourist_existing->getTouristDocuments() as $touristDocument)
+				{
+					dump($touristDocument);
+					
+					$touristDocument->setUser($this->getUser()->getId());
+					$touristDocument->setTourist($tourist_existing);
+				}
+				$em->flush();
+				$response = new Response("",201);					
+				
+			}
+			else
+			{
+				$em->persist($tourist);
+				$em->flush();
+				$response = new Response("",201);				
+			}
+			
+
 		}
 		elseif($form->isSubmitted() && !$form->isValid())
 		{
         return $this->render('CruiseBundle:Order:formTourist.html.twig', [
             'form' => $form->createView(), 
+			'errors' => $errors,
         ]);					
 		}
 		// replace this example code with whatever you need
         return $this->render('CruiseBundle:Order:formTourist.html.twig', [
             'form' => $form->createView(),
+            'errors' => $errors,
         ],$response);		
 		
 	}

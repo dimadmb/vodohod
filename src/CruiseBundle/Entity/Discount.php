@@ -177,6 +177,13 @@ class Discount
 	 * @ORM\OneToMany(targetEntity="DiscountExclusion", mappedBy="discount")
 	 */
 	private $exclusions;
+	
+	
+	
+	public function __toString()
+	{
+		return $this->name;
+	}
 
     /**
      * Get id

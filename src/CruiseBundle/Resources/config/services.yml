@@ -1,4 +1,4 @@
 services:
-#    cruise.example:
-#        class: CruiseBundle\Example
-#        arguments: ["@service_id", "plain_value", %parameter%]
+#    CruiseBundle\Form\OrderingType:
+#        arguments: ['@cruise_service']
+#        tags: [form.type]

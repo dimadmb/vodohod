@@ -1,12 +1,16 @@
 <?php
-
+// удалить этот класс
 namespace CruiseBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class TouristDocumentType extends AbstractType
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+
+use CruiseBundle\Entity\Discount;
+
+class OrderDiscountType extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -14,11 +18,19 @@ class TouristDocumentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-			->add('series')
-			->add('number')
-			->add('date')
-			->add('place')
-			->add('type', null, ['required'=>true])
+			//->add('type')
+			//->add('plus')
+			//->add('priority')
+			//->add('value')
+
+			//->add('enable',CheckboxType::class)
+			->add('discountAdd',EntityType::class,[
+				'class' => Discount::class,
+				'choice_label' => 'name',
+				'multiple' => true,
+				'expanded' => true,
+				'mapped' => false,				
+			])
 		;
     }
     
@@ -28,7 +40,7 @@ class TouristDocumentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'CruiseBundle\Entity\TouristDocument'
+            'data_class' => 'CruiseBundle\Entity\OrderDiscount'
         ));
     }
 
@@ -37,7 +49,7 @@ class TouristDocumentType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'cruisebundle_touristdocument';
+        return 'cruisebundle_orderdiscount';
     }
 
 

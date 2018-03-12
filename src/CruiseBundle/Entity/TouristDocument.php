@@ -64,6 +64,20 @@ class TouristDocument
 	 * @ORM\ManyToOne(targetEntity="TouristDocumentType")
 	 */
 	private $type;
+	
+	
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="user_id", type="integer", nullable=true)
+     */
+    private $userId;
+	
+	
+	public function __toString()
+	{
+		return $this->series. " " . $this->number;
+	}
 
 
     /**
@@ -242,5 +256,31 @@ class TouristDocument
     public function getContractor()
     {
         return $this->contractor;
+    }
+
+
+
+    /**
+     * Set userId
+     *
+     * @param integer $userId
+     *
+     * @return TouristDocument
+     */
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+
+        return $this;
+    }
+
+    /**
+     * Get userId
+     *
+     * @return integer
+     */
+    public function getUserId()
+    {
+        return $this->userId;
     }
 }

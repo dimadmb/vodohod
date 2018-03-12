@@ -10,6 +10,11 @@ use Doctrine\ORM\EntityRepository;
 
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+
 use CruiseBundle\Entity\Tourist;
 
 //use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -31,12 +36,47 @@ class OrderItemPlaceType extends AbstractType
 							->orderBy('t.id', 'DESC');
 					},
 					//'choice_label' => 'name',
-					//'placeholder' => 'Новый турист',
-					//'required' => false
+					'placeholder' => 'Пока не указывать туриста',
+					'required' => false
 			])
-			//->add('tourist',TouristType::class)
+			
+			
+            ->addEventListener(
+                FormEvents::PRE_SET_DATA,
+                array($this, 'onPreSetData')
+            )
 		;
     }
+	
+    public function onPreSetData(FormEvent $event)
+    {
+        $orderItemPlace = $event->getData();
+        $form = $event->getForm();
+		
+		
+		$orderItem = $orderItemPlace->getOrderItem();
+		
+		$priceBaskets = $orderItem->priceBasket;
+		$choices = [];
+		foreach($priceBaskets as $priceBasket)
+		{
+			//$choices[$priceBasket['name']. " " .$priceBasket['price']] = $priceBasket['id'];
+			$choices[$priceBasket['name']. " " .$priceBasket['price']] = $priceBasket['tariff'];
+		}
+		
+		
+
+        $form->add('tariff', ChoiceType::class, [
+			'choices'  => $choices,
+		]);
+		
+		
+		//dump($form);
+		
+    }
+			
+			//->add('tourist',TouristType::class)
+
     
     /**
      * {@inheritdoc}

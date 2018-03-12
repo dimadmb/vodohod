@@ -2,18 +2,34 @@
 <h3>Каюты</h3>
 
 {% for orderItem in form.orderItems %}
-		
-	<b>Каюта  {{ orderItem.vars.data.room.number }}</b>
-
-	{% for orderItemPlace in orderItem.orderItemPlaces %}
-		{{ form_row(orderItemPlace.tourist) }}
-		<a class="add_tourist">Добавить нового туриста</a>
-	{#{dump(orderItemPlace)}#}	
-
-	{% endfor %}
-	
+		<div class="contract-item">
+			<div class="row">
+				<div class="col-sm-3">
+					<div class="blue">Каюта {{orderItem.vars.data.room.number}} {{orderItem.vars.data.room.deck.name}} палуба</div>
+					{% if orderItem.vars.data.price.name != "" %}
+						<div>{{orderItem.vars.data.price.name}}</div>
+					{% else %}
+						<div>{{orderItem.vars.data.room.roomType.name}}</div>
+					{% endif %}
+					<div>{{orderItem.vars.data.price.roomPlacing.name}}</div>
+				</div>
+				<div class="col-sm-9 center-block">
+					{% for orderItemPlace in orderItem.orderItemPlaces %}
+						<div class="row" style="margin-bottom:10px;">
+							<div class="col-sm-4">{{ form_widget(orderItemPlace.tourist) }}</div>
+							<div class="col-sm-4">
+								<a class="add_tourist">Добавить нового туриста</a>
+							</div>
+							<div class="col-sm-4">{{ form_widget(orderItemPlace.tariff) }}</div>
+						</div>
+						{% if not (loop.last) %}
+						<hr>
+						{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+		</div>
 {% endfor %}
-
 
 {{ form_row(form.commentBuyer) }}
 {{ form_end(form) }}

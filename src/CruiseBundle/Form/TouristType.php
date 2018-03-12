@@ -6,9 +6,14 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+//use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+
+
+use CruiseBundle\Form\TouristDocumentType;
 
 
 class TouristType extends AbstractType
@@ -28,7 +33,10 @@ class TouristType extends AbstractType
 		->add('email')
 		->add('phone')
 
-		//->add('touristDocuments')
+		->add('touristDocuments',CollectionType::class,[
+			'entry_type' => TouristDocumentType::class,
+			'entry_options' => ['label' => false ],
+		])
 		
 		->add('submit', SubmitType::class)	
 		

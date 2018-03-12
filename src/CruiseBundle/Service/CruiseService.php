@@ -909,7 +909,7 @@ class CruiseService
 					$tariffJS['id'] = $tariff->getId();
 					$tariffJS['name'] = $tariff->getName();
 					$tariffJS['price'] = ceil($price->price/100) * (100 + $tariff->getValue());
-					
+					$tariffJS['tariff'] = $tariff;
 
 				
 				$priceJS[] = $tariffJS;
