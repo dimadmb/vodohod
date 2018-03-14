@@ -10,7 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+
 
 class OrderingType extends AbstractType
 {
@@ -31,8 +31,8 @@ class OrderingType extends AbstractType
 				'entry_options' => ['label' => false ],
 			]
 		)
-		->add('commentBuyer')
-		->add('submit',SubmitType::class)
+		->add('commentBuyer',null, ['label'=>'Ваш комментарий к заказу'])
+
 
 
 		;

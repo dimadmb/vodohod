@@ -8,6 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use Doctrine\ORM\EntityRepository;
 
+
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use Symfony\Component\Form\FormEvent;
@@ -15,27 +16,68 @@ use Symfony\Component\Form\FormEvents;
 
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
+use CruiseBundle;
 use CruiseBundle\Entity\Tourist;
 
 //use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 use CruiseBundle\Form\TouristType;
 
+
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+
 class OrderItemPlaceType extends AbstractType
 {
+
+    private $doctrine;
+	private $tokenStorage;
+
+    public function __construct( $doctrine,TokenStorageInterface $tokenStorage)
+    {
+        $this->doctrine = $doctrine;
+		$this->tokenStorage = $tokenStorage;
+    }
+
+
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
+        global $kernel;
+		 
+        // возьмите пользователя и проведите быструю проверку на предмет его существовани
+        $user = $this->tokenStorage->getToken()->getUser();
+        if (!$user) {
+            throw new \LogicException(
+                'The FriendMessageFormType cannot be used without an authenticated user!'
+            );
+        }
+		
+		
+		$em = $this->doctrine->getManager('cruise');
+		
+		
+		
+		$choices = $em->createQueryBuilder()
+				->select('t')
+				->from("CruiseBundle:Tourist","t")
+				->leftJoin('t.touristDocuments','td')
+				->where('td.userId = ' . $user->getId())
+				->getQuery()
+				->getResult()
+			;
+			
+		
+		$builder
 			->add('tourist',EntityType::class,[
 					 'class' => Tourist::class,
-					'query_builder' => function (EntityRepository $er) {
-						return $er->createQueryBuilder('t')
-							->orderBy('t.id', 'DESC');
-					},
-					//'choice_label' => 'name',
+					// 'query_builder' => function (EntityRepository $er, $user) {
+						// return $er->createQueryBuilder('t')
+							// ->leftJoin('t.touristDocuments','td')
+							// ->orderBy('t.id', 'DESC');
+					// },
+					'choices' => $choices,
 					'placeholder' => 'Пока не указывать туриста',
 					'required' => false
 			])

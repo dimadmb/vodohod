@@ -15,4 +15,4 @@
 /vendor/
 /web/bundles/ivoryckeditor/
 #/web/files/
-#/web/media/
+/web/media/

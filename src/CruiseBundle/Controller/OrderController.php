@@ -19,9 +19,8 @@ use CruiseBundle\Entity\TouristDocument;
 use CruiseBundle\Entity\Discount;
 
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 use CruiseBundle\Form\OrderingType;
@@ -157,6 +156,128 @@ class OrderController extends Controller
 		
 		return ['orders'=>$orders];
 	}
+
+
+	
+	/**
+	 * @Route("/order/add_tourist", name="order_add_tourist")
+	 */
+	public function addTouristAction(Request $request)
+	{
+		$em = $this->getDoctrine()->getManager("cruise");
+		
+		$tourist = new Tourist();
+		$touristDocument = new TouristDocument();
+		
+		//$em->persist($touristDocument);
+		//$em->persist($tourist);
+		
+		$tourist->addTouristDocument($touristDocument);
+		$touristDocument->setTourist($tourist);
+		
+		
+		
+		$form = $this->createForm(TouristType::class,$tourist,['action' => $this->generateUrl('order_add_tourist'),'attr'=>['class'=>'ajaxForm']]);
+		$form->handleRequest($request);
+		
+		
+		$response = new Response();
+		$errors = [];
+		
+		//dump(get_class_methods($form));
+		
+		if($form->isSubmitted() && $form->isValid())
+		{
+			
+			$tourist_existing = $em->getRepository("CruiseBundle:Tourist")->findOneBy([
+				'name'=>$tourist->getName(),
+				'lastname'=>$tourist->getLastname(),
+				'fathername'=>$tourist->getFathername(),
+				'dateBirth'=>$tourist->getDateBirth()
+			]);
+			
+			if(null !== $tourist_existing)  /// тут ошибка  //написать тест для создания туриста с документом и существующего туриста с документом
+			{
+				//$response = new Response("",200);
+				//$errors[] = "Турист уже есть в базе";
+				
+				
+				// сделать проверку на наличие документа у этого туриста 
+				
+				
+				foreach($tourist->getTouristDocuments() as $touristDocument)
+				{
+					
+					// находим данные на туриста, доступные этому пользователю 
+					$touristDocumentExist = $em->getRepository("CruiseBundle:TouristDocument")->findOneBy([
+						'tourist' => $tourist_existing,
+						'userId' => $this->getUser()->getId(),
+					]);
+					
+					if(null !== $touristDocumentExist)
+					{
+						// сперва надо перенести данные, чтобы их перезаписать 
+						// но надо найти лучшее решение, чтоб не зависить от полей объекта 
+						$touristDocumentExist
+								->setSeries($touristDocument->getSeries())
+								->setNumber($touristDocument->getNumber())
+								->setDate($touristDocument->getDate())
+								->setPlace($touristDocument->getPlace())
+								->setType($touristDocument->getType())
+								->setAddress($touristDocument->getAddress())
+								->setEmail($touristDocument->getEmai())
+								->setPhone($touristDocument->getPhone())
+						
+						;
+						$touristDocument = $touristDocumentExist;
+					}
+					
+					$touristDocument->setUserId($this->getUser()->getId());
+					$touristDocument->setTourist($tourist_existing);
+					$em->persist($touristDocument);
+					
+					
+					$tourist_existing->addTouristDocument($touristDocument);
+					
+					$em->persist($touristDocument);
+					
+				}
+				
+				$em->persist($tourist_existing);
+				
+				$em->flush();
+				$response = new Response("",201);					
+				
+			}
+			else
+			{
+				foreach($tourist->getTouristDocuments() as $touristDocument)
+				{
+					$touristDocument->setUserId($this->getUser()->getId());
+					$em->persist($touristDocument);
+					$em->persist($touristDocument);	
+				}				
+				$em->persist($tourist);
+				$em->flush();
+				$response = new Response("",201);				
+			}
+			
+
+		}
+		elseif($form->isSubmitted() && !$form->isValid())
+		{
+        return $this->render('CruiseBundle:Order:formTourist.html.twig', [
+            'form' => $form->createView(), 
+			'errors' => $errors,
+        ]);					
+		}
+		// replace this example code with whatever you need
+        return $this->render('CruiseBundle:Order:formTourist.html.twig', [
+            'form' => $form->createView(),
+            'errors' => $errors,
+        ],$response);		
+		
+	}
 	
 	/**
 	 * @Template()
@@ -196,15 +317,6 @@ class OrderController extends Controller
 			
 			$turistCount += $orderItem->getPrice()->getRoomPlacing()->getId();
 			
-			// foreach($orderItem->getOrderItemPlaces() as $orderItemPlace )
-			// {
-				// if(null === $orderItemPlace->getTourist())
-				// {
-					// $tourist = new \CruiseBundle\Entity\Tourist;
-					// $em->persist($tourist);
-					// $orderItemPlace->setTourist($tourist);	
-				// }
-			// }
 		}		
 
 		$data_discounts = [];
@@ -212,41 +324,38 @@ class OrderController extends Controller
 		{
 			$data_discounts[] = $orderDiscount->getDiscount();
 		}
-		//dump($data_discounts);
 
 		$discounts = $this->get("cruise_service")->getDiscounts($cruise,true,$turistCount);
 
 		$form =  $this->createForm(OrderingType::class, $order)	;
-		
 		$form->add('discountAdd',EntityType::class,[
 				'class' => Discount::class,
 				'choice_label' => 'name',
 				'multiple' => true,
 				'expanded' => true,
 				'mapped' => false,	
-				'choices' => $discounts
+				'choices' => $discounts,
+				'label' => 'Скидки',
+				'attr' => ['class'=>'check_discount'],
+				'choice_attr' => function($discount, $key, $index) {
+					return ['exclusions' => implode(",",$discount->getExclusions()->toArray())];
+				},
 			])
 			->get('discountAdd')->setData($data_discounts)
 		; 
-		
-		//dump($form);
+		$form->add('save',SubmitType::class,['label'=> 'Сохранить']);
+		$form->add('send',SubmitType::class,['label'=> 'Оформить']);
 
+		//dump($request);
 		
 		$form->handleRequest($request);	
 		
-		//dump($form);
-		
         if ($form->isSubmitted() && $form->isValid()) 
 		{	
-			// dump($order->getDiscounts()->toArray());
-			// dump($form->get('discountAdd')->getData());
-			
-			
 			foreach(array_diff ($order->getDiscounts()->toArray(),$form->get('discountAdd')->getData()) as $orderDiscountRemove )
 			{
 				$em->remove($orderDiscountRemove);
 			}
-			//$em->flush();
  			foreach(array_diff ($form->get('discountAdd')->getData(),$order->getDiscounts()->toArray()) as $discount )
 			{
 				$orderDiscount = new OrderDiscount;
@@ -287,82 +396,7 @@ class OrderController extends Controller
 					'formOrderView' => $formOrderView,
 			];
 	}	
-	
-	/**
-	 * @Route("/cruise/order/add_tourist", name="order_add_tourist")
-	 */
-	public function addTouristAction(Request $request)
-	{
-		$em = $this->getDoctrine()->getManager("cruise");
-		
-		$tourist = new Tourist();
-		$touristDocument = new TouristDocument();
-		
-		//$em->persist($touristDocument);
-		//$em->persist($tourist);
-		
-		$tourist->addTouristDocument($touristDocument);
-		$touristDocument->setTourist($tourist);
-		
-		
-		
-		$form = $this->createForm(TouristType::class,$tourist,['action' => $this->generateUrl('order_add_tourist'),'attr'=>['class'=>'ajaxForm']]);
-		$form->handleRequest($request);
-		
-		
-		$response = new Response();
-		$errors = [];
-		
-		//dump(get_class_methods($form));
-		
-		if($form->isSubmitted() && $form->isValid())
-		{
-			
-			$tourist_existing = $em->getRepository("CruiseBundle:Tourist")->findOneBy([
-				'name'=>$tourist->getName(),
-				'lastname'=>$tourist->getLastname(),
-				'fathername'=>$tourist->getFathername(),
-				'dateBirth'=>$tourist->getDateBirth()
-			]);
-			
-			if(null !== $tourist_existing)  /// тут ошибка  //написать тест для создания туриста с документом и существующего туриста с документом
-			{
-				//$response = new Response("",200);
-				//$errors[] = "Турист уже есть в базе";
-				foreach($tourist_existing->getTouristDocuments() as $touristDocument)
-				{
-					dump($touristDocument);
-					
-					$touristDocument->setUser($this->getUser()->getId());
-					$touristDocument->setTourist($tourist_existing);
-				}
-				$em->flush();
-				$response = new Response("",201);					
-				
-			}
-			else
-			{
-				$em->persist($tourist);
-				$em->flush();
-				$response = new Response("",201);				
-			}
-			
 
-		}
-		elseif($form->isSubmitted() && !$form->isValid())
-		{
-        return $this->render('CruiseBundle:Order:formTourist.html.twig', [
-            'form' => $form->createView(), 
-			'errors' => $errors,
-        ]);					
-		}
-		// replace this example code with whatever you need
-        return $this->render('CruiseBundle:Order:formTourist.html.twig', [
-            'form' => $form->createView(),
-            'errors' => $errors,
-        ],$response);		
-		
-	}
 	
 	/**
 	 * @Template()

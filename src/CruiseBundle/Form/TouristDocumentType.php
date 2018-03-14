@@ -6,6 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+use Symfony\Component\Validator\Constraints\Email;
+
 class TouristDocumentType extends AbstractType
 {
     /**
@@ -14,10 +16,19 @@ class TouristDocumentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-			->add('series')
-			->add('number')
-			->add('date')
-			->add('place')
+			->add('address', null, ['required'=>false])
+			->add('email',null,[
+				'required'=>false	,		   
+			    'constraints' => array(
+                new Email(array('checkMX' => true)),
+            ),
+
+			])
+			->add('phone', null, ['required'=>false])
+			->add('series', null, ['required'=>true])
+			->add('number', null, ['required'=>true])
+			->add('date',null,['required'=>true,'years' => range((date("Y")) , (date("Y") - 50))])
+			->add('place', null, ['required'=>true])
 			->add('type', null, ['required'=>true])
 		;
     }

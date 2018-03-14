@@ -1,4 +1,6 @@
 services:
-#    CruiseBundle\Form\OrderingType:
-#        arguments: ['@cruise_service']
-#        tags: [form.type]
+    cruise_form_type_order_item_place:
+        class: CruiseBundle\Form\OrderItemPlaceType
+        arguments: ['@doctrine','@security.token_storage']
+        tags:
+            - { name: form.type, alias: order_item_place }

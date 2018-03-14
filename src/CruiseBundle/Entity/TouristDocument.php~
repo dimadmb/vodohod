@@ -20,6 +20,28 @@ class TouristDocument
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+	
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="address", type="string", length=255)
+     */
+    private $address;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="email", type="string", length=255)
+     */
+    private $email;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="phone", type="string", length=255)
+     */
+    private $phone;	
+	
 
     /**
      * @var string
@@ -259,28 +281,4 @@ class TouristDocument
     }
 
 
-
-    /**
-     * Set userId
-     *
-     * @param integer $userId
-     *
-     * @return TouristDocument
-     */
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
-
-        return $this;
-    }
-
-    /**
-     * Get userId
-     *
-     * @return integer
-     */
-    public function getUserId()
-    {
-        return $this->userId;
-    }
 }

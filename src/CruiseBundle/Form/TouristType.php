@@ -29,9 +29,9 @@ class TouristType extends AbstractType
 		->add('name')
 		->add('fathername')
 		->add('dateBirth',null,['years' => range((date("Y")) , (date("Y") - 100))])
-		->add('address')
-		->add('email')
-		->add('phone')
+		//->add('address')
+		//->add('email')
+		//->add('phone')
 
 		->add('touristDocuments',CollectionType::class,[
 			'entry_type' => TouristDocumentType::class,

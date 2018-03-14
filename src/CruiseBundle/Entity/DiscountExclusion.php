@@ -33,6 +33,10 @@ class DiscountExclusion
     private $discountExclusion; 	
 	
 	
+	public function __toString()
+	{
+		return (string)$this->discountExclusion->getId();
+	}
 
 
     /**

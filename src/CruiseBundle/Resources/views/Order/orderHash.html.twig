@@ -102,9 +102,11 @@
 				$("#modal_add_tourist").modal('hide');
 				
 			// тут обновляем основную форму
-				
+			// но желательно отправить существующую форму, чтоб не сбрасывать изменения 	
 			$.ajax({
+					type: "POST",
 					url: "{{path('cruise_order_hash',{'code':order.hashCode})}}",
+					data: $('form[name="cruisebundle_ordering"]').serialize()
 				})
 				.done(function(html){
 					$('form[name="cruisebundle_ordering"]').html(html);
@@ -145,12 +147,12 @@
 	
 	
 	
-$('input.check_discount').change(function(){
+$('.check_discount input').change(function(){
 	exclusions = $(this).attr('exclusions');
 	exclusions_array = exclusions.split(',');
 	for(var exclusion in exclusions_array)
 	{			
-		$('input.check_discount#discount_' + exclusions_array[exclusion]).attr('checked',false);
+		$('#cruisebundle_ordering_discountAdd_' + exclusions_array[exclusion]).attr('checked',false);
 	}
 });
 
