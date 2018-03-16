@@ -7,24 +7,70 @@
 
 <div class="container">
 
-{{dump(orders)}}
+{#{dump(orders)}#}
 
-<table class="table">
+
+<div class="cabinet-order-table table-responsive">
+			<table>
+				<thead>
+					<tr>
+						<td>Дата</td>
+						<td>Статус</td>
+						<td>Номер</td>
+						<td>Круиз</td>
+						<td>Телоход</td>
+						<td>Каюта</td>
+						<td>Сумма</td>
+						<td>К оплате</td>
+						<td>Оплата</td>
+					</tr>
+				</thead>
+				<tbody>
+				
 {% for order in orders %}	
 	
 	{% set code = (order.order1sCode != null) ? order.order1sCode : order.hashCode %}
 	
-	<tr>
-		<td>{{order.created | date("d.m.Y H:i")}}</td>
-		<td>статус</td>
-		<td><a href="{{path('cruise_order_hash',{'code': code })}}">номер</a></td>
-		<td>{{order.cruise.id}}</td>
-		<td>{% for orderItem in order.orderItems %}{{orderItem.room.number}} {% endfor %}</td>
-		<td></td>
-		<td></td>
-	</tr>
-{% endfor %}	
-</table>
+					<tr>
+						<td>
+							{{order.created | date("d.m.Y")}}<br>
+							{{order.created | date("H:i")}}
+						</td>
+						<td>
+							<div class="status no">Отменен</div>
+						</td>
+						<td>
+							<a href="{{path('cruise_order_hash',{'code': code })}}">номер</a>
+						</td>
+						<td>
+							<a href="{{ path('cruise_detail',{'id':order.cruise.id}) }}">{{order.cruise.name}}</a><br>
+							{{order.cruise.dateStart | localizeddate('full', 'none', null, null, 'dd (eee) MMM') }} - {{order.cruise.dateStop | localizeddate('full', 'none', null, null, 'dd (eee) MMM - ') }}
+						</td>
+						<td>
+							<a href="{{ path('fleet_ship',{'shipcode':order.cruise.motorship.code}) }}">{{order.cruise.motorship.name}}</a><br>
+						
+						</td>
+						<td>
+							{% for orderItem in order.orderItems %}{{orderItem.room.number}} {% endfor %}
+						</td>
+						<td>
+							сумма 
+						</td>
+						<td>
+							<div class="bold">сумма</div>
+						</td>
+						<td>
+							Нет
+						</td>
+			
+					</tr>
+					
+{% endfor %}						
+
+				</tbody>
+			</table>
+		</div>
+
 
 
 </div>
